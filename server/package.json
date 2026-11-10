@@ -1,0 +1,16 @@
+{
+  "name": "queenstown-society-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "REST API for the Queenstown Society app (Node + MongoDB)",
+  "main": "server.js",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "mongodb": "^6.8.0"
+  }
+}

@@ -314,3 +314,13 @@ table.tbl{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
 .sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
 .code{font:800 26px var(--f-display);letter-spacing:.24em;background:var(--surface-2);border:1px dashed var(--line);border-radius:12px;padding:10px 16px;text-align:center}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.marq .trk{animation:none}.marq{overflow-x:auto}}
+
+/* connecting and offline screens (remote mode) */
+.boot{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;color:var(--ink)}
+.boot b{font:700 20px/1.3 var(--font-d,inherit)}
+.boot small{color:var(--ink-2);max-width:36ch;min-height:1.2em}
+.boot .spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:bootspin .8s linear infinite}
+@keyframes bootspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.boot .spin{animation-duration:2.4s}}
+
+details.alt{border:1px dashed var(--line);border-radius:12px;padding:10px 14px}details.alt[open]{padding-bottom:14px}details.alt summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ink-2);list-style:none}details.alt summary::-webkit-details-marker{display:none}details.alt summary::after{content:'+';float:right;font-weight:700}details.alt[open] summary::after{content:'\2212'}details.alt>*+*{margin-top:12px}

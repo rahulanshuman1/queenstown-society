@@ -2,6 +2,7 @@
 
 The APK is built in the cloud by GitHub Actions. You do not need Android Studio.
 
+Before the first build, in GitHub open Settings > Secrets and variables > Actions > Variables and add **QS_API_URL** with your Render address, for example `https://queenstown-api.onrender.com`. Without it the APK opens the offline demo instead of your society.
 1. Push to `main` (or open the repo's **Actions** tab, choose **Build Android APK** and press **Run workflow**).
 2. Wait about 5 to 8 minutes for the run to finish.
 3. Open the finished run and download **queenstown-society-apk** from the Artifacts list at the bottom. Unzip it to get `app-debug.apk`.
@@ -18,4 +19,4 @@ Build on your own computer instead (needs Node 20, JDK 17, Android SDK):
 
 The APK appears in `android/app/build/outputs/apk/debug/`.
 
-The app shows live data from the phone's own storage, so each phone has its own copy until a shared database is connected (see README.md).
+With QS_API_URL set, the app uses the same accounts, database and Razorpay payments as the website. Add the Render CLIENT_ORIGINS value `https://localhost` as well (comma separated) only if sign-in from the APK is refused; the API already accepts it by default.

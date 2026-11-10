@@ -53,13 +53,32 @@ ROUTES.maintenance=()=>{
  <div class="split"><div class="card"><h3>${ic('clock')}Bill history</h3>${bills.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Month</th><th class="r">Amount</th><th>Due date</th><th>Status</th><th></th></tr></thead><tbody>${bills.map(b=>{const od=b.status==='due'&&daysTo(b.dueDate)<0;return`<tr><td><b>${mlabel(b.month)}</b></td><td class="r num">${inr(billTotal(b))}${lateFee(b)?`<br><small>incl. ${inr(lateFee(b))} late fee</small>`:''}</td><td>${fdate(b.dueDate)}</td><td>${od?sChip('overdue'):sChip(b.status)}</td><td class="r">${b.status==='due'?btn('Pay','pay',{sm:1,c:'pri',d:{ids:b.id}}):b.status==='paid'?btn('Receipt','receipt',{sm:1,d:{id:b.id}}):''}</td></tr>`}).join('')}</tbody></table></div>`:empty('wallet','No bills yet','Bills appear here after the admin generates them.')}</div>
  <div class="stack"><div class="card"><h3>${ic('chart')}Society collection</h3><div class="row" style="gap:18px">${ring(cur.pct,'flats paid')}<div><b class="num" style="font-size:22px;font-family:var(--f-display)">${cur.paid} of ${cur.total}</b><br><small>flats have paid for ${mlabel(mkey())}</small></div></div></div>
  <div class="card"><h3>${ic('info')}What your bill covers</h3>${DB.settings.charges.map(c=>`<div class="kv"><span>${esc(c.label)}</span><span class="num">${inr(c.amt)}</span></div>`).join('')}<div class="kv"><span><b>Monthly total</b></span><span class="num">${inr(chargeTotal())}</span></div><small>Due on the ${DB.settings.dueDay}th of every month. Late fee ${DB.settings.latePct}% per month.</small></div></div></div>`};
-ACT.pay=d=>{const ids=d.ids.split(','),bs=DB.bills.filter(b=>ids.includes(b.id)),tot=bs.reduce((a,b)=>a+billTotal(b),0),s=DB.settings,m=me(),fk=flatKey(m),
+ACT.pay=d=>{const ids=d.ids.split(','),bs=DB.bills.filter(b=>ids.includes(b.id)),tot=bs.reduce((a,b)=>a+billTotal(b),0),s=DB.settings,m=me(),fk=flatKey(m),online=REMOTE&&!!DB.settings.payOnline,
  note=`Maint ${fk} ${bs.map(b=>b.month).join(',')}`,upi=`upi://pay?pa=${encodeURIComponent(s.upi)}&pn=${encodeURIComponent(s.upiName)}&am=${tot}&cu=INR&tn=${encodeURIComponent(note)}`;
  modal('Pay maintenance',`<div class="stack"><div class="card flat">${bs.map(b=>`<div class="kv"><span>${mlabel(b.month)}</span><span class="num">${inr(b.amount)}${lateFee(b)?' + '+inr(lateFee(b))+' late':''}</span></div>`).join('')}<div class="kv"><span><b>Total payable</b></span><span class="num" style="font-size:18px">${inr(tot)}</span></div></div>
+ ${online?`<button class="btn acc block" id="rzpbtn" data-act="rzp-pay" data-ids="${ids.join(',')}">${ic('lock')}Pay ${inr(tot)} securely</button><small style="text-align:center;display:block">UPI, cards, net banking and wallets. Payments are processed by Razorpay and the bill is marked paid automatically.</small><details class="alt"><summary>I paid another way (bank transfer, cheque or cash)</summary>`:''}
  <div class="qr" id="qrbox"></div><div class="row" style="justify-content:center;flex-wrap:wrap"><span class="chip">UPI ID</span><b id="upiid">${esc(s.upi)}</b><button class="btn sm" data-act="copy" data-t="${esc(s.upi)}">${ic('copy')}Copy</button></div>
  <a class="btn pri block" href="${upi}">${ic('wallet')}Open UPI app</a>${s.bank?`<small>Bank transfer: ${esc(s.bank)}</small>`:'<small>For bank transfer or cheque, collect the account details from the society office.</small>'}
- <hr class="hr">${formWrap('pay',`<input type="hidden" name="ids" value="${ids.join(',')}">`+F.s('p_method','Paid using',['UPI','Bank transfer','Cheque','Cash at office'],{})+F.t('p_ref','Transaction ID or cheque number',{req:true,ph:'12 digit UPI reference (UTR)',hint:'The admin matches this with the bank statement.'}),'I have paid')}</div>`);
+ <hr class="hr">${formWrap('pay',`<input type="hidden" name="ids" value="${ids.join(',')}">`+F.s('p_method','Paid using',['UPI','Bank transfer','Cheque','Cash at office'],{})+F.t('p_ref','Transaction ID or cheque number',{req:true,ph:'12 digit UPI reference (UTR)',hint:'The admin matches this with the bank statement.'}),'I have paid')}${online?'</details>':''}</div>`);
  try{if(window.QRCode)new QRCode($('#qrbox'),{text:upi,width:152,height:152,colorDark:'#0F2A2B',colorLight:'#ffffff'});else $('#qrbox').innerHTML='<small style="color:#333">QR unavailable offline</small>'}catch(e){}};
+/* Online payment with Razorpay Checkout. The server prices the order and confirms the payment; this only opens the window. */
+function rzpLoad(){return window.Razorpay?Promise.resolve():new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://checkout.razorpay.com/v1/checkout.js';sc.onload=res;sc.onerror=()=>rej(new Error('Could not open the payment window. Check your internet connection and try again.'));document.head.appendChild(sc)})}
+ACT['rzp-pay']=async d=>{
+ const btn=$('#rzpbtn'),label=btn?btn.innerHTML:'',reset=()=>{if(btn){btn.disabled=false;btn.innerHTML=label}};
+ if(btn){btn.disabled=true;btn.textContent='Starting payment...'}
+ try{
+  if(dirty||syncing)await flush();
+  const o=await api('/api/payments/order',{method:'POST',body:{billIds:d.ids.split(',')}});
+  await rzpLoad();
+  const rz=new window.Razorpay({key:o.keyId,amount:o.amount,currency:o.currency,name:o.name,description:o.description,order_id:o.orderId,prefill:o.prefill,theme:{color:'#0B3B3A'},
+   modal:{ondismiss:reset,confirm_close:true},
+   handler:async resp=>{
+    if(btn)btn.textContent='Confirming payment...';
+    try{const r=await api('/api/payments/verify',{method:'POST',body:{orderId:resp.razorpay_order_id,paymentId:resp.razorpay_payment_id,signature:resp.razorpay_signature}});adopt(r.db,r.rev);closeModal();render();confetti();toast('Payment received. Your receipt is ready.')}
+    catch(e){closeModal();toast('We are confirming your payment. It will show here shortly.','info');setTimeout(pollRemote,5000);setTimeout(pollRemote,20000)}}});
+  rz.on('payment.failed',r=>{toast((r.error&&r.error.description)||'The payment failed. Try again.','x');reset()});
+  rz.open();
+ }catch(e){reset();toast(e.message,'x')}};
 ACT.copy=d=>copyText(d.t);
 FORMS.pay=d=>{if(!d.p_ref.trim()&&d.p_method!=='Cash at office')return fErr('Enter the transaction ID.');const ids=d.ids.split(',');DB.bills.filter(b=>ids.includes(b.id)).forEach(b=>{b.status='verifying';b.method=d.p_method;b.ref=d.p_ref.trim()||'CASH';b.submittedOn=new Date().toISOString();b.lateFee=lateFee(b)});const m=me();notify('admin',`${flatKey(m)} submitted a payment (${d.p_method}) for verification`,'billing');logAct(`${flatKey(m)} submitted payment`);save();closeModal();render();toast('Payment submitted for verification');confetti()};
 ACT.receipt=d=>{const b=DB.bills.find(x=>x.id===d.id),u=approvedFlats().find(x=>flatKey(x)===b.flat)||me(),no='QS-'+b.id.slice(-6).toUpperCase(),txt=`Receipt ${no}\n${DB.settings.name}\nFlat ${b.flat} · ${mlabel(b.month)}\nAmount ${inr(billTotal(b))}\nPaid ${fdatey(b.paidOn)} via ${b.method} (${b.ref})`;

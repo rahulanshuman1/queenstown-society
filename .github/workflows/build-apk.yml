@@ -21,13 +21,10 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Build web files into www/
-        run: |
-          chmod +x build.sh
-          ./build.sh
-          mkdir -p www
-          cp index.html manifest.webmanifest sw.js www/
-          cp -r icons www/
+      - name: Build web files into www/ (writes config.js from the QS_API_URL variable)
+        env:
+          QS_API_URL: ${{ vars.QS_API_URL }}
+        run: bash scripts/vercel-build.sh
 
       - name: Install Capacitor
         run: npm install --no-audit --no-fund

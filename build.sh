@@ -23,6 +23,7 @@ cat <<'HEAD'
 <meta name="theme-color" content="#0B3B3A"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Queenstown">
 HEAD
+echo '<script src="config.js"></script>'
 echo "$FONTS"
 echo '<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}'; cat src/styles.css; echo '</style></head><body>'
 echo "$BODY"

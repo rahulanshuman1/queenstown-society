@@ -1,5 +1,6 @@
 node_modules/
 android/
 www/
+.env
 *.log
 .DS_Store

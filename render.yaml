@@ -1,0 +1,40 @@
+# Render Blueprint for the Queenstown Society API.
+# Render dashboard > New > Blueprint > pick this repo. Fill the values marked "sync: false" when asked.
+services:
+  - type: web
+    name: queenstown-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      # MongoDB Atlas connection string, for example mongodb+srv://user:password@cluster0.xxxx.mongodb.net/
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB
+        value: queenstown
+      # Render creates a long random value for you.
+      - key: JWT_SECRET
+        generateValue: true
+      # The admin account is created on first start from these two values.
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      # Your Vercel address, no trailing slash. Several addresses can be separated by commas.
+      - key: CLIENT_ORIGINS
+        sync: false
+      # Razorpay. Leave empty to keep online payment off (residents can still report manual payments).
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false

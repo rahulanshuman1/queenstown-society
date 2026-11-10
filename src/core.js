@@ -104,13 +104,76 @@ function scene(kind='night',seed=1){
 const cover=e=>e.cover?`<img class="art" src="${e.cover}" alt="">`:scene(e.scene,hashStr(e.id));
 
 /* ========== store ========== */
-const KEY='qs_data_v1',SKEY='qs_session_v1',TKEY='qs_theme';
-let DB=null,SES=null;
+const KEY='qs_data_v1',SKEY='qs_session_v1',TKEY='qs_theme',AKEY='qs_token_v1';
+/* Two modes. With no API address (config.js) the app runs on this browser only, using demo data.
+   With an API address it talks to the Render server, which keeps everything in MongoDB. */
+const API=String((typeof window!=='undefined'&&window.QS_API)||'').trim().replace(/\/+$/,'');
+const REMOTE=!!API;
+let DB=null,SES=null,TOKEN=null;
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}};
-function save(){if(!lsSet(KEY,JSON.stringify(DB)))toast('Browser storage is full or blocked. Changes will be lost on reload.')}
+const lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 function loadDB(){try{const r=lsGet(KEY);DB=r?JSON.parse(r):null}catch(e){DB=null}try{SES=JSON.parse(lsGet(SKEY)||'null')}catch(e){SES=null}}
-function setSes(s){SES=s;lsSet(SKEY,JSON.stringify(s))}
+function setSes(s){SES=s;if(s)lsSet(SKEY,JSON.stringify(s));else lsDel(SKEY)}
+const adminName=()=>REMOTE?(SES&&SES.username)||'admin':DB.settings.adminUser;
+
+/* ----- remote mode: server calls and change syncing ----- */
+const SYNC_COLLS=['users','notices','events','bills','schedule','amenities','bookings','complaints','ads','polls','docs','contacts','entries','visitors','notifs','log'];
+let SNAP={},syncing=false,dirty=false,LASTREV=null,syncTimer=null,failStreak=0;
+async function api(path,opt={}){
+ const h={'Content-Type':'application/json'};if(TOKEN)h.Authorization='Bearer '+TOKEN;
+ let r;try{r=await fetch(API+path,{method:opt.method||'GET',headers:h,body:opt.body?JSON.stringify(opt.body):undefined})}
+ catch(e){const er=new Error('Cannot reach the server. Check your internet connection and try again.');er.net=true;throw er}
+ let j={};try{j=await r.json()}catch(e){}
+ if(!r.ok){const er=new Error(j.error||'Something went wrong. Try again.');er.status=r.status;throw er}
+ return j}
+const snapOf=db=>{const s={settings:{settings:JSON.stringify(db.settings)}};for(const c of SYNC_COLLS){s[c]={};for(const d of (db[c]||[]))if(d&&d.id)s[c][d.id]=JSON.stringify(d)}return s};
+function adopt(db,rev){DB=db;for(const c of SYNC_COLLS)DB[c]=DB[c]||[];SNAP=snapOf(DB);LASTREV=rev==null?LASTREV:rev}
+function save(){
+ if(!REMOTE){if(!lsSet(KEY,JSON.stringify(DB)))toast('Browser storage is full or blocked. Changes will be lost on reload.');return}
+ if(!TOKEN)return;dirty=true;clearTimeout(syncTimer);syncTimer=setTimeout(flush,250)}
+async function flush(){
+ if(syncing||!dirty||!TOKEN||!DB)return;
+ syncing=true;dirty=false;const prev=SNAP;
+ try{
+  DB.log=DB.log||[];DB.log.forEach(l=>{if(!l.id)l.id=uid('l')});
+  const cur=snapOf(DB),changes={};
+  for(const c of ['settings',...SYNC_COLLS]){const a=cur[c]||{},b=prev[c]||{},up=[],rem=[];
+   for(const id in a)if(a[id]!==b[id])up.push(c==='settings'?{...DB.settings,id:'settings'}:JSON.parse(a[id]));
+   for(const id in b)if(!(id in a))rem.push(id);
+   if(up.length||rem.length)changes[c]={upsert:up,remove:rem}}
+  if(!Object.keys(changes).length)return;
+  SNAP=cur;
+  const r=await api('/api/sync',{method:'POST',body:{changes}});failStreak=0;
+  const rej=(r.rejected||[]).filter(x=>x.coll!=='log');
+  if(!dirty)adopt(r.db,r.rev);
+  if(rej.length){toast(rej[0].err||'Some changes could not be saved.','x');render()}
+ }catch(e){
+  if(e.status===401){syncing=false;return endSession('Your session ended. Please sign in again.')}
+  SNAP=prev;dirty=true;if(!failStreak++)toast(e.net?'You are offline. Changes will save when you reconnect.':e.message,'x');
+  setTimeout(flush,Math.min(30000,4000*failStreak))
+ }finally{syncing=false;if(dirty&&!failStreak)flush()}}
+function endSession(msg){TOKEN=null;lsDel(AKEY);setSes(null);UI.auth='login';location.hash='';loadPublic().finally(()=>{render(true);if(msg)toast(msg,'info')})}
+async function loadPublic(){try{const r=await api('/api/public');adopt(r.db,r.rev)}catch(e){if(!DB)DB={v:1,settings:{name:'Queenstown Society',tagline:'Home, together.'}}; for(const c of SYNC_COLLS)DB[c]=DB[c]||[]}}
+async function openSession(token,session){TOKEN=token;lsSet(AKEY,token);setSes(session);const r=await api('/api/state');adopt(r.db,r.rev);SES=r.session;setSes(SES)}
+async function startRemote(){
+ $('#app').innerHTML='<div class="boot" role="status"><div class="spin"></div><b>Connecting to Queenstown</b><small id="bootnote"></small></div>';
+ const t=setTimeout(()=>{const n=$('#bootnote');if(n)n.textContent='The server is waking up. The first load can take up to a minute.'},4000);
+ try{
+  TOKEN=lsGet(AKEY);try{SES=JSON.parse(lsGet(SKEY)||'null')}catch(e){SES=null}
+  if(TOKEN){try{const r=await api('/api/state');adopt(r.db,r.rev);SES=r.session;setSes(SES)}catch(e){if(e.status!==401)throw e;TOKEN=null;lsDel(AKEY);setSes(null)}}
+  if(!TOKEN){SES=null;const r=await api('/api/public');adopt(r.db,r.rev)}
+  return true
+ }catch(e){
+  $('#app').innerHTML=`<div class="boot"><b>Cannot reach the Queenstown server</b><small>${esc(e.message)}</small><button class="btn pri" data-act="retry-boot">Try again</button></div>`;return false
+ }finally{clearTimeout(t)}}
+async function pollRemote(){
+ if(!REMOTE||!TOKEN||document.hidden||syncing||dirty||!DB)return;
+ if($('#modal-root')?.classList.contains('open'))return;
+ const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;
+ try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const s=await api('/api/state');if(dirty||syncing)return;adopt(s.db,s.rev);SES=s.session;render()}
+ catch(e){if(e.status===401)endSession('Your session ended. Please sign in again.')}}
+if(typeof document!=='undefined'){setInterval(()=>pollRemote(),20000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollRemote()})}
 const me=()=>!SES?null:SES.k==='admin'?{id:'admin',name:'Society Admin',role:'admin',status:'approved'}:DB.users.find(u=>u.id===SES.id)||null;
 const isAdmin=()=>SES?.k==='admin';
 const flatKey=u=>u.tower+'-'+u.flat;

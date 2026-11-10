@@ -318,6 +318,16 @@ table.tbl{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
 .sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
 .code{font:800 26px var(--f-display);letter-spacing:.24em;background:var(--surface-2);border:1px dashed var(--line);border-radius:12px;padding:10px 16px;text-align:center}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.marq .trk{animation:none}.marq{overflow-x:auto}}
+
+/* connecting and offline screens (remote mode) */
+.boot{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;color:var(--ink)}
+.boot b{font:700 20px/1.3 var(--font-d,inherit)}
+.boot small{color:var(--ink-2);max-width:36ch;min-height:1.2em}
+.boot .spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:bootspin .8s linear infinite}
+@keyframes bootspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.boot .spin{animation-duration:2.4s}}
+
+details.alt{border:1px dashed var(--line);border-radius:12px;padding:10px 14px}details.alt[open]{padding-bottom:14px}details.alt summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ink-2);list-style:none}details.alt summary::-webkit-details-marker{display:none}details.alt summary::after{content:'+';float:right;font-weight:700}details.alt[open] summary::after{content:'\2212'}details.alt>*+*{margin-top:12px}
 </style>
 <div id="app"></div><div id="modal-root"></div><div id="toasts" aria-live="polite"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -427,13 +437,76 @@ function scene(kind='night',seed=1){
 const cover=e=>e.cover?`<img class="art" src="${e.cover}" alt="">`:scene(e.scene,hashStr(e.id));
 
 /* ========== store ========== */
-const KEY='qs_data_v1',SKEY='qs_session_v1',TKEY='qs_theme';
-let DB=null,SES=null;
+const KEY='qs_data_v1',SKEY='qs_session_v1',TKEY='qs_theme',AKEY='qs_token_v1';
+/* Two modes. With no API address (config.js) the app runs on this browser only, using demo data.
+   With an API address it talks to the Render server, which keeps everything in MongoDB. */
+const API=String((typeof window!=='undefined'&&window.QS_API)||'').trim().replace(/\/+$/,'');
+const REMOTE=!!API;
+let DB=null,SES=null,TOKEN=null;
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}};
-function save(){if(!lsSet(KEY,JSON.stringify(DB)))toast('Browser storage is full or blocked. Changes will be lost on reload.')}
+const lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 function loadDB(){try{const r=lsGet(KEY);DB=r?JSON.parse(r):null}catch(e){DB=null}try{SES=JSON.parse(lsGet(SKEY)||'null')}catch(e){SES=null}}
-function setSes(s){SES=s;lsSet(SKEY,JSON.stringify(s))}
+function setSes(s){SES=s;if(s)lsSet(SKEY,JSON.stringify(s));else lsDel(SKEY)}
+const adminName=()=>REMOTE?(SES&&SES.username)||'admin':DB.settings.adminUser;
+
+/* ----- remote mode: server calls and change syncing ----- */
+const SYNC_COLLS=['users','notices','events','bills','schedule','amenities','bookings','complaints','ads','polls','docs','contacts','entries','visitors','notifs','log'];
+let SNAP={},syncing=false,dirty=false,LASTREV=null,syncTimer=null,failStreak=0;
+async function api(path,opt={}){
+ const h={'Content-Type':'application/json'};if(TOKEN)h.Authorization='Bearer '+TOKEN;
+ let r;try{r=await fetch(API+path,{method:opt.method||'GET',headers:h,body:opt.body?JSON.stringify(opt.body):undefined})}
+ catch(e){const er=new Error('Cannot reach the server. Check your internet connection and try again.');er.net=true;throw er}
+ let j={};try{j=await r.json()}catch(e){}
+ if(!r.ok){const er=new Error(j.error||'Something went wrong. Try again.');er.status=r.status;throw er}
+ return j}
+const snapOf=db=>{const s={settings:{settings:JSON.stringify(db.settings)}};for(const c of SYNC_COLLS){s[c]={};for(const d of (db[c]||[]))if(d&&d.id)s[c][d.id]=JSON.stringify(d)}return s};
+function adopt(db,rev){DB=db;for(const c of SYNC_COLLS)DB[c]=DB[c]||[];SNAP=snapOf(DB);LASTREV=rev==null?LASTREV:rev}
+function save(){
+ if(!REMOTE){if(!lsSet(KEY,JSON.stringify(DB)))toast('Browser storage is full or blocked. Changes will be lost on reload.');return}
+ if(!TOKEN)return;dirty=true;clearTimeout(syncTimer);syncTimer=setTimeout(flush,250)}
+async function flush(){
+ if(syncing||!dirty||!TOKEN||!DB)return;
+ syncing=true;dirty=false;const prev=SNAP;
+ try{
+  DB.log=DB.log||[];DB.log.forEach(l=>{if(!l.id)l.id=uid('l')});
+  const cur=snapOf(DB),changes={};
+  for(const c of ['settings',...SYNC_COLLS]){const a=cur[c]||{},b=prev[c]||{},up=[],rem=[];
+   for(const id in a)if(a[id]!==b[id])up.push(c==='settings'?{...DB.settings,id:'settings'}:JSON.parse(a[id]));
+   for(const id in b)if(!(id in a))rem.push(id);
+   if(up.length||rem.length)changes[c]={upsert:up,remove:rem}}
+  if(!Object.keys(changes).length)return;
+  SNAP=cur;
+  const r=await api('/api/sync',{method:'POST',body:{changes}});failStreak=0;
+  const rej=(r.rejected||[]).filter(x=>x.coll!=='log');
+  if(!dirty)adopt(r.db,r.rev);
+  if(rej.length){toast(rej[0].err||'Some changes could not be saved.','x');render()}
+ }catch(e){
+  if(e.status===401){syncing=false;return endSession('Your session ended. Please sign in again.')}
+  SNAP=prev;dirty=true;if(!failStreak++)toast(e.net?'You are offline. Changes will save when you reconnect.':e.message,'x');
+  setTimeout(flush,Math.min(30000,4000*failStreak))
+ }finally{syncing=false;if(dirty&&!failStreak)flush()}}
+function endSession(msg){TOKEN=null;lsDel(AKEY);setSes(null);UI.auth='login';location.hash='';loadPublic().finally(()=>{render(true);if(msg)toast(msg,'info')})}
+async function loadPublic(){try{const r=await api('/api/public');adopt(r.db,r.rev)}catch(e){if(!DB)DB={v:1,settings:{name:'Queenstown Society',tagline:'Home, together.'}}; for(const c of SYNC_COLLS)DB[c]=DB[c]||[]}}
+async function openSession(token,session){TOKEN=token;lsSet(AKEY,token);setSes(session);const r=await api('/api/state');adopt(r.db,r.rev);SES=r.session;setSes(SES)}
+async function startRemote(){
+ $('#app').innerHTML='<div class="boot" role="status"><div class="spin"></div><b>Connecting to Queenstown</b><small id="bootnote"></small></div>';
+ const t=setTimeout(()=>{const n=$('#bootnote');if(n)n.textContent='The server is waking up. The first load can take up to a minute.'},4000);
+ try{
+  TOKEN=lsGet(AKEY);try{SES=JSON.parse(lsGet(SKEY)||'null')}catch(e){SES=null}
+  if(TOKEN){try{const r=await api('/api/state');adopt(r.db,r.rev);SES=r.session;setSes(SES)}catch(e){if(e.status!==401)throw e;TOKEN=null;lsDel(AKEY);setSes(null)}}
+  if(!TOKEN){SES=null;const r=await api('/api/public');adopt(r.db,r.rev)}
+  return true
+ }catch(e){
+  $('#app').innerHTML=`<div class="boot"><b>Cannot reach the Queenstown server</b><small>${esc(e.message)}</small><button class="btn pri" data-act="retry-boot">Try again</button></div>`;return false
+ }finally{clearTimeout(t)}}
+async function pollRemote(){
+ if(!REMOTE||!TOKEN||document.hidden||syncing||dirty||!DB)return;
+ if($('#modal-root')?.classList.contains('open'))return;
+ const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;
+ try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const s=await api('/api/state');if(dirty||syncing)return;adopt(s.db,s.rev);SES=s.session;render()}
+ catch(e){if(e.status===401)endSession('Your session ended. Please sign in again.')}}
+if(typeof document!=='undefined'){setInterval(()=>pollRemote(),20000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollRemote()})}
 const me=()=>!SES?null:SES.k==='admin'?{id:'admin',name:'Society Admin',role:'admin',status:'approved'}:DB.users.find(u=>u.id===SES.id)||null;
 const isAdmin=()=>SES?.k==='admin';
 const flatKey=u=>u.tower+'-'+u.flat;
@@ -650,21 +723,24 @@ function landing(){
  <div class="view enter">${hero(true)}
  <div class="split" style="align-items:start"><div class="stack"><h2 style="font-size:clamp(26px,4vw,38px)">${esc(s.tagline)} One place for everything at ${esc(s.name)}.</h2><p class="muted" style="max-width:56ch">Notices, maintenance payments, events, bookings, helpdesk and more. Residents register their flat and get access after the society admin approves the request.</p>
  <div class="steps card flat"><div><span class="n">1</span><div><b>Register your flat</b><br><small>Name, tower, flat number and mobile.</small></div></div><div><span class="n">2</span><div><b>Admin verifies</b><br><small>The committee checks ownership or tenancy.</small></div></div><div><span class="n">3</span><div><b>Start using the app</b><br><small>Pay dues, read notices, book amenities.</small></div></div></div>
- <div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Try admin <code>admin</code> / <code>admin123</code> or resident <code>9876500001</code> / <code>resident123</code>.</span></div></div>
+ ${REMOTE?'':`<div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Try admin <code>admin</code> / <code>admin123</code> or resident <code>9876500001</code> / <code>resident123</code>.</span></div>`}</div>
  <div class="card auth"><div class="tabs2" role="tablist"><button class="${reg?'':'on'}" data-act="auth-tab" data-t="login">Sign in</button><button class="${reg?'on':''}" data-act="auth-tab" data-t="register">Register flat</button></div>
  ${reg?formWrap('register',F.t('r_name','Full name',{req:true,cls:'full',attrs:'autocomplete="name"'})+F.s('r_tower','Tower',towers.map(t=>[t,'Tower '+t]))+F.s('r_flat','Flat number',flatOpts(),{})+F.s('r_type','You are',['Owner','Tenant','Family member'])+F.t('r_members','People in flat',{type:'number',v:2,attrs:'min="1" max="12"'})+F.t('r_mobile','Mobile number',{req:true,attrs:'inputmode="numeric" maxlength="10" autocomplete="tel"',hint:'10 digits. This is your login.'})+F.t('r_email','Email (optional)',{type:'email'})+F.t('r_ref','Proof reference (optional)',{cls:'full',ph:'Allotment letter no. or rent agreement date',hint:'Helps the admin verify you faster.'})+F.t('r_pw','Create password',{type:'password',req:true,attrs:'autocomplete="new-password"'})+F.t('r_pw2','Confirm password',{type:'password',req:true,attrs:'autocomplete="new-password"'}),'Submit for approval'):
  formWrap('login',F.t('l_id','Mobile number, email or admin username',{req:true,cls:'full',attrs:'autocomplete="username"'})+F.t('l_pw','Password',{type:'password',req:true,cls:'full',attrs:'autocomplete="current-password"'}),'Sign in',`<span class="sp"></span>`)}
- ${reg?'':`<div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn sm ghost" data-act="demo-res">Fill demo resident</button><button class="btn sm ghost" data-act="demo-admin">Fill demo admin</button></div>`}</div></div></div></div>`;
+ ${reg||REMOTE?'':`<div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn sm ghost" data-act="demo-res">Fill demo resident</button><button class="btn sm ghost" data-act="demo-admin">Fill demo admin</button></div>`}</div></div></div></div>`;
 }
 const flatOpts=(t='A')=>{const o=[];for(let f=1;f<=10;f++)for(let u=1;u<=4;u++)o.push(f+'0'+u);return o.map(x=>[x,'Flat '+x])};
 function waitScreen(m){const rej=m.status==='rejected';return`<div class="wrap"><div class="landing-top">${brand()}<div class="sp"></div><button class="btn sm" data-act="logout">${ic('logout')}Sign out</button></div><div class="wait view enter"><div class="big">${ic(rej?'x':'hourglass')}</div><h2>${rej?'Registration not approved':'Waiting for admin approval'}</h2><p class="muted">${rej?`The admin declined your request${m.reason?': '+esc(m.reason):'.'} You can contact the society office or register again with correct details.`:`Thanks, ${esc(m.name.split(' ')[0])}. Your request for <b>${esc(flatKey(m))}</b> as ${esc(m.type.toLowerCase())} is with the committee. You will get full access as soon as it is approved.`}</p><div class="card flat" style="width:100%;text-align:left"><div class="kv"><span>Name</span><span>${esc(m.name)}</span></div><div class="kv"><span>Flat</span><span>${esc(flatKey(m))}</span></div><div class="kv"><span>Mobile</span><span>${esc(m.mobile)}</span></div><div class="kv"><span>Status</span><span>${sChip(m.status)}</span></div></div><div class="row">${btn('Check status','refresh',{c:'pri'})}${rej?btn('Register again','reregister'):''}</div></div></div>`}
-ACT.refresh=()=>{render(true);toast('Status refreshed','info')};
-ACT.reregister=async()=>{const m=me();DB.users=DB.users.filter(u=>u.id!==m.id);save();setSes(null);UI.auth='register';render(true)};
+ACT.refresh=async()=>{if(REMOTE){try{const r=await api('/api/state');adopt(r.db,r.rev);SES=r.session;setSes(SES)}catch(e){if(e.status===401)return endSession('Your session ended. Please sign in again.');return toast(e.message,'x')}}render(true);toast('Status refreshed','info')};
+ACT['retry-boot']=async()=>{if(await startRemote())render(true)};
+ACT.reregister=async()=>{if(REMOTE){try{await api('/api/auth/withdraw',{method:'POST'})}catch(e){return toast(e.message,'x')}TOKEN=null;lsDel(AKEY);setSes(null);UI.auth='register';await loadPublic();render(true);return}const m=me();DB.users=DB.users.filter(u=>u.id!==m.id);save();setSes(null);UI.auth='register';render(true)};
 ACT['auth-tab']=d=>{UI.auth=d.t;render()};
 ACT.noop=()=>{};
 ACT['demo-res']=()=>{$('#l_id').value='9876500001';$('#l_pw').value='resident123'};
 ACT['demo-admin']=()=>{$('#l_id').value='admin';$('#l_pw').value='admin123'};
-FORMS.login=async(d,f)=>{const idf=d.l_id.trim().toLowerCase(),h=await sha(d.l_pw);
+FORMS.login=async(d,f)=>{
+ if(REMOTE){try{const r=await api('/api/auth/login',{method:'POST',body:{id:d.l_id,password:d.l_pw}});await openSession(r.token,r.session);location.hash=SES.k==='admin'?'admin':'home';render(true);const m=me();if(m&&m.name)toast('Welcome back, '+m.name.split(' ')[0])}catch(e){TOKEN=null;lsDel(AKEY);fErr(e.message)}return}
+ const idf=d.l_id.trim().toLowerCase(),h=await sha(d.l_pw);
  if(idf===DB.settings.adminUser.toLowerCase()){if(h!==DB.settings.adminHash)return fErr('Incorrect admin password.');setSes({k:'admin'});location.hash='admin';render(true);return}
  const u=DB.users.find(u=>u.mobile===idf||(u.email&&u.email.toLowerCase()===idf));if(!u||u.passHash!==h)return fErr('Mobile, email or password is incorrect.');setSes({k:'user',id:u.id});location.hash='home';render(true);toast('Welcome back, '+u.name.split(' ')[0])};
 FORMS.register=async(d)=>{const mob=d.r_mobile.trim();
@@ -672,6 +748,7 @@ FORMS.register=async(d)=>{const mob=d.r_mobile.trim();
  if(!/^[6-9]\d{9}$/.test(mob))return fErr('Enter a valid 10 digit Indian mobile number.');
  if(d.r_pw.length<6)return fErr('Password needs at least 6 characters.');
  if(d.r_pw!==d.r_pw2)return fErr('The two passwords do not match.');
+ if(REMOTE){try{const r=await api('/api/auth/register',{method:'POST',body:{name:d.r_name,tower:d.r_tower,flat:d.r_flat,type:d.r_type,members:d.r_members,mobile:mob,email:d.r_email,ref:d.r_ref,password:d.r_pw}});await openSession(r.token,r.session);render(true);confetti()}catch(e){TOKEN=null;lsDel(AKEY);fErr(e.message)}return}
  if(DB.users.some(u=>u.mobile===mob))return fErr('This mobile number is already registered. Sign in instead.');
  if(d.r_type==='Owner'&&DB.users.some(u=>u.tower===d.r_tower&&u.flat===d.r_flat&&u.type==='Owner'&&u.status==='approved'))return fErr(`${d.r_tower}-${d.r_flat} already has an approved owner. Register as Tenant or Family member, or contact the office.`);
  const u={id:uid('u'),name:d.r_name.trim(),tower:d.r_tower,flat:d.r_flat,mobile:mob,email:d.r_email.trim(),type:d.r_type,passHash:await sha(d.r_pw),status:'pending',role:'resident',title:'',members:+d.r_members||1,vehicle:'',showPhone:false,ref:d.r_ref.trim(),created:Date.now()};
@@ -732,13 +809,32 @@ ROUTES.maintenance=()=>{
  <div class="split"><div class="card"><h3>${ic('clock')}Bill history</h3>${bills.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Month</th><th class="r">Amount</th><th>Due date</th><th>Status</th><th></th></tr></thead><tbody>${bills.map(b=>{const od=b.status==='due'&&daysTo(b.dueDate)<0;return`<tr><td><b>${mlabel(b.month)}</b></td><td class="r num">${inr(billTotal(b))}${lateFee(b)?`<br><small>incl. ${inr(lateFee(b))} late fee</small>`:''}</td><td>${fdate(b.dueDate)}</td><td>${od?sChip('overdue'):sChip(b.status)}</td><td class="r">${b.status==='due'?btn('Pay','pay',{sm:1,c:'pri',d:{ids:b.id}}):b.status==='paid'?btn('Receipt','receipt',{sm:1,d:{id:b.id}}):''}</td></tr>`}).join('')}</tbody></table></div>`:empty('wallet','No bills yet','Bills appear here after the admin generates them.')}</div>
  <div class="stack"><div class="card"><h3>${ic('chart')}Society collection</h3><div class="row" style="gap:18px">${ring(cur.pct,'flats paid')}<div><b class="num" style="font-size:22px;font-family:var(--f-display)">${cur.paid} of ${cur.total}</b><br><small>flats have paid for ${mlabel(mkey())}</small></div></div></div>
  <div class="card"><h3>${ic('info')}What your bill covers</h3>${DB.settings.charges.map(c=>`<div class="kv"><span>${esc(c.label)}</span><span class="num">${inr(c.amt)}</span></div>`).join('')}<div class="kv"><span><b>Monthly total</b></span><span class="num">${inr(chargeTotal())}</span></div><small>Due on the ${DB.settings.dueDay}th of every month. Late fee ${DB.settings.latePct}% per month.</small></div></div></div>`};
-ACT.pay=d=>{const ids=d.ids.split(','),bs=DB.bills.filter(b=>ids.includes(b.id)),tot=bs.reduce((a,b)=>a+billTotal(b),0),s=DB.settings,m=me(),fk=flatKey(m),
+ACT.pay=d=>{const ids=d.ids.split(','),bs=DB.bills.filter(b=>ids.includes(b.id)),tot=bs.reduce((a,b)=>a+billTotal(b),0),s=DB.settings,m=me(),fk=flatKey(m),online=REMOTE&&!!DB.settings.payOnline,
  note=`Maint ${fk} ${bs.map(b=>b.month).join(',')}`,upi=`upi://pay?pa=${encodeURIComponent(s.upi)}&pn=${encodeURIComponent(s.upiName)}&am=${tot}&cu=INR&tn=${encodeURIComponent(note)}`;
  modal('Pay maintenance',`<div class="stack"><div class="card flat">${bs.map(b=>`<div class="kv"><span>${mlabel(b.month)}</span><span class="num">${inr(b.amount)}${lateFee(b)?' + '+inr(lateFee(b))+' late':''}</span></div>`).join('')}<div class="kv"><span><b>Total payable</b></span><span class="num" style="font-size:18px">${inr(tot)}</span></div></div>
+ ${online?`<button class="btn acc block" id="rzpbtn" data-act="rzp-pay" data-ids="${ids.join(',')}">${ic('lock')}Pay ${inr(tot)} securely</button><small style="text-align:center;display:block">UPI, cards, net banking and wallets. Payments are processed by Razorpay and the bill is marked paid automatically.</small><details class="alt"><summary>I paid another way (bank transfer, cheque or cash)</summary>`:''}
  <div class="qr" id="qrbox"></div><div class="row" style="justify-content:center;flex-wrap:wrap"><span class="chip">UPI ID</span><b id="upiid">${esc(s.upi)}</b><button class="btn sm" data-act="copy" data-t="${esc(s.upi)}">${ic('copy')}Copy</button></div>
  <a class="btn pri block" href="${upi}">${ic('wallet')}Open UPI app</a>${s.bank?`<small>Bank transfer: ${esc(s.bank)}</small>`:'<small>For bank transfer or cheque, collect the account details from the society office.</small>'}
- <hr class="hr">${formWrap('pay',`<input type="hidden" name="ids" value="${ids.join(',')}">`+F.s('p_method','Paid using',['UPI','Bank transfer','Cheque','Cash at office'],{})+F.t('p_ref','Transaction ID or cheque number',{req:true,ph:'12 digit UPI reference (UTR)',hint:'The admin matches this with the bank statement.'}),'I have paid')}</div>`);
+ <hr class="hr">${formWrap('pay',`<input type="hidden" name="ids" value="${ids.join(',')}">`+F.s('p_method','Paid using',['UPI','Bank transfer','Cheque','Cash at office'],{})+F.t('p_ref','Transaction ID or cheque number',{req:true,ph:'12 digit UPI reference (UTR)',hint:'The admin matches this with the bank statement.'}),'I have paid')}${online?'</details>':''}</div>`);
  try{if(window.QRCode)new QRCode($('#qrbox'),{text:upi,width:152,height:152,colorDark:'#0F2A2B',colorLight:'#ffffff'});else $('#qrbox').innerHTML='<small style="color:#333">QR unavailable offline</small>'}catch(e){}};
+/* Online payment with Razorpay Checkout. The server prices the order and confirms the payment; this only opens the window. */
+function rzpLoad(){return window.Razorpay?Promise.resolve():new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://checkout.razorpay.com/v1/checkout.js';sc.onload=res;sc.onerror=()=>rej(new Error('Could not open the payment window. Check your internet connection and try again.'));document.head.appendChild(sc)})}
+ACT['rzp-pay']=async d=>{
+ const btn=$('#rzpbtn'),label=btn?btn.innerHTML:'',reset=()=>{if(btn){btn.disabled=false;btn.innerHTML=label}};
+ if(btn){btn.disabled=true;btn.textContent='Starting payment...'}
+ try{
+  if(dirty||syncing)await flush();
+  const o=await api('/api/payments/order',{method:'POST',body:{billIds:d.ids.split(',')}});
+  await rzpLoad();
+  const rz=new window.Razorpay({key:o.keyId,amount:o.amount,currency:o.currency,name:o.name,description:o.description,order_id:o.orderId,prefill:o.prefill,theme:{color:'#0B3B3A'},
+   modal:{ondismiss:reset,confirm_close:true},
+   handler:async resp=>{
+    if(btn)btn.textContent='Confirming payment...';
+    try{const r=await api('/api/payments/verify',{method:'POST',body:{orderId:resp.razorpay_order_id,paymentId:resp.razorpay_payment_id,signature:resp.razorpay_signature}});adopt(r.db,r.rev);closeModal();render();confetti();toast('Payment received. Your receipt is ready.')}
+    catch(e){closeModal();toast('We are confirming your payment. It will show here shortly.','info');setTimeout(pollRemote,5000);setTimeout(pollRemote,20000)}}});
+  rz.on('payment.failed',r=>{toast((r.error&&r.error.description)||'The payment failed. Try again.','x');reset()});
+  rz.open();
+ }catch(e){reset();toast(e.message,'x')}};
 ACT.copy=d=>copyText(d.t);
 FORMS.pay=d=>{if(!d.p_ref.trim()&&d.p_method!=='Cash at office')return fErr('Enter the transaction ID.');const ids=d.ids.split(',');DB.bills.filter(b=>ids.includes(b.id)).forEach(b=>{b.status='verifying';b.method=d.p_method;b.ref=d.p_ref.trim()||'CASH';b.submittedOn=new Date().toISOString();b.lateFee=lateFee(b)});const m=me();notify('admin',`${flatKey(m)} submitted a payment (${d.p_method}) for verification`,'billing');logAct(`${flatKey(m)} submitted payment`);save();closeModal();render();toast('Payment submitted for verification');confetti()};
 ACT.receipt=d=>{const b=DB.bills.find(x=>x.id===d.id),u=approvedFlats().find(x=>flatKey(x)===b.flat)||me(),no='QS-'+b.id.slice(-6).toUpperCase(),txt=`Receipt ${no}\n${DB.settings.name}\nFlat ${b.flat} · ${mlabel(b.month)}\nAmount ${inr(billTotal(b))}\nPaid ${fdatey(b.paidOn)} via ${b.method} (${b.ref})`;
@@ -890,13 +986,13 @@ ACT['contact-del']=d=>{DB.contacts=DB.contacts.filter(c=>c.id!==d.id);save();ren
 
 /* ----- profile ----- */
 ROUTES.profile=()=>{const m=me(),adm=isAdmin();
- return head('My profile')+(adm?`<div class="card"><div class="row"><span class="av" style="width:56px;height:56px;font-size:20px">AD</span><div><b>Society Admin</b><br><small>Username: ${esc(DB.settings.adminUser)}</small></div></div><hr class="hr"><p class="muted">Change the admin password and society details under Society setup.</p><div class="row" style="margin-top:12px">${btn('Open Society setup','nav',{c:'pri',d:{to:'setup'}})}${btn('Sign out','logout',{i:'logout'})}</div></div>`:
+ return head('My profile')+(adm?`<div class="card"><div class="row"><span class="av" style="width:56px;height:56px;font-size:20px">AD</span><div><b>Society Admin</b><br><small>Username: ${esc(adminName())}</small></div></div><hr class="hr"><p class="muted">Change the admin password and society details under Society setup.</p><div class="row" style="margin-top:12px">${btn('Open Society setup','nav',{c:'pri',d:{to:'setup'}})}${btn('Sign out','logout',{i:'logout'})}</div></div>`:
  `<div class="split"><div class="card"><h3>${ic('user')}Details</h3>${formWrap('profile',F.t('pf_name','Full name',{req:true,v:m.name})+F.t('pf_email','Email',{type:'email',v:m.email})+F.t('pf_members','People in flat',{type:'number',v:m.members})+F.t('pf_veh','Vehicle number',{v:m.vehicle})+F.c('pf_show','Show my phone number to other residents',m.showPhone),'Save changes')}</div>
  <div class="stack"><div class="card"><h3>${ic('building')}My flat</h3><div class="kv"><span>Flat</span><span>${esc(flatKey(m))}</span></div><div class="kv"><span>Resident type</span><span>${esc(m.type)}</span></div><div class="kv"><span>Mobile</span><span>${esc(m.mobile)}</span></div><div class="kv"><span>Status</span><span>${sChip(m.status)}</span></div></div>
  <div class="card"><h3>${ic('lock')}Change password</h3>${formWrap('pw',F.t('pw_old','Current password',{type:'password',req:true,cls:'full'})+F.t('pw_new','New password',{type:'password',req:true,cls:'full'}),'Update password')}</div>
  <div class="row">${btn('Sign out','logout',{i:'logout'})}</div></div></div>`)};
 FORMS.profile=d=>{const m=me();Object.assign(m,{name:d.pf_name.trim()||m.name,email:d.pf_email.trim(),members:+d.pf_members||1,vehicle:d.pf_veh.trim(),showPhone:!!d.pf_show});save();render();toast('Profile saved')};
-FORMS.pw=async d=>{const m=me();if(await sha(d.pw_old)!==m.passHash)return fErr('Current password is incorrect.');if(d.pw_new.length<6)return fErr('New password needs at least 6 characters.');m.passHash=await sha(d.pw_new);save();render();toast('Password updated')};
+FORMS.pw=async d=>{if(REMOTE){if(d.pw_new.length<6)return fErr('New password needs at least 6 characters.');try{const r=await api('/api/auth/password',{method:'POST',body:{current:d.pw_old,next:d.pw_new}});TOKEN=r.token;lsSet(AKEY,TOKEN);render();toast('Password updated')}catch(e){fErr(e.message)}return}const m=me();if(await sha(d.pw_old)!==m.passHash)return fErr('Current password is incorrect.');if(d.pw_new.length<6)return fErr('New password needs at least 6 characters.');m.passHash=await sha(d.pw_new);save();render();toast('Password updated')};
 /* ========== admin views + app wiring ========== */
 ROUTES.admin=()=>{const c=collection(mkey()),pend=DB.users.filter(u=>u.status==='pending'),ver=DB.bills.filter(b=>b.status==='verifying'),bk=DB.bookings.filter(b=>b.status==='pending'),ads=DB.ads.filter(a=>a.status==='pending'),open=DB.complaints.filter(x=>x.status==='open');
  const q=(i,t,n,link)=>`<a class="kpi ${n?'warn':''}" href="#${link}"><span class="k-ic">${ic(i)}</span><div><b data-count="${n}">0</b><small>${t}</small></div></a>`;
@@ -910,7 +1006,7 @@ ROUTES.admin=()=>{const c=collection(mkey()),pend=DB.users.filter(u=>u.status===
 
 function memberCard(u){const dup=DB.users.find(x=>x.id!==u.id&&x.status==='approved'&&x.tower===u.tower&&x.flat===u.flat&&x.type==='Owner'),pm=DB.users.some(x=>x.id!==u.id&&x.mobile===u.mobile);
  return`<div class="notice" style="cursor:default"><span class="av" style="width:44px;height:44px;flex:none">${initials(u.name)}</span><div class="sp" style="min-width:0"><h4>${esc(u.name)}</h4><p style="-webkit-line-clamp:3">${esc(flatKey(u))} · ${esc(u.type)} · ${u.members} member${u.members>1?'s':''} · ${esc(u.mobile)}${u.email?' · '+esc(u.email):''}${u.ref?' · Proof: '+esc(u.ref):''}</p><div class="meta">${sChip(u.status)}${u.role==='committee'?chip(esc(u.title||'Committee'),'brand'):''}<span>Requested ${rel(u.created)}</span>${dup&&u.type==='Owner'?chip('Flat has an owner already','bad'):''}</div>
- <div class="row wrap-r" style="margin-top:10px">${u.status==='pending'?btn('Approve','approve',{sm:1,c:'good',i:'check',d:{id:u.id}})+btn('Reject','reject',{sm:1,c:'bad',i:'x',d:{id:u.id}}):u.status==='approved'?btn('Make committee','committee',{sm:1,d:{id:u.id}})+btn('Remove access','reject',{sm:1,c:'bad',d:{id:u.id}}):btn('Approve now','approve',{sm:1,c:'good',d:{id:u.id}})}</div></div></div>`}
+ <div class="row wrap-r" style="margin-top:10px">${u.status==='pending'?btn('Approve','approve',{sm:1,c:'good',i:'check',d:{id:u.id}})+btn('Reject','reject',{sm:1,c:'bad',i:'x',d:{id:u.id}}):u.status==='approved'?btn('Make committee','committee',{sm:1,d:{id:u.id}})+(REMOTE?btn('Reset password','reset-pw',{sm:1,d:{id:u.id}}):'')+btn('Remove access','reject',{sm:1,c:'bad',d:{id:u.id}}):btn('Approve now','approve',{sm:1,c:'good',d:{id:u.id}})}</div></div></div>`}
 ROUTES.members=()=>{const tab=UI.tab||'pending';let l=DB.users.filter(u=>u.status===tab);if(UI.q)l=l.filter(u=>(u.name+flatKey(u)+u.mobile).toLowerCase().includes(UI.q.toLowerCase()));const cnt=s=>DB.users.filter(u=>u.status===s).length;
  return head('Members','Approve flat registrations and manage resident access.')+`<div class="filters">${['pending','approved','rejected'].map(t=>`<button class="pill ${tab===t?'on':''}" data-act="tab" data-v="${t}">${t[0].toUpperCase()+t.slice(1)} (${cnt(t)})</button>`).join('')}<div class="search">${ic('search')}<input id="q" value="${esc(UI.q)}" placeholder="Name, flat or mobile" data-input="q" aria-label="Search members"></div></div><div class="grid g2">${l.length?l.slice(0,60).map(memberCard).join(''):empty(tab==='pending'?'check':'users','Nothing here',tab==='pending'?'All registration requests are handled.':'')}</div>`};
 ACT.approve=d=>{const u=DB.users.find(x=>x.id===d.id);if(u.type==='Owner'&&DB.users.some(x=>x.id!==u.id&&x.status==='approved'&&x.type==='Owner'&&x.tower===u.tower&&x.flat===u.flat)&&!d.force){return modal('Flat already has an owner',`<div class="stack"><p>${esc(flatKey(u))} already has an approved owner. Approving ${esc(u.name)} as a second owner is usually for co-owners. Continue?</p><div class="row" style="justify-content:flex-end">${btn('Cancel','close-modal')}${btn('Approve anyway','approve',{c:'pri',d:{id:u.id,force:1}})}</div></div>`)}
@@ -939,10 +1035,10 @@ FORMS.cash=d=>{const b=DB.bills.find(x=>x.id===d.id);b.lateFee=lateFee(b);b.stat
 /* ----- setup ----- */
 ROUTES.setup=()=>{const s=DB.settings;
  return head('Society setup','Details, charges and account security.')+`<div class="split"><div class="card"><h3>${ic('building')}Society details</h3>${formWrap('setup',F.t('s_name','Society name',{req:true,v:s.name,cls:'full'})+F.t('s_tag','Tagline',{v:s.tagline,cls:'full'})+F.t('s_addr','Address',{v:s.address,cls:'full'})+F.t('s_upi','UPI ID for collection',{v:s.upi,hint:'Residents see a QR for this ID.'})+F.t('s_upin','Name on UPI account',{v:s.upiName})+F.a('s_bank','Bank transfer details (optional)',{v:s.bank||'',cls:'full',ph:'A/c name, number, IFSC, branch'})+F.a('s_charges','Monthly charges, one per line as Label | Amount',{v:s.charges.map(c=>c.label+' | '+c.amt).join('\n'),cls:'full'})+F.t('s_due','Due day of month',{type:'number',v:s.dueDay,attrs:'min="1" max="28"'})+F.t('s_late','Late fee % per month',{type:'number',v:s.latePct,attrs:'min="0" max="20" step="0.5"'})+F.t('s_banner','Banner ad rate per week (₹)',{type:'number',v:s.adRates.banner}),'Save setup')}</div>
- <div class="stack"><div class="card"><h3>${ic('lock')}Admin login</h3>${formWrap('adminpw',F.t('ap_user','Admin username',{v:s.adminUser,req:true,cls:'full'})+F.t('ap_old','Current password',{type:'password',req:true,cls:'full'})+F.t('ap_new','New password',{type:'password',req:true,cls:'full',hint:'At least 8 characters.'}),'Update admin login')}</div>
- <div class="card"><h3>${ic('upload')}Data</h3><p class="muted" style="margin-bottom:12px">Everything is stored in this browser. Take a backup before clearing data or switching device.</p><div class="row wrap-r">${btn('Backup','backup',{sm:1,i:'copy'})}${btn('Restore','restore',{sm:1,i:'upload'})}${btn('Reload demo data','reset-demo',{sm:1,confirm:1})}${btn('Clear demo data','clear-demo',{sm:1,c:'bad',confirm:1})}</div></div></div></div>`};
+ <div class="stack"><div class="card"><h3>${ic('lock')}Admin login</h3>${formWrap('adminpw',F.t('ap_user','Admin username',{v:adminName(),req:true,cls:'full'})+F.t('ap_old','Current password',{type:'password',req:true,cls:'full'})+F.t('ap_new','New password',{type:'password',req:true,cls:'full',hint:'At least 8 characters.'}),'Update admin login')}</div>
+ <div class="card"><h3>${ic('upload')}Data</h3>${REMOTE?`<p class="muted" style="margin-bottom:12px">Everything is stored safely in the society database, so it is the same on every phone and computer. Download a copy any time. Passwords are never included.</p><div class="row wrap-r">${btn('Download backup','backup',{sm:1,i:'copy'})}</div>`:`<p class="muted" style="margin-bottom:12px">Everything is stored in this browser. Take a backup before clearing data or switching device.</p><div class="row wrap-r">${btn('Backup','backup',{sm:1,i:'copy'})}${btn('Restore','restore',{sm:1,i:'upload'})}${btn('Reload demo data','reset-demo',{sm:1,confirm:1})}${btn('Clear demo data','clear-demo',{sm:1,c:'bad',confirm:1})}</div>`}</div></div></div>`};
 FORMS.setup=d=>{const ch=d.s_charges.split('\n').map(l=>l.split('|')).filter(p=>p.length>=2&&+p[1]>0).map(p=>({label:p[0].trim(),amt:+p[1]}));if(!d.s_name.trim())return fErr('Society name is required.');if(!ch.length)return fErr('Add at least one charge, like: Maintenance | 2200');Object.assign(DB.settings,{name:d.s_name.trim(),tagline:d.s_tag.trim(),address:d.s_addr.trim(),upi:d.s_upi.trim(),upiName:d.s_upin.trim(),bank:d.s_bank.trim(),charges:ch,dueDay:Math.min(28,Math.max(1,+d.s_due||15)),latePct:+d.s_late||0});DB.settings.adRates.banner=+d.s_banner||0;save();render();toast('Setup saved')};
-FORMS.adminpw=async d=>{if(await sha(d.ap_old)!==DB.settings.adminHash)return fErr('Current password is incorrect.');if(d.ap_new.length<8)return fErr('New password needs at least 8 characters.');DB.settings.adminUser=d.ap_user.trim();DB.settings.adminHash=await sha(d.ap_new);save();render();toast('Admin login updated')};
+FORMS.adminpw=async d=>{if(REMOTE){if(d.ap_new.length<8)return fErr('New password needs at least 8 characters.');try{const r=await api('/api/auth/password',{method:'POST',body:{current:d.ap_old,next:d.ap_new,username:d.ap_user}});TOKEN=r.token;lsSet(AKEY,TOKEN);SES={...SES,username:d.ap_user.trim().toLowerCase()};setSes(SES);render();toast('Admin login updated')}catch(e){fErr(e.message)}return}if(await sha(d.ap_old)!==DB.settings.adminHash)return fErr('Current password is incorrect.');if(d.ap_new.length<8)return fErr('New password needs at least 8 characters.');DB.settings.adminUser=d.ap_user.trim();DB.settings.adminHash=await sha(d.ap_new);save();render();toast('Admin login updated')};
 ACT.backup=()=>modal('Backup',`<div class="stack"><p class="muted">Copy this text and keep it somewhere safe. Paste it into Restore to get your data back.</p><textarea id="bk" readonly style="width:100%;min-height:200px;font:12px monospace;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px">${esc(JSON.stringify(DB))}</textarea><div class="row" style="justify-content:flex-end"><button class="btn pri" data-act="copy" data-t="${esc(JSON.stringify(DB))}">${ic('copy')}Copy backup</button></div></div>`);
 ACT.restore=()=>modal('Restore backup',formWrap('restore',`<label class="fld full"><span>Paste backup text</span><textarea id="rs" name="rs" required style="min-height:200px"></textarea></label>`,'Restore'));
 FORMS.restore=d=>{try{const x=JSON.parse(d.rs);if(!x.settings||!x.users)throw 0;DB=x;save();closeModal();render(true);toast('Backup restored')}catch(e){fErr('That text is not a valid backup.')}};
@@ -951,7 +1047,7 @@ ACT['clear-demo']=async()=>{const s=DB.settings,am=DB.amenities,co=DB.contacts.f
 
 /* ----- global actions ----- */
 ACT.theme=()=>{const r=document.documentElement,dark=r.dataset.theme==='dark'||(!r.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches),n=dark?'light':'dark';r.dataset.theme=n;lsSet(TKEY,n);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=n==='dark'?'#0A1516':'#0B3B3A';render()};
-ACT.logout=()=>{closeModal();setSes(null);UI.auth='login';location.hash='';render(true)};
+ACT.logout=()=>{closeModal();if(REMOTE){endSession();return}setSes(null);UI.auth='login';location.hash='';render(true)};
 ACT['close-modal']=()=>closeModal();
 ACT.bell=()=>{const m=me(),l=myNotifs().slice(0,30);l.forEach(n=>{if(!n.read.includes(m.id))n.read.push(m.id)});save();modal('Notifications',l.length?`<div class="stack">${l.map(n=>`<a class="notice" style="text-decoration:none;cursor:pointer" href="#${n.link||'home'}" data-act="close-modal"><div class="ni">${ic('bell')}</div><div class="sp" style="min-width:0"><b>${esc(n.text)}</b><div class="meta"><span>${rel(n.at)}</span></div></div></a>`).join('')}</div>`:empty('bell','You are all caught up'));render()};
 
@@ -968,9 +1064,13 @@ document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.i
 /* ----- boot ----- */
 (async function boot(){
  try{const th=lsGet(TKEY);if(th)document.documentElement.dataset.theme=th}catch(e){}
- loadDB();if(!DB||!DB.settings){DB=await seed();save()}
+ if(REMOTE){if(!(await startRemote()))return}
+ else{loadDB();if(!DB||!DB.settings){DB=await seed();save()}
  DB.entries=DB.entries||[];DB.visitors=DB.visitors||[];DB.notifs=DB.notifs||[];DB.log=DB.log||[];
- if(SES&&SES.k==='user'&&!DB.users.some(u=>u.id===SES.id))SES=null;
+ if(SES&&SES.k==='user'&&!DB.users.some(u=>u.id===SES.id))SES=null}
  render(true);
  if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
-})();</script>
+})();
+
+ACT['reset-pw']=d=>{const u=DB.users.find(x=>x.id===d.id);modal('Reset password for '+esc(u.name),`<div class="stack"><p>This signs ${esc(u.name)} out everywhere and creates a temporary password. Share it with the resident in person or on a call. They can change it under Profile.</p><div class="row" style="justify-content:flex-end">${btn('Cancel','close-modal')}${btn('Create temporary password','reset-pw-go',{c:'pri',d:{id:u.id}})}</div></div>`)};
+ACT['reset-pw-go']=async d=>{const u=DB.users.find(x=>x.id===d.id);try{const r=await api('/api/admin/users/'+encodeURIComponent(d.id)+'/password',{method:'POST'});modal('Temporary password',`<div class="stack"><p>Give this to <b>${esc(u.name)}</b> (${esc(flatKey(u))}). It is shown only once.</p><div class="card flat" style="text-align:center;font:700 26px/1.2 monospace;letter-spacing:.06em;user-select:all">${esc(r.password)}</div><div class="row" style="justify-content:flex-end">${btn('Copy','copy',{c:'pri',i:'copy',d:{t:r.password}})}${btn('Done','close-modal')}</div></div>`);logAct('Reset password for '+u.name);save()}catch(e){toast(e.message,'x')}};</script>
