@@ -1,0 +1,21 @@
+{
+  "name": "Queenstown Society",
+  "short_name": "Queenstown",
+  "description": "Notices, maintenance payments, events and bookings for Queenstown Society.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B3B3A",
+  "theme_color": "#0B3B3A",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Pay maintenance", "url": "./index.html#maintenance"},
+    {"name": "Notices", "url": "./index.html#notices"},
+    {"name": "Events", "url": "./index.html#events"}
+  ]
+}

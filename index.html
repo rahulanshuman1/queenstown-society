@@ -1,0 +1,979 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Queenstown Society</title><meta name="description" content="Notices, maintenance payments, events and bookings for Queenstown Society.">
+<meta name="theme-color" content="#0B3B3A"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Queenstown">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Layout: dark-spruce side rail + content column; hero is a banded stage of generated skyline art with a glass "Coming up" forecast panel. Phones get a bottom tab bar. */
+:root{
+  --bg:#EDF3F1; --surface:#FFFFFF; --surface-2:#F4F8F7; --ink:#0F2A2B; --ink-2:#506869; --line:#D8E3E0;
+  --brand:#0F4C4A; --brand-ink:#FFFFFF; --accent:#E39A1B; --accent-ink:#2B1B00;
+  --good:#1B8553; --warn:#B86E05; --bad:#C23B3B; --info:#2B6CB0;
+  --side-bg:#0B3B3A; --side-ink:#E4F0EE; --side-ink2:#9FC2BE; --side-on:rgba(255,255,255,.12);
+  --on-art:#FFFFFF; --on-art-2:rgba(255,255,255,.80); --glass:rgba(8,24,26,.52);
+  --shadow:0 1px 2px rgba(15,42,43,.06),0 10px 28px rgba(15,42,43,.08);
+  --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --r:16px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1516; --surface:#102123; --surface-2:#152B2D; --ink:#E6F0EE; --ink-2:#9DB4B2; --line:#223A3C;
+  --brand:#3BB5AA; --brand-ink:#04201F; --accent:#F2B13A; --accent-ink:#2B1B00;
+  --good:#4CC38A; --warn:#EBA43A; --bad:#EF7B7B; --info:#6FAEEB;
+  --side-bg:#0D1F21; --side-ink:#E4F0EE; --side-ink2:#86A9A6; --side-on:rgba(255,255,255,.09);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.28); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1516; --surface:#102123; --surface-2:#152B2D; --ink:#E6F0EE; --ink-2:#9DB4B2; --line:#223A3C;
+  --brand:#3BB5AA; --brand-ink:#04201F; --accent:#F2B13A; --accent-ink:#2B1B00;
+  --good:#4CC38A; --warn:#EBA43A; --bad:#EF7B7B; --info:#6FAEEB;
+  --side-bg:#0D1F21; --side-ink:#E4F0EE; --side-ink2:#86A9A6; --side-on:rgba(255,255,255,.09);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.28); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.012em}
+p{margin:0} a{color:inherit} small{color:var(--ink-2)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ic{width:20px;height:20px;flex:none}
+.muted{color:var(--ink-2)} .num{font-variant-numeric:tabular-nums}
+.noscroll{overflow:hidden}
+
+/* shell */
+.shell{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow:auto;padding:22px 14px;background:var(--side-bg);color:var(--side-ink);display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none}
+.brand svg{width:38px;height:38px;flex:none}
+.brand b{font:700 19px/1 var(--f-display);display:block;letter-spacing:-.01em}
+.brand span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--side-ink2)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav h6{margin:10px 10px 4px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--side-ink2);font-weight:700}
+.nav a{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:11px;text-decoration:none;color:var(--side-ink);font-weight:600;font-size:14px;transition:background .2s,transform .2s}
+.nav a:hover{background:var(--side-on);transform:translateX(2px)}
+.nav a.on{background:var(--accent);color:var(--accent-ink)}
+.nav .badge-n{margin-left:auto;background:var(--accent);color:var(--accent-ink);border-radius:99px;font-size:11px;padding:1px 7px;font-weight:800}
+.nav a.on .badge-n{background:var(--accent-ink);color:var(--accent)}
+.side .me{margin-top:auto;display:flex;gap:10px;align-items:center;padding:10px;border-radius:13px;background:var(--side-on);text-decoration:none}
+.me small{color:var(--side-ink2);display:block;font-size:12px}
+.me b{font-size:13.5px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:800 14px var(--f-display);flex:none}
+.main{min-width:0}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;display:flex;align-items:center;gap:10px;height:62px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top .ttl{font:700 20px var(--f-display);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand{display:none}
+.iconbtn{position:relative;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;transition:transform .15s}
+.iconbtn:hover{transform:translateY(-1px)}
+.iconbtn .dot{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--bad);color:#fff;font:800 10.5px/18px var(--f-body);text-align:center;padding:0 4px}
+.wrap{max-width:1200px;margin:0 auto;padding-block:8px 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.view{display:flex;flex-direction:column;gap:22px}
+.view.enter>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.view.enter>*:nth-child(2){animation-delay:.05s}.view.enter>*:nth-child(3){animation-delay:.1s}.view.enter>*:nth-child(4){animation-delay:.15s}.view.enter>*:nth-child(5){animation-delay:.2s}.view.enter>*:nth-child(n+6){animation-delay:.25s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.tabbar a,.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:0;background:none;text-decoration:none;color:var(--ink-2);font-size:11px;font-weight:700;border-radius:12px;cursor:pointer}
+.tabbar .on{color:var(--brand)} .tabbar .on .ic{transform:translateY(-2px) scale(1.1)}
+.tabbar .ic{transition:transform .2s}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)} .side{display:none}
+  .tabbar{display:flex} .top .brand{display:flex} .top .brand b{color:var(--ink);font-size:17px} .top .brand span{display:none}
+  .top .ttl{display:none}.top .sp{flex:1}
+}
+
+/* primitives */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);min-width:0}
+.card.flat{box-shadow:none}
+.card h3{font-size:17px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3 .more{margin-left:auto;font:700 12.5px var(--f-body);color:var(--brand);text-decoration:none}
+.grid{display:grid;gap:16px;min-width:0}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.split{display:grid;gap:16px;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+@media (max-width:900px){.split{grid-template-columns:minmax(0,1fr)}}
+.ph{display:flex;gap:14px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;padding-top:6px}
+.ph h2{font-size:clamp(24px,3.4vw,32px)} .ph p{color:var(--ink-2);margin-top:4px;max-width:60ch}
+.ph-act{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s,background .2s;position:relative;overflow:hidden;white-space:nowrap}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)} .btn:active{transform:scale(.97)}
+.btn.pri{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+.btn.acc{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad);border-color:transparent}
+.btn.good{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);border-color:transparent}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:10px}
+.btn.armed{background:var(--bad);color:#fff}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.btn.block{width:100%}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:color-mix(in srgb,var(--ink-2) 14%,transparent);color:var(--ink-2);white-space:nowrap}
+.chip.good{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.chip.warn{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.chip.bad{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}
+.chip.info{background:color-mix(in srgb,var(--info) 16%,transparent);color:var(--info)}
+.chip.brand{background:color-mix(in srgb,var(--brand) 16%,transparent);color:var(--brand)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{padding:7px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
+.pill.on{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:0 12px;min-width:0;flex:1;max-width:340px}
+.search input{border:0;background:none;outline:0;padding:10px 0;min-width:0;width:100%}
+.empty{text-align:center;padding:36px 16px;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:8px}
+.empty .ic{width:34px;height:34px;color:var(--brand)} .empty b{color:var(--ink);font:700 17px var(--f-display)}
+.row{display:flex;gap:12px;align-items:center;min-width:0}.row.wrap-r{flex-wrap:wrap}.sp{flex:1}
+.stack{display:flex;flex-direction:column;gap:12px;min-width:0}
+.hr{height:1px;background:var(--line);border:0;margin:6px 0;width:100%}
+.demo{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:color-mix(in srgb,var(--accent) 16%,var(--surface));border:1px dashed color-mix(in srgb,var(--accent) 60%,transparent);padding:10px 14px;border-radius:12px;font-size:13.5px}
+
+/* forms */
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fld>span{font-size:12.5px;font-weight:700;color:var(--ink-2)}
+.fld input,.fld select,.fld textarea{border:1px solid var(--line);background:var(--surface-2);border-radius:11px;padding:10px 12px;min-width:0;width:100%;transition:border-color .2s,box-shadow .2s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 22%,transparent)}
+.fld textarea{min-height:96px;resize:vertical}
+.fld .hint{font-size:12px;color:var(--ink-2)}
+.chk{display:flex;gap:9px;align-items:center;font-size:14px;font-weight:600}
+.chk input{width:18px;height:18px;accent-color:var(--brand)}
+.frm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.frm .full{grid-column:1/-1}
+@media (max-width:560px){.frm{grid-template-columns:minmax(0,1fr)}}
+.err{color:var(--bad);font-size:13.5px;font-weight:600;min-height:0}
+
+/* modal + toast */
+#modal-root{display:none;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;padding:16px}
+#modal-root.open{display:flex}
+.scrim-m{position:absolute;inset:0;background:rgba(5,18,20,.6);backdrop-filter:blur(3px);animation:fade .2s both}
+.modal{position:relative;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:22px;width:min(100%,520px);max-height:calc(100% - 8px);overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.35);animation:pop .28s cubic-bezier(.2,.8,.2,1) both}
+.modal.wide{width:min(100%,760px)}
+.modal h3{font-size:21px;margin-bottom:4px}
+.modal .mh{display:flex;gap:10px;align-items:flex-start;margin-bottom:16px}
+.modal .mh .x{margin-left:auto}
+@keyframes pop{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (max-width:640px){#modal-root{align-items:flex-end;padding:0}.modal{border-radius:22px 22px 0 0;width:100%;max-height:92%;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}}
+#toasts{position:fixed;left:0;right:0;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:120;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 16px}
+@media (max-width:900px){#toasts{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+.toast{background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:13px;font-weight:700;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.3);animation:rise .3s both;display:flex;gap:8px;align-items:center;max-width:100%}
+.toast.out{opacity:0;transition:opacity .3s}
+
+/* hero */
+.hero{position:relative;border-radius:24px;overflow:hidden;background:#0A1A1C;color:var(--on-art);isolation:isolate;box-shadow:var(--shadow)}
+.stage{position:relative;min-height:440px}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility .9s}
+.slide.on{opacity:1;visibility:visible;z-index:1}
+.art-wrap{position:absolute;inset:0;overflow:hidden}
+.art{width:100%;height:100%;object-fit:cover;display:block}
+.slide.on .art-wrap{animation:kb 10s ease-out both}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.07)}}
+.scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,16,18,.84) 0%,rgba(5,16,18,.5) 48%,rgba(5,16,18,.05) 100%),linear-gradient(0deg,rgba(5,16,18,.7),transparent 45%)}
+.slide-body{position:absolute;left:clamp(18px,3vw,38px);bottom:62px;right:clamp(18px,3vw,38px);max-width:640px;display:flex;flex-direction:column;gap:12px}
+.slide.on .slide-body>*{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+.slide.on .slide-body>*:nth-child(2){animation-delay:.12s}.slide.on .slide-body>*:nth-child(3){animation-delay:.22s}.slide.on .slide-body>*:nth-child(4){animation-delay:.32s}.slide.on .slide-body>*:nth-child(5){animation-delay:.42s}
+.tag{align-self:flex-start;background:var(--accent);color:var(--accent-ink);padding:4px 12px;border-radius:99px;font:800 11.5px var(--f-body);letter-spacing:.1em;text-transform:uppercase}
+.tag.thr{background:rgba(255,255,255,.2);color:#fff;backdrop-filter:blur(6px)}
+.slide h1{font-size:clamp(28px,4.6vw,52px);font-weight:800;color:var(--on-art);text-shadow:0 2px 24px rgba(0,0,0,.35)}
+.slide .meta{color:var(--on-art-2);display:flex;gap:16px;flex-wrap:wrap;font-weight:600}
+.slide .meta span{display:inline-flex;gap:6px;align-items:center}
+.cd{display:flex;gap:8px}
+.cd div{background:var(--glass);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:6px 10px;min-width:56px;text-align:center}
+.cd b{display:block;font:800 22px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.cd small{color:var(--on-art-2);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
+.hero-ctl{position:absolute;left:clamp(18px,3vw,38px);bottom:22px;z-index:3;display:flex;align-items:center;gap:8px}
+.dotb{width:34px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);border:0;padding:0;cursor:pointer;position:relative;overflow:hidden}
+.dotb.on::after{content:"";position:absolute;inset:0;background:var(--accent);transform-origin:left;animation:bar 6s linear both}
+.hero.paused .dotb.on::after{animation-play-state:paused}
+@keyframes bar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.arrow{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(6px)}
+.arrow:hover{background:rgba(255,255,255,.22)}
+.forecast{position:absolute;z-index:3;right:16px;top:16px;bottom:16px;width:292px;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.forecast h4{font:700 12px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--on-art-2);display:flex;align-items:center;gap:8px}
+.forecast h4 .live{width:8px;height:8px;border-radius:50%;background:#58e0a0;animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(88,224,160,.6)}100%{box-shadow:0 0 0 10px rgba(88,224,160,0)}}
+.fi{display:flex;gap:11px;align-items:center;padding:8px;border-radius:12px;text-decoration:none;color:var(--on-art);transition:background .2s}
+.fi:hover{background:rgba(255,255,255,.1)}
+.fi .d{width:44px;flex:none;text-align:center;border-radius:10px;background:rgba(255,255,255,.12);padding:4px 0}
+.fi .d b{display:block;font:800 17px/1 var(--f-display)} .fi .d small{color:var(--on-art-2);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.fi .t{min-width:0;font-weight:700;font-size:13.5px;line-height:1.25}
+.fi .t small{display:block;color:var(--on-art-2);font-weight:600;font-size:12px}
+.fi .k{width:8px;height:8px;border-radius:50%;flex:none;margin-left:auto}
+@media (max-width:980px){
+  .forecast{position:relative;inset:auto;width:auto;margin:0 12px 12px;border-radius:16px}
+  .stage{min-height:400px}.slide-body{bottom:58px}
+}
+.sway{animation:sway 4.5s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 0}
+.tw{animation:tw 3.2s ease-in-out infinite}.rot{animation:spin 90s linear infinite}
+@keyframes sway{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* kpi */
+.kpi{display:flex;gap:14px;align-items:center;padding:16px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);text-decoration:none;transition:transform .2s,box-shadow .2s;min-width:0}
+.kpi:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.kpi .k-ic{width:44px;height:44px;border-radius:13px;background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand);display:grid;place-items:center;flex:none}
+.kpi.warn .k-ic{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.kpi.bad .k-ic{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.kpi b{font:800 24px/1.1 var(--f-display);display:block;font-variant-numeric:tabular-nums}
+.kpi small{font-weight:600}
+
+/* lists & cards */
+.notice{display:flex;gap:14px;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);cursor:pointer;transition:transform .2s,border-color .2s;min-width:0}
+.notice:hover{transform:translateX(3px);border-color:var(--brand)}
+.notice.unread{border-left:4px solid var(--accent)}
+.notice .ni{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand)}
+.notice.urgent .ni{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.notice h4{font-size:16px;margin-bottom:3px}
+.notice p{color:var(--ink-2);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.notice .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:12.5px;color:var(--ink-2)}
+.ev{display:flex;flex-direction:column;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);transition:transform .25s}
+.ev:hover{transform:translateY(-4px)}
+.ev .cv{position:relative;aspect-ratio:16/9;overflow:hidden;cursor:pointer}
+.ev .cv .art{transition:transform .6s}.ev:hover .cv .art{transform:scale(1.06)}
+.ev .date{position:absolute;left:12px;top:12px;background:var(--surface);color:var(--ink);border-radius:12px;padding:5px 10px;text-align:center;line-height:1.1;box-shadow:var(--shadow)}
+.ev .date b{display:block;font:800 20px var(--f-display)}.ev .date small{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.ev .bd{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.ev h4{font-size:18px}
+.ev .meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink-2)}
+.ev .meta span{display:inline-flex;gap:5px;align-items:center}
+.ev .meta .ic{width:15px;height:15px}
+.ev .ft{margin-top:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
+table.tbl{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.tbl th{text-align:left;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);padding:10px 12px;background:var(--surface-2);white-space:nowrap}
+.tbl td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:middle}
+.tbl tr:hover td{background:var(--surface-2)}
+.tbl .r{text-align:right}
+.duecard{position:relative;overflow:hidden;border-radius:22px;padding:24px;background:linear-gradient(135deg,var(--brand),color-mix(in srgb,var(--brand) 60%,#000));color:var(--brand-ink);display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.duecard::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%)}
+.duecard small{color:inherit;opacity:.8;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:12px}
+.duecard b{display:block;font:800 clamp(34px,6vw,52px)/1.05 var(--f-display);font-variant-numeric:tabular-nums}
+.duecard .btn{position:relative;z-index:1}
+.ring{position:relative;width:132px;height:132px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:11;stroke-linecap:round}
+.ring .bg{stroke:var(--line)}.ring .fg{stroke:var(--good);stroke-dasharray:var(--c) var(--c);stroke-dashoffset:var(--c);animation:ring 1.4s .2s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes ring{to{stroke-dashoffset:var(--o)}}
+.ring div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring b{font:800 28px var(--f-display)}.ring small{font-size:11px;font-weight:700}
+.tl{display:flex;flex-direction:column;gap:0;position:relative;padding-left:18px}
+.tl::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tli{position:relative;display:flex;gap:12px;padding:10px 0;align-items:flex-start}
+.tli::before{content:"";position:absolute;left:-18px;top:16px;width:12px;height:12px;border-radius:50%;background:var(--c,var(--brand));border:3px solid var(--bg)}
+.tli .dt{width:62px;flex:none;font-weight:800;font-family:var(--f-display);line-height:1.1}.tli .dt small{display:block;font:600 11.5px var(--f-body)}
+.k-event{--c:var(--accent)}.k-maintenance{--c:var(--info)}.k-due{--c:var(--bad)}.k-meeting{--c:var(--brand)}.k-booking{--c:var(--good)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.cal .hd{font-size:11px;text-align:center;font-weight:800;color:var(--ink-2);letter-spacing:.08em;text-transform:uppercase;padding:4px 0}
+.cal button{aspect-ratio:1;border-radius:12px;border:1px solid transparent;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-weight:700;font-size:14px;transition:transform .15s,background .2s;min-width:0}
+.cal button:hover{transform:scale(1.06)}.cal button.out{opacity:.35}
+.cal button.today{border-color:var(--accent)}.cal button.sel{background:var(--brand);color:var(--brand-ink)}
+.cal .dots{display:flex;gap:3px;height:6px}.cal .dots i{width:6px;height:6px;border-radius:50%;background:var(--c)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);font-weight:600}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:6px}
+.gal{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr))}
+.gal figure{margin:0;border-radius:14px;overflow:hidden;position:relative;aspect-ratio:4/3;cursor:pointer;border:1px solid var(--line)}
+.gal figure .art{transition:transform .5s}.gal figure:hover .art{transform:scale(1.08)}
+.gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;background:linear-gradient(0deg,rgba(0,0,0,.7),transparent);color:#fff;font-weight:700;font-size:13.5px}
+.ad{border-radius:var(--r);padding:16px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:8px;min-width:0}
+.ad .sp-t{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--ink-2)}
+.marq{display:flex;gap:14px;overflow:hidden;position:relative}
+.marq .trk{display:flex;gap:14px;animation:marq 38s linear infinite;flex:none}
+.marq:hover .trk{animation-play-state:paused}
+@keyframes marq{to{transform:translateX(-50%)}}
+.sponsor{flex:none;width:300px;border-radius:14px;padding:14px 16px;background:linear-gradient(120deg,color-mix(in srgb,var(--h,var(--accent)) 22%,var(--surface)),var(--surface));border:1px solid var(--line)}
+.sponsor b{font:700 16px var(--f-display);display:block}.sponsor p{font-size:13px;color:var(--ink-2)}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar-r{display:flex;flex-direction:column;gap:4px}.bar-r .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:14px}
+.bar-r .tr{height:10px;border-radius:6px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.bar-r .tr i{display:block;height:100%;background:var(--brand);border-radius:6px;width:var(--w);animation:grow 1s cubic-bezier(.2,.8,.2,1) both;transform-origin:left}
+@keyframes grow{from{transform:scaleX(0)}to{transform:none}}
+.chart text{font:600 11px var(--f-body);fill:var(--ink-2)}
+.chart .ax{stroke:var(--line)}
+.chart .in{fill:var(--brand)}.chart .ex{fill:var(--accent)}
+.chart rect{transform-origin:bottom;transform-box:fill-box;animation:growy .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes growy{from{transform:scaleY(0)}to{transform:none}}
+.qr{width:168px;height:168px;background:#fff;border-radius:14px;padding:8px;display:grid;place-items:center;margin:0 auto}
+.qr img,.qr canvas{max-width:100%}
+.receipt{border:2px dashed var(--line);border-radius:16px;padding:18px;position:relative}
+.receipt .stamp{position:absolute;right:16px;top:14px;border:3px solid var(--good);color:var(--good);border-radius:10px;padding:2px 12px;font:800 20px var(--f-display);transform:rotate(-8deg);letter-spacing:.1em}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line)}.kv:last-child{border:0}
+.kv span:first-child{color:var(--ink-2)} .kv span:last-child{font-weight:700;text-align:right}
+.steps{counter-reset:s;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.steps>div{display:flex;gap:12px;align-items:flex-start}
+.steps .n{flex:none;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:800 15px var(--f-display)}
+.landing-top{display:flex;align-items:center;gap:12px;padding-block:16px 12px}
+.landing-top .brand b{color:var(--ink)} .landing-top .brand span{color:var(--ink-2)}
+.auth{max-width:520px;margin:0 auto;width:100%}
+.tabs2{display:flex;background:var(--surface-2);border-radius:13px;padding:4px;gap:4px;margin-bottom:16px}
+.tabs2 button{flex:1;border:0;background:none;padding:9px;border-radius:10px;font-weight:800;cursor:pointer;color:var(--ink-2)}
+.tabs2 button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.wait{max-width:560px;margin:40px auto;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center}
+.wait .big{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent)}
+.wait .big .ic{width:40px;height:40px;animation:tick 2.4s ease-in-out infinite}
+@keyframes tick{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.sheet-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sheet-grid a,.sheet-grid button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border-radius:14px;background:var(--surface-2);text-decoration:none;border:0;font-weight:700;font-size:12.5px;cursor:pointer;color:var(--ink);text-align:center}
+.sheet-grid .ic{color:var(--brand);width:24px;height:24px}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:130;overflow:hidden}
+.confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:fall 1.8s cubic-bezier(.3,.6,.4,1) forwards}
+@keyframes fall{to{transform:translate(var(--x),105vh) rotate(var(--r));opacity:.9}}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .6s ease-out;pointer-events:none}
+@keyframes rip{to{transform:scale(3.2);opacity:0}}
+.sep{display:flex;align-items:center;gap:10px;color:var(--ink-2);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
+.code{font:800 26px var(--f-display);letter-spacing:.24em;background:var(--surface-2);border:1px dashed var(--line);border-radius:12px;padding:10px 16px;text-align:center}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.marq .trk{animation:none}.marq{overflow-x:auto}}
+</style></head><body>
+<div id="app"></div><div id="modal-root"></div><div id="toasts" aria-live="polite"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>'use strict';
+/* ========== utils ========== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=(p='i')=>p+Math.random().toString(36).slice(2,9);
+const DAY=864e5;
+const inr=n=>'₹'+Math.round(n||0).toLocaleString('en-IN');
+const D=x=>new Date(x);
+const sod=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x};
+const daysTo=d=>Math.round((sod(d)-sod(new Date()))/DAY);
+const fdate=(x,o={day:'numeric',month:'short'})=>D(x).toLocaleDateString('en-IN',o);
+const fdatey=x=>fdate(x,{day:'numeric',month:'short',year:'numeric'});
+const fwd=x=>fdate(x,{weekday:'short',day:'numeric',month:'short'});
+const ftime=x=>D(x).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
+const mkey=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const mlabel=k=>{const [y,m]=k.split('-');return new Date(y,m-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'})};
+const mshort=k=>{const [y,m]=k.split('-');return new Date(y,m-1,1).toLocaleDateString('en-IN',{month:'short'})};
+const mshift=(k,n)=>{const [y,m]=k.split('-').map(Number);return mkey(new Date(y,m-1+n,1))};
+const rel=d=>{const n=daysTo(d);return n===0?'Today':n===1?'Tomorrow':n===-1?'Yesterday':n>0?`in ${n} days`:`${-n} days ago`};
+const initials=n=>String(n||'?').split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+const greet=()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'};
+const isoLocal=d=>{const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,16)};
+function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const hashStr=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
+async function sha(s){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('qs|'+s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){return'x'+btoa(unescape(encodeURIComponent('qs|'+s)))}}
+function readImage(file,maxW=1200,q=.72){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=rej;fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const k=Math.min(1,maxW/im.width),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q))};im.src=fr.result};fr.readAsDataURL(file)})}
+
+/* ========== icons ========== */
+const IP={
+home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+bell:'<path d="M6 8a6 6 0 0112 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 004 0"/>',
+notice:'<path d="M3 11v3l14 5V6L3 11z"/><path d="M7 14v5a2 2 0 002 2"/><path d="M21 9v6"/>',
+wallet:'<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1"/>',
+calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+sunrise:'<path d="M3 18h18M6 18a6 6 0 0112 0M12 6V3M4.5 9.5L3 8M19.5 9.5L21 8"/>',
+chat:'<path d="M4 4h16v12H8l-4 4V4z"/>',
+key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/>',
+visitor:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0114 0"/><path d="M17 11l2 2 4-4"/>',
+tag:'<path d="M3 12V3h9l9 9-9 9-9-9z"/><circle cx="7.5" cy="7.5" r="1.2"/>',
+vote:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l3 3 5-6"/>',
+image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>',
+book:'<path d="M5 3h10l4 4v14H5z"/><path d="M14 3v5h5M8 13h8M8 17h6"/>',
+users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 21a7 7 0 0114 0"/><path d="M16 4.5a3.5 3.5 0 010 7M18 14.5a6 6 0 014 6.5"/>',
+shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+plus:'<path d="M12 5v14M5 12h14"/>',check:'<path d="M5 12l5 5 9-10"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
+moon:'<path d="M20 14A8 8 0 019.5 3.5 8 8 0 1020 14z"/>',
+logout:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>',
+search:'<circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+pin:'<path d="M12 17v5M8 3h8l-1 6 3 4H6l3-4-1-6z"/>',
+phone:'<path d="M5 3h4l2 5-2.5 1.5a11 11 0 006 6L16 13l5 2v4a2 2 0 01-2 2A16 16 0 013 5a2 2 0 012-2z"/>',
+more:'<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+chart:'<path d="M4 20V4M4 20h16M8 16v-5M13 16V8M18 16v-3"/>',
+trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+edit:'<path d="M4 20h4L19 9l-4-4L4 16v4z"/>',
+upload:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+mappin:'<path d="M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',cl:'<path d="M15 5l-7 7 7 7"/>',cr:'<path d="M9 5l7 7-7 7"/>',
+building:'<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>',
+info:'<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16v.5"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>',
+copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 012-2h10"/>',
+user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/>',
+lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+hourglass:'<path d="M6 3h12M6 21h12M7 3c0 6 5 6 5 9s-5 3-5 9M17 3c0 6-5 6-5 9s5 3 5 9"/>',
+gym:'<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>',
+send:'<path d="M21 3L3 11l7 3 3 7 8-18z"/>',
+flag:'<path d="M5 21V4h11l-2 4 2 4H5"/>'
+};
+const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IP[n]||''}</svg>`;
+
+/* ========== generated scene art (placeholder for real event photos) ========== */
+const PAL={
+ festival:{sky:['#1a0b3b','#7a1f5c','#f08a4b'],glow:'#ffd27a',far:'#2e1450',near:'#140a2a',lamp:['#ffb347','#ff6b9a','#ffe27a']},
+ sports:{sky:['#0b3c49','#1f8a8a','#f4d27a'],glow:'#fff1b8',far:'#0f4e59',near:'#08272f'},
+ garden:{sky:['#0c3b3a','#3f8f6b','#f0d98a'],glow:'#fff3c4',far:'#17563f',near:'#0a2b26'},
+ yoga:{sky:['#1c2f66','#e0728a','#ffc98b'],glow:'#fff0c8',far:'#2c3d79',near:'#101a3d'},
+ night:{sky:['#060d24','#1d3557','#41689a'],glow:'#f6e7a8',far:'#16294d',near:'#0a1530'},
+ meeting:{sky:['#16233f','#3f5f86','#e8a94a'],glow:'#ffe2a0',far:'#243858',near:'#0f1a30'},
+ kids:{sky:['#3b1f78','#d1559e','#ffd86b'],glow:'#fff3a8',far:'#4d2b8c',near:'#25104f',lamp:['#6be3ff','#ff7ab8','#ffe066']}
+};
+function scene(kind='night',seed=1){
+ const p=PAL[kind]||PAL.night,r=rng(seed*977+kind.length*13),W=1600,H=900,id='s'+Math.floor(r()*1e7),f=n=>n.toFixed(0);
+ let s=`<svg class="art" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.sky[0]}"/><stop offset=".62" stop-color="${p.sky[1]}"/><stop offset="1" stop-color="${p.sky[2]}"/></linearGradient><radialGradient id="${id}r"><stop offset="0" stop-color="${p.glow}" stop-opacity=".9"/><stop offset="1" stop-color="${p.glow}" stop-opacity="0"/></radialGradient></defs><rect width="${W}" height="${H}" fill="url(#${id}g)"/>`;
+ const sx=380+r()*900,sy=250+r()*110;
+ s+=`<circle cx="${f(sx)}" cy="${f(sy)}" r="280" fill="url(#${id}r)"/>`;
+ if(kind==='yoga'){s+=`<g class="rot" style="transform-origin:${f(sx)}px ${f(sy)}px">`;for(let i=0;i<28;i++){const a=i/28*Math.PI*2;s+=`<line x1="${f(sx+Math.cos(a)*76)}" y1="${f(sy+Math.sin(a)*76)}" x2="${f(sx+Math.cos(a)*(i%2?190:260))}" y2="${f(sy+Math.sin(a)*(i%2?190:260))}" stroke="${p.glow}" stroke-opacity=".35" stroke-width="5" stroke-linecap="round"/>`}s+='</g>'}
+ s+=`<circle cx="${f(sx)}" cy="${f(sy)}" r="52" fill="${p.glow}"/>`;
+ if(['night','festival','meeting','kids'].includes(kind))for(let i=0;i<50;i++)s+=`<circle class="tw" style="animation-delay:${(r()*4).toFixed(1)}s" cx="${f(r()*W)}" cy="${f(r()*420)}" r="${(r()*1.7+.6).toFixed(1)}" fill="#fff"/>`;
+ s+=`<path d="M0 650 Q320 520 640 630 T1260 600 T1600 650 V900 H0Z" fill="${p.far}"/>`;
+ const tw=(x0,n,col,hmin,hmax,base,lit)=>{let o='',x=x0;for(let i=0;i<n;i++){const w=74+r()*54,h=hmin+r()*(hmax-hmin);o+=`<rect x="${f(x)}" y="${f(base-h)}" width="${f(w)}" height="${f(h)}" fill="${col}"/>`;if(lit)for(let yy=base-h+18;yy<base-16;yy+=24)for(let xx=x+10;xx<x+w-14;xx+=19)if(r()<.36)o+=`<rect x="${f(xx)}" y="${f(yy)}" width="8" height="12" rx="1" fill="#ffd27a" opacity="${(.4+r()*.55).toFixed(2)}"/>`;x+=w+10+r()*30}return o};
+ s+=tw(-30,13,p.far,200,360,720,false)+tw(-10,12,p.near,260,520,800,true);
+ s+=`<rect y="790" width="${W}" height="110" fill="${p.near}"/>`;
+ if(p.lamp){s+=`<path d="M0 90 Q400 190 800 110 T1600 130" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="3"/>`;for(let i=0;i<14;i++){const x=60+i*115,y=95+Math.sin(i*.55)*38+i*2.4,c=p.lamp[i%3];s+=`<g class="sway" style="animation-delay:${(i*.3).toFixed(1)}s"><line x1="${x}" y1="${f(y-6)}" x2="${x}" y2="${f(y+22)}" stroke="#000" stroke-opacity=".4"/><circle cx="${x}" cy="${f(y+40)}" r="30" fill="${c}" opacity=".28"/><ellipse cx="${x}" cy="${f(y+40)}" rx="14" ry="18" fill="${c}"/></g>`}}
+ if(kind==='garden'||kind==='yoga'||kind==='sports')for(let i=0;i<9;i++){const x=40+i*190+r()*60,h=90+r()*80;s+=`<g class="sway" style="animation-delay:${(r()*3).toFixed(1)}s"><rect x="${f(x-6)}" y="${f(800-h)}" width="12" height="${f(h)}" fill="#07201c"/><circle cx="${f(x)}" cy="${f(800-h-34)}" r="${f(46+r()*20)}" fill="${i%2?'#1d6b4f':'#2f8a5f'}"/><circle cx="${f(x+28)}" cy="${f(800-h-10)}" r="40" fill="#1d6b4f"/></g>`}
+ if(kind==='sports'){s+=`<path d="M0 840 L1600 840 L1600 900 L0 900Z" fill="#1f7a4a"/>`;for(let i=0;i<8;i++)s+=`<path d="M${i*200} 840 L${i*200+100} 840 L${i*200+60} 900 L${i*200-40} 900Z" fill="#2a9158" opacity=".7"/>`;s+=`<circle cx="${f(sx-120)}" cy="${f(sy+170)}" r="22" fill="#fff"/><path d="M${f(sx-420)} 640 Q${f(sx-250)} 360 ${f(sx-120)} ${f(sy+170)}" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="3" stroke-dasharray="10 12"/>`}
+ if(kind==='kids')for(let i=0;i<8;i++){const x=120+i*190+r()*50,y=560+r()*120,c=p.lamp[i%3];s+=`<g class="sway" style="animation-delay:${(r()*3).toFixed(1)}s"><ellipse cx="${f(x)}" cy="${f(y)}" rx="34" ry="42" fill="${c}"/><path d="M${f(x)} ${f(y+42)} q-8 60 6 110" fill="none" stroke="#fff" stroke-opacity=".6"/></g>`}
+ for(let i=0;i<16;i++){const x=i*105+r()*40;s+=`<circle cx="${f(x)}" cy="812" r="${f(24+r()*20)}" fill="${p.near}"/>`}
+ return s+'</svg>';
+}
+const cover=e=>e.cover?`<img class="art" src="${e.cover}" alt="">`:scene(e.scene,hashStr(e.id));
+
+/* ========== store ========== */
+const KEY='qs_data_v1',SKEY='qs_session_v1',TKEY='qs_theme';
+let DB=null,SES=null;
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}};
+function save(){if(!lsSet(KEY,JSON.stringify(DB)))toast('Browser storage is full or blocked. Changes will be lost on reload.')}
+function loadDB(){try{const r=lsGet(KEY);DB=r?JSON.parse(r):null}catch(e){DB=null}try{SES=JSON.parse(lsGet(SKEY)||'null')}catch(e){SES=null}}
+function setSes(s){SES=s;lsSet(SKEY,JSON.stringify(s))}
+const me=()=>!SES?null:SES.k==='admin'?{id:'admin',name:'Society Admin',role:'admin',status:'approved'}:DB.users.find(u=>u.id===SES.id)||null;
+const isAdmin=()=>SES?.k==='admin';
+const flatKey=u=>u.tower+'-'+u.flat;
+function notify(to,text,link){DB.notifs.unshift({id:uid('n'),to,text,link:link||'',at:Date.now(),read:[]});DB.notifs=DB.notifs.slice(0,200)}
+function logAct(t){DB.log.unshift({t,at:Date.now()});DB.log=DB.log.slice(0,60)}
+const myNotifs=()=>{const m=me();return m?DB.notifs.filter(n=>isAdmin()?(n.to==='admin'||n.to==='all'):(n.to===m.id||n.to==='all')):[]};
+const unreadN=()=>{const m=me();return myNotifs().filter(n=>!n.read.includes(m.id)).length};
+
+/* money */
+const chargeTotal=()=>DB.settings.charges.reduce((a,c)=>a+Number(c.amt||0),0);
+function lateFee(b){if(b.status==='paid')return b.lateFee||0;return daysTo(b.dueDate)<0?Math.round(b.amount*DB.settings.latePct/100):0}
+const billTotal=b=>b.amount+lateFee(b);
+const billsOf=fk=>DB.bills.filter(b=>b.flat===fk).sort((a,b)=>b.month.localeCompare(a.month));
+const unpaidOf=fk=>billsOf(fk).filter(b=>b.status!=='paid');
+function collection(m){const bs=DB.bills.filter(b=>b.month===m),paid=bs.filter(b=>b.status==='paid');return{total:bs.length,paid:paid.length,ver:bs.filter(b=>b.status==='verifying').length,billed:bs.reduce((a,b)=>a+b.amount,0),got:paid.reduce((a,b)=>a+billTotal(b),0),pct:bs.length?Math.round(paid.length/bs.length*100):0}}
+const approvedFlats=()=>{const m=new Map();DB.users.filter(u=>u.status==='approved').forEach(u=>{const k=flatKey(u);if(!m.has(k)||u.type==='Owner')m.set(k,u)});return[...m.values()]};
+function genBills(month){let n=0;approvedFlats().forEach(u=>{const fk=flatKey(u);if(DB.bills.some(b=>b.flat===fk&&b.month===month))return;const[y,mm]=month.split('-').map(Number);DB.bills.push({id:uid('b'),flat:fk,month,amount:chargeTotal(),items:DB.settings.charges.map(c=>({...c})),dueDate:new Date(y,mm-1,DB.settings.dueDay,23,59).toISOString(),status:'due'});n++});return n}
+function ledger(n=6){const out=[];for(let i=n-1;i>=0;i--){const k=mshift(mkey(),-i);let inc=0,exp=0;DB.bills.filter(b=>b.status==='paid'&&(b.paidOn?mkey(D(b.paidOn)):b.month)===k).forEach(b=>inc+=billTotal(b));DB.entries.filter(e=>mkey(D(e.date))===k).forEach(e=>e.type==='income'?inc+=e.amount:exp+=e.amount);out.push({k,inc,exp})}return out}
+
+/* ========== forecast ========== */
+const KIND={event:['Event','var(--accent)'],maintenance:['Works','var(--info)'],due:['Due','var(--bad)'],meeting:['Meeting','var(--brand)'],booking:['Booking','var(--good)']};
+function forecastItems(from=sod(new Date()),to=new Date(+from+31*DAY),opts={}){
+ const out=[],inR=d=>{const t=+D(d);return t>=+from&&t<+to};
+ DB.events.forEach(e=>{if(inR(e.date))out.push({at:e.date,kind:e.category==='Meeting'?'meeting':'event',title:e.title,sub:e.venue,link:'events',id:e.id})});
+ DB.schedule.forEach(s=>{if(inR(s.date))out.push({at:s.date,kind:s.kind||'maintenance',title:s.title,sub:s.note,link:'forecast',id:s.id})});
+ const m=me();
+ if(m&&!isAdmin()&&!opts.publicOnly){unpaidOf(flatKey(m)).forEach(b=>{if(inR(b.dueDate))out.push({at:b.dueDate,kind:'due',title:'Maintenance due '+mlabel(b.month),sub:inr(billTotal(b)),link:'maintenance'})});
+  DB.bookings.filter(b=>b.userId===m.id&&b.status!=='rejected'&&inR(b.date)).forEach(b=>out.push({at:b.date,kind:'booking',title:(DB.amenities.find(a=>a.id===b.amenityId)||{}).name+' booking',sub:b.slot,link:'amenities'}))}
+ if(isAdmin()){DB.bills.length&&[mkey(),mshift(mkey(),1)].forEach(k=>{const[y,mm]=k.split('-').map(Number),d=new Date(y,mm-1,DB.settings.dueDay,23,59);if(inR(d))out.push({at:d,kind:'due',title:'Maintenance due date '+mlabel(k),sub:'Collected '+collection(k).pct+'%',link:'billing'})})}
+ return out.sort((a,b)=>D(a.at)-D(b.at));
+}
+
+/* ========== seed (demo data) ========== */
+async function seed(){
+ const r=rng(42),ph=await sha('resident123'),ah=await sha('admin123'),now=Date.now();
+ const at=(d,h,mi=0)=>{const x=new Date();x.setDate(x.getDate()+d);x.setHours(h,mi,0,0);return x.toISOString()};
+ const FN=['Aarav','Priya','Sanjay','Meenakshi','Farhan','Ananya','Vikram','Sneha','Arjun','Kavya','Rohit','Divya','Karthik','Nisha','Manish','Pooja','Imran','Tara','Gaurav','Lakshmi','Deepak','Rina','Suresh','Anita','Harsh','Isha','Naveen','Shalini','Pranav','Mitali'];
+ const LN=['Nair','Kulkarni','Iyer','Qureshi','Sharma','Mehta','Rao','Das','Banerjee','Gupta','Verma','Reddy','Singh','Joshi','Menon','Kapoor','Bose','Pillai','Chopra','Sen'];
+ const users=[];let tIdx=0;const used=new Set(['A101']);
+ const mk=(i,name,extra={})=>{let t,fl;do{t='ABCD'[tIdx++%4];fl=(1+Math.floor(r()*10))+'0'+(1+Math.floor(r()*4))}while(used.has(t+fl));used.add(t+fl);
+  return{id:'u'+i,name,tower:t,flat:fl,mobile:'9876500'+String(i+1).padStart(3,'0'),email:name.toLowerCase().replace(/[^a-z]/g,'.')+'@example.com',type:r()<.82?'Owner':'Tenant',passHash:ph,status:'approved',role:'resident',title:'',members:1+Math.floor(r()*4),vehicle:r()<.7?'WB 0'+Math.floor(r()*9)+' '+String.fromCharCode(65+Math.floor(r()*20))+' '+(1000+Math.floor(r()*8999)):'',showPhone:r()<.5,created:now-(200+r()*600)*DAY,...extra}};
+ for(let i=0;i<44;i++){const name=i===0?'Priya Nair':FN[(i*7)%FN.length]+' '+LN[(i*3+i%5)%LN.length];users.push(mk(i,name))}
+ users[0].tower='A';users[0].flat='101';users[0].type='Owner';users[0].showPhone=true;
+ users[1].role='committee';users[1].title='President';users[1].name='Sanjay Kulkarni';users[2].role='committee';users[2].title='Secretary';users[2].name='Meenakshi Iyer';users[3].role='committee';users[3].title='Treasurer';users[3].name='Farhan Qureshi';
+ users.push({id:'u90',name:'Neha Bansal',tower:'B',flat:'704',mobile:'9876500901',email:'neha.bansal@example.com',type:'Owner',passHash:ph,status:'pending',role:'resident',title:'',members:3,vehicle:'',showPhone:false,ref:'Allotment letter 1187',created:now-1*DAY});
+ users.push({id:'u91',name:'Imran Sheikh',tower:'C',flat:'305',mobile:'9876500902',email:'imran.sheikh@example.com',type:'Tenant',passHash:ph,status:'pending',role:'resident',title:'',members:2,vehicle:'',showPhone:false,ref:'Rent agreement 11 months',created:now-3*3600e3});
+ const settings={name:'Queenstown Society',tagline:'Home, together.',address:'Queenstown Society, Main Gate Road',upi:'queenstown.society@upi',upiName:'Queenstown Society',charges:[{label:'Maintenance charges',amt:2200},{label:'Sinking fund',amt:300},{label:'Water and common electricity',amt:450},{label:'Security and housekeeping',amt:350}],dueDay:15,latePct:2,adRates:{banner:500,classified:0},adminUser:'admin',adminHash:ah,demo:true};
+ const ev=(title,scene,d,h,venue,cat,fee,desc,o={})=>({id:uid('e'),title,scene,date:at(d,h),venue,category:cat,fee,desc,featured:true,rsvps:{},cover:null,photos:[],capacity:0,...o});
+ const events=[
+  ev('Yoga and Wellness Morning','yoga',3,6,'Central Lawn','Wellness',0,'A guided one hour yoga and breathing session for all ages, led by a certified instructor. Bring your own mat.'),
+  ev('Winter Sports Fest','sports',9,8,'Sports Court and Cricket Pitch','Sports',100,'Badminton, box cricket, table tennis and a kids relay. Team entries close two days before the event. Fee covers refreshments and trophies.'),
+  ev('Annual Day Cultural Evening','night',16,18,'Amphitheatre','Cultural',0,'Dance, music and skits by residents of all ages. Rehearsal slots open on the notice board. Dinner follows the show.'),
+  ev('Annual General Meeting 2026','meeting',25,11,'Clubhouse Hall','Meeting',0,'Presentation of audited accounts, budget for next year, committee election and open floor. Every flat gets one vote.',{featured:false}),
+  ev('Christmas Carnival and Kids Fair','kids',45,16,'Central Lawn','Festival',150,'Stalls, games, a puppet show, Santa visit and a food court run by residents. Stall booking is open in Marketplace.'),
+  ev('New Year Gala Night','festival',51,20,'Amphitheatre and Clubhouse','Festival',600,'Live band, dinner buffet and midnight countdown with a lights show. Family passes are limited.',{capacity:300}),
+  ev('Diwali Mela and Rangoli Night','festival',-2,18,'Central Lawn','Festival',0,'Thank you for a bright evening. Rangoli winners and the best decorated tower were announced on stage.',{rsvps:{}}),
+  ev('Durga Puja Celebration','festival',-23,17,'Community Hall','Festival',0,'Four days of aarti, dhunuchi dance, bhog and cultural programmes.',{featured:false})
+ ];
+ users.filter(u=>u.status==='approved').forEach((u,i)=>events.forEach(e=>{if(r()<.35)e.rsvps[u.id]=r()<.8?'yes':'maybe'}));
+ const mnow=mkey(),months=[0,1,2,3,4,5].map(i=>mshift(mnow,-i)),bills=[];
+ users.filter(u=>u.status==='approved').forEach(u=>{const fk=flatKey(u);months.forEach((m,mi)=>{const[y,mm]=m.split('-').map(Number),due=new Date(y,mm-1,settings.dueDay,23,59);const b={id:uid('b'),flat:fk,month:m,amount:3300,items:settings.charges.map(c=>({...c})),dueDate:due.toISOString(),status:'paid'};
+  if(mi===0){const x=r();b.status=u.id==='u0'?'due':x<.5?'paid':x<.58?'verifying':'due'}
+  if(b.status==='paid'){const pd=new Date(due);pd.setDate(pd.getDate()-Math.floor(r()*8));b.paidOn=pd.toISOString();b.method=r()<.7?'UPI':'Bank transfer';b.ref=b.method==='UPI'?'UPI'+Math.floor(1e11+r()*9e11):'NEFT'+Math.floor(1e8+r()*9e8);b.lateFee=0}
+  if(b.status==='verifying'){b.method='UPI';b.ref='UPI'+Math.floor(1e11+r()*9e11);b.submittedOn=new Date().toISOString()}
+  bills.push(b)})});
+ const notices=[
+  {t:'Water tank cleaning on '+fdate(at(4,0),{weekday:'long',day:'numeric',month:'long'}),b:'The overhead tanks of all four towers will be cleaned between 9 am and 3 pm. Water supply will be interrupted. Please store water for essential use in advance. The work is done by the approved contractor under committee supervision.',c:'Maintenance',p:'high',pin:true,d:-1},
+  {t:'Annual General Meeting notice',b:'The AGM is on '+fdate(at(25,0),{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' at 11 am in the Clubhouse Hall. Agenda: audited accounts, budget 2027, election of committee members and any other matter with the Chair permission. Proxy forms are available in Documents.',c:'Finance',p:'high',pin:true,d:-3},
+  {t:'Visitor pre-approval is now mandatory',b:'From this month, all expected visitors and delivery partners should be pre-approved in the Visitors section. Security will ask for the six digit code at the gate. Unexpected visitors are allowed only after a call to the flat.',c:'Security',p:'normal',pin:false,d:-6},
+  {t:'Lift servicing for Tower B',b:'One lift in Tower B will be out of service from 10 am to 1 pm for the quarterly AMC service. The second lift will be running as usual.',c:'Maintenance',p:'normal',pin:false,d:-8},
+  {t:'Festive decoration guidelines',b:'Please do not use open flames or diyas in corridors and staircases. Electric lights are permitted on balconies until 11 pm. Fire safety equipment must never be blocked.',c:'Emergency',p:'high',pin:false,d:-10},
+  {t:'Parking sticker renewal',b:'Residents with expired parking stickers should apply at the society office with the vehicle RC copy. Vehicles without a valid sticker will not be allowed after the 30th.',c:'General',p:'normal',pin:false,d:-14},
+  {t:'Clubhouse gym timings changed',b:'The gym is now open from 5:30 am to 10 pm. Children below 16 are allowed only with a guardian.',c:'General',p:'normal',pin:false,d:-20}
+ ].map(n=>({id:uid('n'),title:n.t,body:n.b,category:n.c,priority:n.p,pinned:n.pin,date:at(n.d,10),author:'Society Office',readBy:users.filter(u=>r()<.4).map(u=>u.id).filter(x=>x!=='u0')}));
+ const schedule=[
+  {id:uid('s'),title:'Water tank cleaning',date:at(4,9),kind:'maintenance',note:'Supply off 9 am to 3 pm'},
+  {id:uid('s'),title:'Tower B lift servicing',date:at(6,10),kind:'maintenance',note:'One lift out of service'},
+  {id:uid('s'),title:'DG set load test',date:at(8,11),kind:'maintenance',note:'Short power cut, 20 minutes'},
+  {id:uid('s'),title:'Pest control, all towers',date:at(12,10),kind:'maintenance',note:'Keep kitchen cabinets open'},
+  {id:uid('s'),title:'Garden redevelopment begins',date:at(14,8),kind:'maintenance',note:'North lawn closed for 10 days'},
+  {id:uid('s'),title:'Fire drill',date:at(19,17),kind:'maintenance',note:'All residents to assemble at Gate 2'},
+  {id:uid('s'),title:'Committee meeting',date:at(7,19),kind:'meeting',note:'Clubhouse office'}
+ ];
+ const amenities=[
+  {id:'am1',name:'Banquet Hall',rate:3000,unit:'per slot',capacity:120,hours:'8 am to 11 pm',desc:'Air conditioned hall with a pantry and stage. Cleaning charges included.',scene:'festival'},
+  {id:'am2',name:'Clubhouse Lounge',rate:800,unit:'per slot',capacity:30,hours:'8 am to 10 pm',desc:'Ideal for birthday parties and small gatherings.',scene:'meeting'},
+  {id:'am3',name:'Tennis Court',rate:150,unit:'per hour',capacity:4,hours:'6 am to 9 pm',desc:'Floodlit synthetic court. Racquets available at the desk.',scene:'sports'},
+  {id:'am4',name:'Swimming Pool',rate:0,unit:'free for residents',capacity:40,hours:'6 am to 9 am, 4 pm to 8 pm',desc:'Swim cap compulsory. Lifeguard on duty. Guests need a pass.',scene:'yoga'},
+  {id:'am5',name:'Guest Room',rate:1200,unit:'per night',capacity:3,hours:'Check-in 12 pm',desc:'Two guest rooms for visiting relatives. Book at least two days ahead.',scene:'garden'}
+ ];
+ const bookings=[{id:uid('k'),amenityId:'am3',userId:'u0',date:at(2,0),slot:'Evening',purpose:'Practice with friends',status:'approved',at:now-DAY},{id:uid('k'),amenityId:'am1',userId:'u5',date:at(18,0),slot:'Night',purpose:'Anniversary dinner',status:'pending',at:now-3600e3}];
+ const complaints=[
+  {id:uid('c'),userId:'u0',category:'Plumbing',title:'Water leakage from bathroom ceiling',body:'Seepage in the common bathroom ceiling since two days. It seems to come from the flat above.',priority:'normal',status:'in-progress',assignee:'Mr. Biswas, plumber',created:now-2*DAY,comments:[{by:'Society Office',text:'Plumber will visit tomorrow morning between 10 and 12.',at:now-DAY,admin:true}]},
+  {id:uid('c'),userId:'u7',category:'Lift',title:'Tower C lift 2 making noise',body:'Grinding sound between floors 5 and 6.',priority:'high',status:'open',assignee:'',created:now-5*3600e3,comments:[]},
+  {id:uid('c'),userId:'u9',category:'Housekeeping',title:'Garbage not collected on Sunday',body:'Tower A, third floor landing.',priority:'normal',status:'resolved',assignee:'Housekeeping',created:now-6*DAY,comments:[{by:'Society Office',text:'Staff briefed. Collection has resumed.',at:now-5*DAY,admin:true}]},
+  {id:uid('c'),userId:'u12',category:'Parking',title:'Unknown car in visitor slot for 3 days',body:'Silver hatchback near Tower D gate.',priority:'normal',status:'open',assignee:'',created:now-DAY,comments:[]}
+ ];
+ const ads=[
+  {id:uid('a'),userId:'u4',business:'Sharma Home Tuitions',title:'Maths and Science for classes 6 to 10',body:'Small batches of six. First week free. Located in Tower B.',category:'Tuition',contact:'98765 00005',price:'₹1,800 per month',type:'banner',weeks:4,fee:2000,feePaid:true,status:'live',hue:'#E39A1B',created:now-9*DAY},
+  {id:uid('a'),userId:'u8',business:'FreshBite Cloud Kitchen',title:'Home style tiffin, lunch and dinner',body:'Weekly menu on WhatsApp. Free delivery inside the society.',category:'Food',contact:'98765 00009',price:'From ₹120 per meal',type:'banner',weeks:2,fee:1000,feePaid:true,status:'live',hue:'#2FA39B',created:now-5*DAY},
+  {id:uid('a'),userId:'u14',business:'GreenLeaf Pharmacy',title:'Free home delivery for medicines',body:'Order before 6 pm for same day delivery. Senior citizens get 10 percent off.',category:'Health',contact:'98765 00015',price:'',type:'banner',weeks:4,fee:2000,feePaid:true,status:'live',hue:'#2B6CB0',created:now-3*DAY},
+  {id:uid('a'),userId:'u6',business:'',title:'Dining table, 6 seater, teak',body:'Two years old, very good condition. Pickup from Tower D.',category:'Buy and Sell',contact:'98765 00007',price:'₹14,000',type:'classified',weeks:0,fee:0,feePaid:true,status:'live',hue:'#C77A0A',created:now-2*DAY},
+  {id:uid('a'),userId:'u10',business:'',title:'2 BHK for rent in Tower C, 9th floor',body:'Semi furnished, east facing, available from next month.',category:'Real Estate',contact:'98765 00011',price:'₹22,000 per month',type:'classified',weeks:0,fee:0,feePaid:true,status:'live',hue:'#6B4FBB',created:now-DAY},
+  {id:uid('a'),userId:'u16',business:'Glow Salon and Spa',title:'Festive offer on bridal and party makeup',body:'Home visits available inside the society.',category:'Beauty',contact:'98765 00017',price:'',type:'banner',weeks:1,fee:500,feePaid:false,status:'pending',hue:'#C23B3B',created:now-4*3600e3}
+ ];
+ const polls=[
+  {id:uid('p'),question:'Should we install solar panels on the Tower roofs?',options:[{t:'Yes, go ahead'},{t:'Yes, but after the AGM discussion'},{t:'No'}],votes:{},closes:at(12,23),status:'open',by:'Committee'},
+  {id:uid('p'),question:'Preferred time for the weekly yoga class',options:[{t:'5:30 am'},{t:'6:30 am'},{t:'7:30 am'}],votes:{},closes:at(-5,23),status:'closed',by:'Committee'}
+ ];
+ polls.forEach(p=>users.filter(u=>u.status==='approved'&&u.id!=='u0').forEach(u=>{if(r()<.55)p.votes[flatKey(u)]=Math.floor(r()*p.options.length)}));
+ const docs=[
+  {id:uid('d'),title:'Society Bye-laws',type:'Bye-laws',date:at(-400,0),desc:'Registered bye-laws including rules for renovation, pets, parking and common areas.',link:''},
+  {id:uid('d'),title:'AGM 2025 Minutes',type:'Minutes',date:at(-330,0),desc:'Resolutions passed in the last annual general meeting.',link:''},
+  {id:uid('d'),title:'Audited Accounts 2025 to 2026',type:'Audit',date:at(-60,0),desc:'Statement of income and expenditure, balance sheet and auditor remarks.',link:''},
+  {id:uid('d'),title:'Proxy form for AGM',type:'Forms',date:at(-3,0),desc:'Fill and hand over to the office before the meeting.',link:''},
+  {id:uid('d'),title:'Renovation permission form',type:'Forms',date:at(-120,0),desc:'Needed before starting any interior work. Timings are 9 am to 5 pm on weekdays.',link:''},
+  {id:uid('d'),title:'Fire safety and evacuation plan',type:'Circulars',date:at(-90,0),desc:'Assembly points, extinguisher locations and emergency contacts for every tower.',link:''}
+ ];
+ const contacts=[
+  {id:uid('t'),name:'Police',role:'Emergency',phone:'100',cat:'Emergency'},{id:uid('t'),name:'Fire brigade',role:'Emergency',phone:'101',cat:'Emergency'},{id:uid('t'),name:'Ambulance',role:'Emergency',phone:'102',cat:'Emergency'},{id:uid('t'),name:'Women helpline',role:'Emergency',phone:'1091',cat:'Emergency'},
+  {id:uid('t'),name:'Main Gate Security',role:'24 x 7 desk (demo number)',phone:'9876543210',cat:'Society'},{id:uid('t'),name:'Society Office',role:'10 am to 6 pm (demo number)',phone:'9876543211',cat:'Society'},
+  {id:uid('t'),name:'Mr. Biswas',role:'Plumber (demo number)',phone:'9876543212',cat:'Services'},{id:uid('t'),name:'Rafiq Electricals',role:'Electrician (demo number)',phone:'9876543213',cat:'Services'},{id:uid('t'),name:'Lift Care Service',role:'Lift AMC (demo number)',phone:'9876543214',cat:'Services'},{id:uid('t'),name:'CleanPro',role:'Housekeeping agency (demo number)',phone:'9876543215',cat:'Services'}
+ ];
+ const entries=[];
+ months.forEach((m,i)=>{const d=k=>new Date(+m.split('-')[0],+m.split('-')[1]-1,k).toISOString();
+  [['Salaries','Security and housekeeping staff',62000+Math.floor(r()*2000)],['Electricity','Common area electricity',26000+Math.floor(r()*6000)],['Lift AMC','Quarterly lift maintenance',9500],['Water','Tanker and treatment',10500+Math.floor(r()*2500)],['Garden','Gardener and supplies',4500],['Repairs','Plumbing and electrical repairs',3000+Math.floor(r()*9000)]].forEach(([c,t,a],j)=>entries.push({id:uid('x'),date:d(3+j*4),category:c,desc:t,amount:a,type:'expense'}));
+  entries.push({id:uid('x'),date:d(11),category:'Hall rent',desc:'Banquet hall bookings',amount:3000+Math.floor(r()*6000),type:'income'})});
+ const entriesDone=entries.filter(e=>+D(e.date)<=now);
+ return{v:1,settings,users,notices,events,bills,schedule,amenities,bookings,complaints,ads,polls,docs,contacts,entries:entriesDone,visitors:[{id:uid('v'),userId:'u0',name:'Ravi (electrician)',purpose:'Repair visit',date:at(1,0),code:'482913',status:'expected'}],notifs:[{id:uid('n'),to:'admin',text:'New registration request from Neha Bansal (B-704)',link:'members',at:now-DAY,read:[]},{id:uid('n'),to:'admin',text:'New registration request from Imran Sheikh (C-305)',link:'members',at:now-3600e3*3,read:[]}],log:[{t:'Demo data loaded',at:now}]};
+}
+/* ========== ui helpers ========== */
+const UI={q:'',cat:'all',tab:'',month:mkey(),auth:'login',sel:null,calM:mkey(),err:''};
+const FORMS={},ACT={};
+const chip=(t,c='')=>`<span class="chip ${c}">${t}</span>`;
+const STAT={paid:['Paid','good'],due:['Due','warn'],overdue:['Overdue','bad'],verifying:['Verifying','info'],open:['Open','warn'],'in-progress':['In progress','info'],resolved:['Resolved','good'],pending:['Pending','warn'],approved:['Approved','good'],rejected:['Rejected','bad'],live:['Live','good'],expired:['Expired','bad'],closed:['Closed',''],expected:['Expected','info'],entered:['Inside','good'],exited:['Left',''],yes:['Going','good'],maybe:['Maybe','warn']};
+const sChip=s=>{const[t,c]=STAT[s]||[s,''];return chip(t,c)};
+const head=(t,sub='',act='')=>`<div class="ph"><div><h2>${t}</h2>${sub?`<p>${sub}</p>`:''}</div><div class="ph-act">${act}</div></div>`;
+const empty=(i,t,s='',a='')=>`<div class="empty">${ic(i)}<b>${t}</b><span>${s}</span>${a}</div>`;
+const btn=(label,act,o={})=>`<button type="button" class="btn ${o.c||''} ${o.sm?'sm':''}" data-act="${act}" ${Object.entries(o.d||{}).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')} ${o.confirm?'data-confirm="1"':''}>${o.i?ic(o.i):''}${label}</button>`;
+const F={
+ t:(id,l,o={})=>`<label class="fld ${o.cls||''}" for="${id}"><span>${l}</span><input id="${id}" name="${id}" type="${o.type||'text'}" value="${esc(o.v??'')}" ${o.req?'required':''} ${o.ph?`placeholder="${esc(o.ph)}"`:''} ${o.attrs||''}>${o.hint?`<em class="hint">${o.hint}</em>`:''}</label>`,
+ a:(id,l,o={})=>`<label class="fld ${o.cls||''}" for="${id}"><span>${l}</span><textarea id="${id}" name="${id}" ${o.req?'required':''} ${o.ph?`placeholder="${esc(o.ph)}"`:''}>${esc(o.v??'')}</textarea></label>`,
+ s:(id,l,opts,o={})=>`<label class="fld ${o.cls||''}" for="${id}"><span>${l}</span><select id="${id}" name="${id}" ${o.req?'required':''}>${opts.map(x=>{const[v,t]=Array.isArray(x)?x:[x,x];return`<option value="${esc(v)}" ${String(v)===String(o.v)?'selected':''}>${esc(t)}</option>`}).join('')}</select></label>`,
+ c:(id,l,on)=>`<label class="chk full"><input type="checkbox" id="${id}" name="${id}" ${on?'checked':''}>${l}</label>`
+};
+const formWrap=(name,inner,submit='Save',extra='')=>`<form data-form="${name}" novalidate><div class="frm">${inner}</div><div class="err" id="ferr" role="alert"></div><div class="row" style="margin-top:16px;justify-content:flex-end">${extra}<button class="btn pri" type="submit">${submit}</button></div></form>`;
+function modal(title,body,o={}){const r=$('#modal-root');r.innerHTML=`<div class="scrim-m" data-act="close-modal"></div><div class="modal ${o.wide?'wide':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="mh"><div><h3>${title}</h3>${o.sub?`<small>${o.sub}</small>`:''}</div><button class="iconbtn x" data-act="close-modal" aria-label="Close">${ic('x')}</button></div>${body}</div>`;r.classList.add('open');document.body.classList.add('noscroll');if(!matchMedia('(max-width:640px)').matches)setTimeout(()=>r.querySelector('form input:not([type=checkbox]):not([type=file]),form select,form textarea')?.focus(),60)}
+function closeModal(){const r=$('#modal-root');r.classList.remove('open');r.innerHTML='';document.body.classList.remove('noscroll')}
+function toast(msg,icon='check'){const t=document.createElement('div');t.className='toast';t.innerHTML=ic(icon)+esc(msg);$('#toasts').appendChild(t);setTimeout(()=>t.classList.add('out'),2800);setTimeout(()=>t.remove(),3200)}
+function confetti(){const c=document.createElement('div');c.className='confetti';const cols=['#E39A1B','#2FA39B','#C23B3B','#2B6CB0','#F2B13A','#fff'];for(let i=0;i<60;i++){const e=document.createElement('i');e.style.cssText=`left:${Math.random()*100}%;background:${cols[i%6]};--x:${(Math.random()-.5)*260}px;--r:${Math.random()*720}deg;animation-delay:${Math.random()*.4}s;animation-duration:${1.4+Math.random()*1.2}s`;c.appendChild(e)}document.body.appendChild(c);setTimeout(()=>c.remove(),3200)}
+function copyText(t){const done=()=>toast('Copied');try{navigator.clipboard.writeText(t).then(done,()=>fallback())}catch(e){fallback()}function fallback(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){toast('Select the text and copy it manually','info')}a.remove()}}
+
+/* ========== nav ========== */
+const NAV=[['home','Home','home'],['notices','Notices','notice'],['maintenance','Maintenance','wallet'],['events','Events','calendar'],['forecast','Forecast','sunrise'],['helpdesk','Helpdesk','chat'],['amenities','Amenities','key'],['visitors','Visitors','visitor'],['marketplace','Marketplace','tag'],['polls','Polls','vote'],['gallery','Gallery','image'],['accounts','Accounts','chart'],['documents','Documents','book'],['directory','Directory','users']];
+const ANAV=[['admin','Dashboard','shield'],['members','Members','users'],['billing','Billing','wallet'],['setup','Society setup','gear']];
+const ROUTES={};
+const routeOf=()=>{let h=location.hash.slice(1)||(isAdmin()?'admin':'home');if(isAdmin()&&h==='maintenance')h='billing';if(!isAdmin()&&ANAV.some(a=>a[0]===h))h='home';if(h!=='profile'&&!NAV.some(n=>n[0]===h)&&!ANAV.some(n=>n[0]===h))h='home';return h};
+const pendingReviews=()=>DB.ads.filter(a=>a.status==='pending').length+DB.bookings.filter(b=>b.status==='pending').length+DB.bills.filter(b=>b.status==='verifying').length;
+function navBadge(id){if(!isAdmin())return 0;return id==='members'?DB.users.filter(u=>u.status==='pending').length:id==='billing'?DB.bills.filter(b=>b.status==='verifying').length:id==='helpdesk'?DB.complaints.filter(c=>c.status==='open').length:id==='amenities'?DB.bookings.filter(b=>b.status==='pending').length:id==='marketplace'?DB.ads.filter(a=>a.status==='pending').length:0}
+const logo=`<svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#E39A1B"/><path d="M9 31V19l5-3v15M16 31V12l6-4v23M24 31V17l7 3v11" fill="#0B3B3A"/><rect x="18" y="14" width="2" height="2" fill="#E39A1B"/><rect x="18" y="19" width="2" height="2" fill="#E39A1B"/><rect x="18" y="24" width="2" height="2" fill="#E39A1B"/></svg>`;
+const brand=()=>`<a class="brand" href="#${isAdmin()?'admin':'home'}">${logo}<div><b>${esc(DB.settings.name.split(' ')[0])}</b><span>${esc(DB.settings.name.split(' ').slice(1).join(' ')||'Society')}</span></div></a>`;
+
+function shell(route,inner){
+ const m=me(),t=NAV.concat(ANAV,[['profile','My profile','user']]).find(n=>n[0]===route)?.[1]||'';
+ const link=n=>`<a href="#${n[0]}" class="${route===n[0]?'on':''}">${ic(n[2])}${n[1]}${navBadge(n[0])?`<span class="badge-n">${navBadge(n[0])}</span>`:''}</a>`;
+ const tabs=isAdmin()?[['admin','Admin','shield'],['members','Members','users'],['billing','Billing','wallet'],['notices','Notices','notice']]:[['home','Home','home'],['notices','Notices','notice'],['maintenance','Pay','wallet'],['events','Events','calendar']];
+ const inTabs=tabs.some(x=>x[0]===route);
+ const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);
+ return`<div class="shell"><aside class="side">${brand()}<nav class="nav" aria-label="Main">${isAdmin()?`<h6>Admin</h6>${ANAV.map(link).join('')}`:''}<h6>${isAdmin()?'Society':'Menu'}</h6>${NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')).map(link).join('')}</nav><a class="me" href="#profile"><span class="av">${initials(m.name)}</span><div><b>${esc(m.name)}</b><small>${isAdmin()?'Administrator':esc(flatKey(m))+' · '+esc(m.title||m.type)}</small></div></a></aside>
+ <div class="main"><header class="top">${brand()}<div class="ttl">${t}</div><div class="sp"></div><button class="iconbtn" data-act="bell" aria-label="Notifications">${ic('bell')}${unreadN()?`<span class="dot">${unreadN()}</span>`:''}</button><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic(dark?'sun':'moon')}</button><a class="iconbtn" href="#profile" aria-label="Profile"><span class="av" style="width:30px;height:30px;font-size:12px">${initials(m.name)}</span></a></header>
+ <div class="wrap"><div class="view enter" id="view">${inner}</div></div></div>
+ <nav class="tabbar" aria-label="Primary">${tabs.map(x=>`<a href="#${x[0]}" class="${route===x[0]?'on':''}">${ic(x[2])}${x[1]}</a>`).join('')}<button data-act="more" class="${!inTabs?'on':''}">${ic('more')}More</button></nav></div>`;
+}
+ACT.more=()=>{const items=(isAdmin()?ANAV.slice(0,0):[]).concat(NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')),isAdmin()?[ANAV[3]]:[],[['profile','Profile','user']]);modal('Menu',`<div class="sheet-grid">${items.map(n=>`<a href="#${n[0]}" data-act="close-modal">${ic(n[2])}${n[1]}</a>`).join('')}<button data-act="logout">${ic('logout')}Sign out</button></div>`)};
+
+/* ========== hero ========== */
+function heroSlides(){const now=Date.now(),f=DB.events.filter(e=>e.featured);return[...f.filter(e=>+D(e.date)>=now-3*3600e3).sort((a,b)=>D(a.date)-D(b.date)).slice(0,4).map(e=>({e,tag:'Upcoming'})),...f.filter(e=>+D(e.date)<now-3*3600e3).sort((a,b)=>D(b.date)-D(a.date)).slice(0,1).map(e=>({e,tag:'Throwback'}))]}
+function hero(pub=false){
+ const sl=heroSlides();if(!sl.length)return'';
+ const items=forecastItems(sod(new Date()),new Date(Date.now()+30*DAY),{publicOnly:pub}).filter(x=>!pub||x.kind==='event'||x.kind==='meeting').slice(0,5);
+ return`<section class="hero" aria-label="Society highlights" data-hero><div class="stage">${sl.map((s,i)=>{const e=s.e,up=s.tag==='Upcoming';return`<article class="slide ${i?'':'on'}" data-i="${i}"><div class="art-wrap">${cover(e)}</div><div class="scrim"></div><div class="slide-body"><span class="tag ${up?'':'thr'}">${up?'Upcoming · '+rel(e.date):'Throwback'}</span><h1>${esc(e.title)}</h1><div class="meta"><span>${ic('calendar')}${fwd(e.date)}, ${ftime(e.date)}</span><span>${ic('mappin')}${esc(e.venue)}</span></div>${up?`<div class="cd" data-cd="${e.date}"></div>`:`<p class="meta">${esc(e.desc)}</p>`}${pub?'':`<div class="row wrap-r">${up?btn(e.rsvps[me()?.id]?'You are '+(e.rsvps[me()?.id]==='yes'?'going':'interested'):'RSVP now','event-open',{c:'acc',d:{id:e.id}}):btn('See photos','nav',{c:'acc',d:{to:'gallery'}})}</div>`}</div></article>`}).join('')}
+ <div class="hero-ctl"><button class="arrow" data-act="hero-prev" aria-label="Previous">${ic('cl')}</button>${sl.map((_,i)=>`<button class="dotb ${i?'':'on'}" data-act="hero-go" data-i="${i}" aria-label="Slide ${i+1}"></button>`).join('')}<button class="arrow" data-act="hero-next" aria-label="Next">${ic('cr')}</button></div></div>
+ <aside class="forecast" aria-label="Coming up"><h4><span class="live"></span>Coming up · next 30 days</h4>${items.length?items.map(x=>`<a class="fi" href="${pub?'#':'#'+x.link}" ${pub?'data-act="noop"':''}><div class="d"><b>${D(x.at).getDate()}</b><small>${fdate(x.at,{month:'short'})}</small></div><div class="t">${esc(x.title)}<small>${rel(x.at)}${x.sub?' · '+esc(x.sub):''}</small></div><span class="k" style="background:${KIND[x.kind][1]}"></span></a>`).join(''):'<small style="color:var(--on-art-2)">Nothing scheduled in the next 30 days.</small>'}</aside></section>`;
+}
+let heroT=null,heroI=0;
+function heroGo(i){const h=$('[data-hero]');if(!h)return;const sl=$$('.slide',h),ds=$$('.dotb',h);heroI=(i+sl.length)%sl.length;sl.forEach((s,k)=>s.classList.toggle('on',k===heroI));ds.forEach((d,k)=>{d.classList.remove('on');void d.offsetWidth;d.classList.toggle('on',k===heroI)});heroSched()}
+function heroSched(){clearTimeout(heroT);const h=$('[data-hero]');if(!h||h.classList.contains('paused'))return;heroT=setTimeout(()=>heroGo(heroI+1),6000)}
+function initHero(){clearTimeout(heroT);heroI=0;const h=$('[data-hero]');if(!h)return;h.onmouseenter=()=>{h.classList.add('paused');clearTimeout(heroT)};h.onmouseleave=()=>{h.classList.remove('paused');heroGo(heroI)};let x0=null;h.ontouchstart=e=>{x0=e.touches[0].clientX};h.ontouchend=e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)heroGo(heroI+(dx<0?1:-1));x0=null};heroSched()}
+ACT['hero-go']=d=>heroGo(+d.i);ACT['hero-next']=()=>heroGo(heroI+1);ACT['hero-prev']=()=>heroGo(heroI-1);
+function tickCd(){$$('[data-cd]').forEach(el=>{let s=Math.max(0,Math.floor((+D(el.dataset.cd)-Date.now())/1000));const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60);el.innerHTML=[[d,'days'],[h,'hrs'],[m,'min'],[s%60,'sec']].map(([v,l])=>`<div><b>${String(v).padStart(2,'0')}</b><small>${l}</small></div>`).join('')})}
+setInterval(tickCd,1000);
+
+/* ========== render ========== */
+function countUp(){const red=matchMedia('(prefers-reduced-motion:reduce)').matches;$$('[data-count]').forEach(el=>{const to=+el.dataset.count,suf=el.dataset.suf||'',t0=performance.now();if(red||!to){el.textContent=to+suf;return}const step=t=>{const k=Math.min(1,(t-t0)/900),v=Math.round(to*(1-Math.pow(1-k,3)));el.textContent=v.toLocaleString('en-IN')+suf;if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)})}
+function render(nav=false){
+ if(!DB)return;const root=$('#app'),y=scrollY,ae=document.activeElement,aid=ae&&ae.id&&root.contains(ae)?ae.id:null,pos=aid&&ae.selectionStart!=null?ae.selectionStart:null;
+ const m=me();let html,route='';
+ if(!SES||!m){html=landing()}
+ else if(!isAdmin()&&m.status!=='approved'){html=waitScreen(m)}
+ else{route=routeOf();html=shell(route,(ROUTES[route]||ROUTES.home)())}
+ root.innerHTML=html;document.title=(route&&route!=='home'?($('.top .ttl')?.textContent+' · '):'')+DB.settings.name;
+ const v=$('#view');if(v&&!nav)v.classList.remove('enter');
+ if(!nav)scrollTo(0,y);else scrollTo(0,0);
+ if(aid){const el=document.getElementById(aid);if(el){el.focus();try{if(pos!=null)el.setSelectionRange(pos,pos)}catch(e){}}}
+ initHero();tickCd();countUp();
+}
+window.addEventListener('hashchange',()=>{UI.q='';UI.cat='all';UI.tab='';UI.sel=null;render(true)});
+
+/* ========== landing + wait ========== */
+function landing(){
+ const s=DB.settings,reg=UI.auth==='register';
+ const towers=['A','B','C','D'];
+ return`<div class="wrap" style="max-width:1160px;padding-bottom:60px"><div class="landing-top"><a class="brand" href="#">${logo}<div><b>${esc(s.name.split(' ')[0])}</b><span>${esc(s.name.split(' ').slice(1).join(' ')||'Society')}</span></div></a><div class="sp"></div><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic('moon')}</button></div>
+ <div class="view enter">${hero(true)}
+ <div class="split" style="align-items:start"><div class="stack"><h2 style="font-size:clamp(26px,4vw,38px)">${esc(s.tagline)} One place for everything at ${esc(s.name)}.</h2><p class="muted" style="max-width:56ch">Notices, maintenance payments, events, bookings, helpdesk and more. Residents register their flat and get access after the society admin approves the request.</p>
+ <div class="steps card flat"><div><span class="n">1</span><div><b>Register your flat</b><br><small>Name, tower, flat number and mobile.</small></div></div><div><span class="n">2</span><div><b>Admin verifies</b><br><small>The committee checks ownership or tenancy.</small></div></div><div><span class="n">3</span><div><b>Start using the app</b><br><small>Pay dues, read notices, book amenities.</small></div></div></div>
+ <div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Try admin <code>admin</code> / <code>admin123</code> or resident <code>9876500001</code> / <code>resident123</code>.</span></div></div>
+ <div class="card auth"><div class="tabs2" role="tablist"><button class="${reg?'':'on'}" data-act="auth-tab" data-t="login">Sign in</button><button class="${reg?'on':''}" data-act="auth-tab" data-t="register">Register flat</button></div>
+ ${reg?formWrap('register',F.t('r_name','Full name',{req:true,cls:'full',attrs:'autocomplete="name"'})+F.s('r_tower','Tower',towers.map(t=>[t,'Tower '+t]))+F.s('r_flat','Flat number',flatOpts(),{})+F.s('r_type','You are',['Owner','Tenant','Family member'])+F.t('r_members','People in flat',{type:'number',v:2,attrs:'min="1" max="12"'})+F.t('r_mobile','Mobile number',{req:true,attrs:'inputmode="numeric" maxlength="10" autocomplete="tel"',hint:'10 digits. This is your login.'})+F.t('r_email','Email (optional)',{type:'email'})+F.t('r_ref','Proof reference (optional)',{cls:'full',ph:'Allotment letter no. or rent agreement date',hint:'Helps the admin verify you faster.'})+F.t('r_pw','Create password',{type:'password',req:true,attrs:'autocomplete="new-password"'})+F.t('r_pw2','Confirm password',{type:'password',req:true,attrs:'autocomplete="new-password"'}),'Submit for approval'):
+ formWrap('login',F.t('l_id','Mobile number, email or admin username',{req:true,cls:'full',attrs:'autocomplete="username"'})+F.t('l_pw','Password',{type:'password',req:true,cls:'full',attrs:'autocomplete="current-password"'}),'Sign in',`<span class="sp"></span>`)}
+ ${reg?'':`<div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn sm ghost" data-act="demo-res">Fill demo resident</button><button class="btn sm ghost" data-act="demo-admin">Fill demo admin</button></div>`}</div></div></div></div>`;
+}
+const flatOpts=(t='A')=>{const o=[];for(let f=1;f<=10;f++)for(let u=1;u<=4;u++)o.push(f+'0'+u);return o.map(x=>[x,'Flat '+x])};
+function waitScreen(m){const rej=m.status==='rejected';return`<div class="wrap"><div class="landing-top">${brand()}<div class="sp"></div><button class="btn sm" data-act="logout">${ic('logout')}Sign out</button></div><div class="wait view enter"><div class="big">${ic(rej?'x':'hourglass')}</div><h2>${rej?'Registration not approved':'Waiting for admin approval'}</h2><p class="muted">${rej?`The admin declined your request${m.reason?': '+esc(m.reason):'.'} You can contact the society office or register again with correct details.`:`Thanks, ${esc(m.name.split(' ')[0])}. Your request for <b>${esc(flatKey(m))}</b> as ${esc(m.type.toLowerCase())} is with the committee. You will get full access as soon as it is approved.`}</p><div class="card flat" style="width:100%;text-align:left"><div class="kv"><span>Name</span><span>${esc(m.name)}</span></div><div class="kv"><span>Flat</span><span>${esc(flatKey(m))}</span></div><div class="kv"><span>Mobile</span><span>${esc(m.mobile)}</span></div><div class="kv"><span>Status</span><span>${sChip(m.status)}</span></div></div><div class="row">${btn('Check status','refresh',{c:'pri'})}${rej?btn('Register again','reregister'):''}</div></div></div>`}
+ACT.refresh=()=>{render(true);toast('Status refreshed','info')};
+ACT.reregister=async()=>{const m=me();DB.users=DB.users.filter(u=>u.id!==m.id);save();setSes(null);UI.auth='register';render(true)};
+ACT['auth-tab']=d=>{UI.auth=d.t;render()};
+ACT.noop=()=>{};
+ACT['demo-res']=()=>{$('#l_id').value='9876500001';$('#l_pw').value='resident123'};
+ACT['demo-admin']=()=>{$('#l_id').value='admin';$('#l_pw').value='admin123'};
+FORMS.login=async(d,f)=>{const idf=d.l_id.trim().toLowerCase(),h=await sha(d.l_pw);
+ if(idf===DB.settings.adminUser.toLowerCase()){if(h!==DB.settings.adminHash)return fErr('Incorrect admin password.');setSes({k:'admin'});location.hash='admin';render(true);return}
+ const u=DB.users.find(u=>u.mobile===idf||(u.email&&u.email.toLowerCase()===idf));if(!u||u.passHash!==h)return fErr('Mobile, email or password is incorrect.');setSes({k:'user',id:u.id});location.hash='home';render(true);toast('Welcome back, '+u.name.split(' ')[0])};
+FORMS.register=async(d)=>{const mob=d.r_mobile.trim();
+ if(d.r_name.trim().length<3)return fErr('Enter your full name.');
+ if(!/^[6-9]\d{9}$/.test(mob))return fErr('Enter a valid 10 digit Indian mobile number.');
+ if(d.r_pw.length<6)return fErr('Password needs at least 6 characters.');
+ if(d.r_pw!==d.r_pw2)return fErr('The two passwords do not match.');
+ if(DB.users.some(u=>u.mobile===mob))return fErr('This mobile number is already registered. Sign in instead.');
+ if(d.r_type==='Owner'&&DB.users.some(u=>u.tower===d.r_tower&&u.flat===d.r_flat&&u.type==='Owner'&&u.status==='approved'))return fErr(`${d.r_tower}-${d.r_flat} already has an approved owner. Register as Tenant or Family member, or contact the office.`);
+ const u={id:uid('u'),name:d.r_name.trim(),tower:d.r_tower,flat:d.r_flat,mobile:mob,email:d.r_email.trim(),type:d.r_type,passHash:await sha(d.r_pw),status:'pending',role:'resident',title:'',members:+d.r_members||1,vehicle:'',showPhone:false,ref:d.r_ref.trim(),created:Date.now()};
+ DB.users.push(u);notify('admin',`New registration request from ${u.name} (${flatKey(u)})`,'members');logAct(`${u.name} registered for ${flatKey(u)}`);save();setSes({k:'user',id:u.id});render(true);confetti()};
+function fErr(t){const e=$('#ferr');if(e)e.textContent=t;return false}
+/* ========== resident views (part 1) ========== */
+const hid=v=>`<input type="hidden" name="id" value="${esc(v||'')}">`;
+const isoDay=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+const kpi=(i,l,v,link,cls='',suf='')=>`<a class="kpi ${cls}" href="#${link}"><span class="k-ic">${ic(i)}</span><div><b ${typeof v==='number'?`data-count="${v}" data-suf="${suf}"`:''}>${typeof v==='number'?'0':v}</b><small>${l}</small></div></a>`;
+const ring=(pct,l)=>{const c=314;return`<div class="ring" style="--c:${c};--o:${c*(1-pct/100)}"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="50"/><circle class="fg" cx="60" cy="60" r="50"/></svg><div><b>${pct}%</b><small>${l}</small></div></div>`};
+
+function evCard(e){const adm=isAdmin(),m=me(),mine=e.rsvps[m.id],n=Object.values(e.rsvps).filter(v=>v==='yes').length,past=+D(e.date)<Date.now()-3*3600e3;
+ return`<article class="ev"><div class="cv" data-act="event-open" data-id="${e.id}">${cover(e)}<div class="date"><b>${D(e.date).getDate()}</b><small>${fdate(e.date,{month:'short'})}</small></div></div><div class="bd"><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free','good')}</div><h4>${esc(e.title)}</h4><div class="meta"><span>${ic('clock')}${ftime(e.date)}</span><span>${ic('mappin')}${esc(e.venue)}</span><span>${ic('users')}${n} going</span></div><div class="ft">${past?chip('Completed'):adm?btn('Manage','event-edit',{sm:1,d:{id:e.id}}):`<button class="btn sm ${mine==='yes'?'good':'pri'}" data-act="rsvp" data-id="${e.id}" data-v="yes">${ic('check')}${mine==='yes'?'Going':'I will attend'}</button><button class="btn sm ${mine==='maybe'?'acc':''}" data-act="rsvp" data-id="${e.id}" data-v="maybe">Maybe</button>`}<button class="btn sm ghost" data-act="event-open" data-id="${e.id}">Details</button></div></div></article>`}
+function noticeCard(n){const m=me(),urgent=n.priority==='high',unread=!isAdmin()&&!n.readBy.includes(m.id);
+ return`<div class="notice ${unread?'unread':''} ${urgent?'urgent':''}" data-act="notice-open" data-id="${n.id}" tabindex="0"><div class="ni">${ic(n.pinned?'pin':urgent?'info':'notice')}</div><div class="sp" style="min-width:0"><h4>${esc(n.title)}</h4><p>${esc(n.body)}</p><div class="meta">${chip(esc(n.category),'brand')}${urgent?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}${unread?chip('New','warn'):''}<span>${fdate(n.date)}</span>${isAdmin()?`<span>Seen by ${n.readBy.length} members</span>`:''}</div></div></div>`}
+const sortedNotices=()=>[...DB.notices].sort((a,b)=>(b.pinned-a.pinned)||D(b.date)-D(a.date));
+
+ROUTES.home=()=>{
+ const m=me(),adm=isAdmin();let kp;
+ if(adm){const c=collection(mkey()),pend=DB.users.filter(u=>u.status==='pending').length;kp=[kpi('users','Pending approvals',pend,'members',pend?'warn':''),kpi('wallet','Collected this month',c.pct,'billing','','%'),kpi('chat','Open tickets',DB.complaints.filter(c=>c.status!=='resolved').length,'helpdesk'),kpi('shield','Awaiting review',pendingReviews(),'billing',pendingReviews()?'warn':'')]}
+ else{const fk=flatKey(m),tot=unpaidOf(fk).reduce((a,b)=>a+billTotal(b),0),nx=DB.events.filter(e=>+D(e.date)>Date.now()).sort((a,b)=>D(a.date)-D(b.date))[0];
+  kp=[kpi('wallet','Maintenance due',tot?inr(tot):'All paid','maintenance',tot?'warn':''),kpi('notice','Unread notices',DB.notices.filter(n=>!n.readBy.includes(m.id)).length,'notices'),kpi('calendar','Next event',nx?rel(nx.date):'None','events'),kpi('chat','My open tickets',DB.complaints.filter(c=>c.userId===m.id&&c.status!=='resolved').length,'helpdesk')]}
+ const ups=DB.events.filter(e=>+D(e.date)>Date.now()-3*3600e3).sort((a,b)=>D(a.date)-D(b.date)).slice(0,3);
+ const ads=DB.ads.filter(a=>a.type==='banner'&&a.status==='live');
+ const poll=DB.polls.find(p=>p.status==='open'&&(adm||p.votes[flatKey(m)]===undefined));
+ const spon=a=>`<div class="sponsor" style="--h:${a.hue}"><span class="sp-t" style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--ink-2)">Sponsored</span><b>${esc(a.business||a.title)}</b><p>${esc(a.title)}</p></div>`;
+ return`${hero()}
+ <div class="ph" style="padding:0"><div><h2>${greet()}, ${esc(m.name.split(' ')[0])}</h2><p>${adm?'Here is what needs your attention today.':`${esc(flatKey(m))} · ${esc(DB.settings.name)}`}</p></div></div>
+ <div class="grid g4">${kp.join('')}</div>
+ <div class="split"><div class="card"><h3>${ic('notice')}Latest notices<a class="more" href="#notices">View all</a></h3><div class="stack">${sortedNotices().slice(0,3).map(noticeCard).join('')||empty('notice','No notices yet')}</div></div>
+ <div class="stack"><div class="card"><h3>${ic('flag')}Quick actions</h3><div class="grid" style="grid-template-columns:1fr 1fr">${adm?`${btn('Publish notice','notice-new',{i:'notice'})}${btn('Add event','event-new',{i:'calendar'})}${btn('Generate bills','nav',{i:'wallet',d:{to:'billing'}})}${btn('Add expense','nav',{i:'chart',d:{to:'accounts'}})}`:`${btn('Pay dues','nav',{i:'wallet',d:{to:'maintenance'}})}${btn('Raise ticket','ticket-new',{i:'chat'})}${btn('Book amenity','nav',{i:'key',d:{to:'amenities'}})}${btn('Invite visitor','visitor-new',{i:'visitor'})}`}</div></div>
+ ${poll?`<div class="card"><h3>${ic('vote')}Open poll</h3><p><b>${esc(poll.question)}</b></p><p class="muted" style="margin:4px 0 12px">Closes ${fdate(poll.closes)} · one vote per flat</p>${btn('Cast your vote','nav',{c:'pri',d:{to:'polls'}})}</div>`:''}</div></div>
+ <div><div class="ph" style="padding:0 0 12px"><div><h2 style="font-size:24px">Upcoming events</h2></div><div class="ph-act"><a class="btn sm" href="#events">All events</a></div></div><div class="grid g3">${ups.map(evCard).join('')||empty('calendar','No upcoming events')}</div></div>
+ ${ads.length?`<div><div class="sep" style="margin-bottom:12px">From local partners</div><div class="marq" aria-label="Sponsored"><div class="trk">${ads.concat(ads).concat(ads.length<4?ads.concat(ads):[]).map(spon).join('')}</div><div class="trk" aria-hidden="true">${ads.concat(ads).concat(ads.length<4?ads.concat(ads):[]).map(spon).join('')}</div></div></div>`:''}`;
+};
+
+/* ----- notices ----- */
+const NCATS=['General','Maintenance','Security','Finance','Events','Emergency'];
+ROUTES.notices=()=>{let l=sortedNotices();if(UI.cat!=='all')l=l.filter(n=>n.category===UI.cat);if(UI.q)l=l.filter(n=>(n.title+n.body).toLowerCase().includes(UI.q.toLowerCase()));
+ return head('Notice board','Official announcements from the committee.',isAdmin()?btn('Publish notice','notice-new',{c:'pri',i:'plus'}):'')+`<div class="filters"><div class="search">${ic('search')}<input id="q" value="${esc(UI.q)}" placeholder="Search notices" data-input="q" aria-label="Search notices"></div>${['all',...NCATS].map(c=>`<button class="pill ${UI.cat===c?'on':''}" data-act="cat" data-v="${c}">${c==='all'?'All':c}</button>`).join('')}</div><div class="stack">${l.length?l.map(noticeCard).join(''):empty('notice','No notices found','Try another category or search term.')}</div>`};
+ACT.cat=d=>{UI.cat=d.v;render()};ACT.tab=d=>{UI.tab=d.v;render()};ACT.nav=d=>{closeModal();location.hash=d.to};
+ACT['notice-open']=d=>{const n=DB.notices.find(x=>x.id===d.id),m=me();if(!isAdmin()&&!n.readBy.includes(m.id)){n.readBy.push(m.id);save();render()}
+ modal(esc(n.title),`<div class="stack"><div class="row wrap-r">${chip(esc(n.category),'brand')}${n.priority==='high'?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}<small>${fdatey(n.date)} · ${esc(n.author)}</small></div><p style="white-space:pre-wrap">${esc(n.body)}</p>${isAdmin()?`<hr class="hr"><div class="row wrap-r">${btn('Edit','notice-edit',{sm:1,i:'edit',d:{id:n.id}})}${btn(n.pinned?'Unpin':'Pin','notice-pin',{sm:1,i:'pin',d:{id:n.id}})}${btn('Delete','notice-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{id:n.id}})}</div>`:''}</div>`)};
+const noticeForm=n=>modal(n?'Edit notice':'Publish notice',formWrap('notice',hid(n?.id)+F.t('n_title','Title',{req:true,cls:'full',v:n?.title})+F.a('n_body','Message',{req:true,cls:'full',v:n?.body})+F.s('n_cat','Category',NCATS,{v:n?.category})+F.s('n_pri','Priority',[['normal','Normal'],['high','Important']],{v:n?.priority})+F.c('n_pin','Pin to the top',n?.pinned)+(n?'':F.c('n_notify','Send a notification to all residents',true)),n?'Save notice':'Publish'));
+ACT['notice-new']=()=>noticeForm();ACT['notice-edit']=d=>noticeForm(DB.notices.find(x=>x.id===d.id));
+FORMS.notice=d=>{if(!d.n_title.trim()||!d.n_body.trim())return fErr('Add a title and a message.');
+ if(d.id){const n=DB.notices.find(x=>x.id===d.id);Object.assign(n,{title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin});toast('Notice updated')}
+ else{DB.notices.unshift({id:uid('n'),title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin,date:new Date().toISOString(),author:'Society Office',readBy:[]});if(d.n_notify)notify('all','New notice: '+d.n_title.trim(),'notices');logAct('Published notice: '+d.n_title.trim());toast('Notice published')}
+ save();closeModal();render()};
+ACT['notice-pin']=d=>{const n=DB.notices.find(x=>x.id===d.id);n.pinned=!n.pinned;save();closeModal();render()};
+ACT['notice-del']=d=>{DB.notices=DB.notices.filter(x=>x.id!==d.id);save();closeModal();render();toast('Notice deleted')};
+
+/* ----- maintenance (resident) ----- */
+ROUTES.maintenance=()=>{
+ const m=me(),fk=flatKey(m),bills=billsOf(fk),due=bills.filter(b=>b.status==='due'),ver=bills.filter(b=>b.status==='verifying'),tot=due.reduce((a,b)=>a+billTotal(b),0),cur=collection(mkey()),oldest=due.slice().sort((a,b)=>a.month.localeCompare(b.month))[0];
+ return head('Maintenance','Dues, payments and receipts for '+esc(fk)+'.')+
+ `<div class="duecard"><div class="sp" style="position:relative;z-index:1"><small>${tot?'Amount due':ver.length?'Payment under verification':'You are all paid up'}</small><b>${tot?inr(tot):ver.length?inr(ver.reduce((a,b)=>a+billTotal(b),0)):inr(0)}</b><small style="text-transform:none;letter-spacing:0;font-size:14px">${tot?`${due.length} bill${due.length>1?'s':''} · oldest ${oldest?mlabel(oldest.month):''}${oldest&&daysTo(oldest.dueDate)<0?' · overdue, late fee applies':oldest?' · due '+fdate(oldest.dueDate):''}`:ver.length?'The admin will confirm once the payment reaches the society account.':'Thank you. No pending bills.'}</small></div>${tot?`<button class="btn acc" data-act="pay" data-ids="${due.map(b=>b.id).join(',')}">${ic('wallet')}Pay ${inr(tot)}</button>`:''}</div>
+ <div class="split"><div class="card"><h3>${ic('clock')}Bill history</h3>${bills.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Month</th><th class="r">Amount</th><th>Due date</th><th>Status</th><th></th></tr></thead><tbody>${bills.map(b=>{const od=b.status==='due'&&daysTo(b.dueDate)<0;return`<tr><td><b>${mlabel(b.month)}</b></td><td class="r num">${inr(billTotal(b))}${lateFee(b)?`<br><small>incl. ${inr(lateFee(b))} late fee</small>`:''}</td><td>${fdate(b.dueDate)}</td><td>${od?sChip('overdue'):sChip(b.status)}</td><td class="r">${b.status==='due'?btn('Pay','pay',{sm:1,c:'pri',d:{ids:b.id}}):b.status==='paid'?btn('Receipt','receipt',{sm:1,d:{id:b.id}}):''}</td></tr>`}).join('')}</tbody></table></div>`:empty('wallet','No bills yet','Bills appear here after the admin generates them.')}</div>
+ <div class="stack"><div class="card"><h3>${ic('chart')}Society collection</h3><div class="row" style="gap:18px">${ring(cur.pct,'flats paid')}<div><b class="num" style="font-size:22px;font-family:var(--f-display)">${cur.paid} of ${cur.total}</b><br><small>flats have paid for ${mlabel(mkey())}</small></div></div></div>
+ <div class="card"><h3>${ic('info')}What your bill covers</h3>${DB.settings.charges.map(c=>`<div class="kv"><span>${esc(c.label)}</span><span class="num">${inr(c.amt)}</span></div>`).join('')}<div class="kv"><span><b>Monthly total</b></span><span class="num">${inr(chargeTotal())}</span></div><small>Due on the ${DB.settings.dueDay}th of every month. Late fee ${DB.settings.latePct}% per month.</small></div></div></div>`};
+ACT.pay=d=>{const ids=d.ids.split(','),bs=DB.bills.filter(b=>ids.includes(b.id)),tot=bs.reduce((a,b)=>a+billTotal(b),0),s=DB.settings,m=me(),fk=flatKey(m),
+ note=`Maint ${fk} ${bs.map(b=>b.month).join(',')}`,upi=`upi://pay?pa=${encodeURIComponent(s.upi)}&pn=${encodeURIComponent(s.upiName)}&am=${tot}&cu=INR&tn=${encodeURIComponent(note)}`;
+ modal('Pay maintenance',`<div class="stack"><div class="card flat">${bs.map(b=>`<div class="kv"><span>${mlabel(b.month)}</span><span class="num">${inr(b.amount)}${lateFee(b)?' + '+inr(lateFee(b))+' late':''}</span></div>`).join('')}<div class="kv"><span><b>Total payable</b></span><span class="num" style="font-size:18px">${inr(tot)}</span></div></div>
+ <div class="qr" id="qrbox"></div><div class="row" style="justify-content:center;flex-wrap:wrap"><span class="chip">UPI ID</span><b id="upiid">${esc(s.upi)}</b><button class="btn sm" data-act="copy" data-t="${esc(s.upi)}">${ic('copy')}Copy</button></div>
+ <a class="btn pri block" href="${upi}">${ic('wallet')}Open UPI app</a>${s.bank?`<small>Bank transfer: ${esc(s.bank)}</small>`:'<small>For bank transfer or cheque, collect the account details from the society office.</small>'}
+ <hr class="hr">${formWrap('pay',`<input type="hidden" name="ids" value="${ids.join(',')}">`+F.s('p_method','Paid using',['UPI','Bank transfer','Cheque','Cash at office'],{})+F.t('p_ref','Transaction ID or cheque number',{req:true,ph:'12 digit UPI reference (UTR)',hint:'The admin matches this with the bank statement.'}),'I have paid')}</div>`);
+ try{if(window.QRCode)new QRCode($('#qrbox'),{text:upi,width:152,height:152,colorDark:'#0F2A2B',colorLight:'#ffffff'});else $('#qrbox').innerHTML='<small style="color:#333">QR unavailable offline</small>'}catch(e){}};
+ACT.copy=d=>copyText(d.t);
+FORMS.pay=d=>{if(!d.p_ref.trim()&&d.p_method!=='Cash at office')return fErr('Enter the transaction ID.');const ids=d.ids.split(',');DB.bills.filter(b=>ids.includes(b.id)).forEach(b=>{b.status='verifying';b.method=d.p_method;b.ref=d.p_ref.trim()||'CASH';b.submittedOn=new Date().toISOString();b.lateFee=lateFee(b)});const m=me();notify('admin',`${flatKey(m)} submitted a payment (${d.p_method}) for verification`,'billing');logAct(`${flatKey(m)} submitted payment`);save();closeModal();render();toast('Payment submitted for verification');confetti()};
+ACT.receipt=d=>{const b=DB.bills.find(x=>x.id===d.id),u=approvedFlats().find(x=>flatKey(x)===b.flat)||me(),no='QS-'+b.id.slice(-6).toUpperCase(),txt=`Receipt ${no}\n${DB.settings.name}\nFlat ${b.flat} · ${mlabel(b.month)}\nAmount ${inr(billTotal(b))}\nPaid ${fdatey(b.paidOn)} via ${b.method} (${b.ref})`;
+ modal('Payment receipt',`<div class="receipt"><span class="stamp">PAID</span><h4 style="font-size:19px">${esc(DB.settings.name)}</h4><small>${esc(DB.settings.address)}</small><hr class="hr" style="margin:12px 0"><div class="kv"><span>Receipt no.</span><span>${no}</span></div><div class="kv"><span>Flat</span><span>${esc(b.flat)}${u&&u.name?' · '+esc(u.name):''}</span></div><div class="kv"><span>For</span><span>${mlabel(b.month)}</span></div>${b.items.map(c=>`<div class="kv"><span>${esc(c.label)}</span><span class="num">${inr(c.amt)}</span></div>`).join('')}${b.lateFee?`<div class="kv"><span>Late fee</span><span class="num">${inr(b.lateFee)}</span></div>`:''}<div class="kv"><span><b>Total paid</b></span><span class="num">${inr(billTotal(b))}</span></div><div class="kv"><span>Paid on</span><span>${fdatey(b.paidOn)}</span></div><div class="kv"><span>Method</span><span>${esc(b.method)} · ${esc(b.ref)}</span></div></div><div class="row" style="margin-top:14px;justify-content:flex-end">${btn('Copy receipt text','copy',{i:'copy',d:{t:txt}})}</div>`)};
+
+/* ----- events ----- */
+ROUTES.events=()=>{const now=Date.now()-3*3600e3,m=me(),tab=UI.tab||'up';let l=DB.events.slice();
+ if(tab==='up')l=l.filter(e=>+D(e.date)>=now).sort((a,b)=>D(a.date)-D(b.date));else if(tab==='past')l=l.filter(e=>+D(e.date)<now).sort((a,b)=>D(b.date)-D(a.date));else l=l.filter(e=>e.rsvps[m.id]).sort((a,b)=>D(a.date)-D(b.date));
+ return head('Events','Festivals, sports, meetings and everything in between.',isAdmin()?btn('Add event','event-new',{c:'pri',i:'plus'}):'')+`<div class="filters">${[['up','Upcoming'],['past','Past'],['mine','My RSVPs']].filter(t=>!(isAdmin()&&t[0]==='mine')).map(t=>`<button class="pill ${tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${t[1]}</button>`).join('')}</div><div class="grid g3">${l.length?l.map(evCard).join(''):empty('calendar','Nothing here yet',tab==='mine'?'RSVP to an event and it shows up here.':'Check back soon.')}</div>`};
+ACT.rsvp=d=>{const e=DB.events.find(x=>x.id===d.id),m=me();if(e.rsvps[m.id]===d.v)delete e.rsvps[m.id];else{e.rsvps[m.id]=d.v;if(d.v==='yes')toast("You're going to "+e.title)}save();closeModal();render()};
+ACT['event-open']=d=>{const e=DB.events.find(x=>x.id===d.id),m=me(),past=+D(e.date)<Date.now()-3*3600e3,mine=e.rsvps[m.id],ent=Object.entries(e.rsvps),going=ent.filter(x=>x[1]==='yes'),mb=ent.filter(x=>x[1]==='maybe'),name=id=>(DB.users.find(u=>u.id===id)||{name:'Resident'}).name;
+ modal(esc(e.title),`<div class="stack"><div class="ev" style="box-shadow:none;border:0"><div class="cv" style="border-radius:14px;cursor:default">${cover(e)}</div></div><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free entry','good')}${e.capacity?chip('Limited to '+e.capacity):''}</div><p style="white-space:pre-wrap">${esc(e.desc)}</p><div class="card flat"><div class="kv"><span>When</span><span>${fwd(e.date)}, ${ftime(e.date)}</span></div><div class="kv"><span>Where</span><span>${esc(e.venue)}</span></div><div class="kv"><span>Responses</span><span>${going.length} going · ${mb.length} maybe</span></div></div>${isAdmin()&&going.length?`<small>Going: ${going.map(x=>esc(name(x[0]))).join(', ')}</small>`:''}
+ <div class="row wrap-r">${past?chip('This event has ended'):isAdmin()?btn('Edit event','event-edit',{c:'pri',i:'edit',d:{id:e.id}}):`<button class="btn ${mine==='yes'?'good':'pri'}" data-act="rsvp" data-id="${e.id}" data-v="yes">${ic('check')}${mine==='yes'?'You are going':'I will attend'}</button><button class="btn ${mine==='maybe'?'acc':''}" data-act="rsvp" data-id="${e.id}" data-v="maybe">Maybe</button>`}</div></div>`,{wide:1})};
+const ECATS=['Festival','Cultural','Sports','Wellness','Meeting','Kids','Community'],SCENES=[['festival','Festival lights'],['sports','Sports field'],['garden','Garden'],['yoga','Sunrise yoga'],['night','Night sky'],['meeting','Meeting dusk'],['kids','Kids fair']];
+ACT['event-new']=()=>eventForm();ACT['event-edit']=d=>eventForm(DB.events.find(x=>x.id===d.id));
+function eventForm(e){modal(e?'Edit event':'Add event',formWrap('event',hid(e?.id)+F.t('e_title','Event name',{req:true,cls:'full',v:e?.title})+F.t('e_date','Date and time',{type:'datetime-local',req:true,v:e?isoLocal(e.date):isoLocal(new Date(Date.now()+7*DAY))})+F.s('e_cat','Category',ECATS,{v:e?.category})+F.t('e_venue','Venue',{req:true,v:e?.venue})+F.t('e_fee','Fee per flat (₹)',{type:'number',v:e?.fee??0,attrs:'min="0"'})+F.a('e_desc','Description',{cls:'full',v:e?.desc})+F.s('e_scene','Artwork style',SCENES,{v:e?.scene,cls:'full'})+`<label class="fld full"><span>Cover photo (shown in the hero)</span><input type="file" id="e_cover" accept="image/*"><em class="hint">Upload a real photo. Without one, generated artwork is used.</em></label><label class="fld full"><span>Gallery photos</span><input type="file" id="e_photos" accept="image/*" multiple></label>`+F.c('e_feat','Show in the home page hero',e?e.featured:true)+(e?`<label class="chk full"><input type="checkbox" id="e_rmcover" name="e_rmcover">Remove current cover photo and gallery photos</label>`:''),e?'Save event':'Add event',e?btn('Delete','event-del',{c:'bad',confirm:1,d:{id:e.id}}):''),{wide:1})}
+FORMS.event=async(d,f)=>{if(!d.e_title.trim()||!d.e_date)return fErr('Event name and date are required.');
+ const base={title:d.e_title.trim(),date:new Date(d.e_date).toISOString(),category:d.e_cat,venue:d.e_venue.trim(),fee:+d.e_fee||0,desc:d.e_desc.trim(),scene:d.e_scene,featured:!!d.e_feat};
+ let cv=null,ph=[];try{const c=$('#e_cover',f).files[0];if(c)cv=await readImage(c,1400,.72);for(const p of [...$('#e_photos',f).files].slice(0,8))ph.push(await readImage(p,1000,.7))}catch(e){return fErr('Could not read one of the photos. Try a different image.')}
+ if(d.id){const e=DB.events.find(x=>x.id===d.id);Object.assign(e,base);if(d.e_rmcover){e.cover=null;e.photos=[]}if(cv)e.cover=cv;if(ph.length)e.photos=(e.photos||[]).concat(ph);toast('Event updated')}
+ else{DB.events.push({id:uid('e'),...base,rsvps:{},cover:cv,photos:ph,capacity:0});notify('all','New event: '+base.title+' on '+fdate(base.date),'events');logAct('Added event: '+base.title);toast('Event added')}
+ save();closeModal();render()};
+ACT['event-del']=d=>{DB.events=DB.events.filter(x=>x.id!==d.id);save();closeModal();render();toast('Event deleted')};
+
+/* ----- forecast ----- */
+ROUTES.forecast=()=>{
+ const [y,mo]=UI.calM.split('-').map(Number),first=new Date(y,mo-1,1),last=new Date(y,mo,0),lead=(first.getDay()+6)%7,items=forecastItems(first,new Date(y,mo,1)),by={};
+ items.forEach(i=>{(by[isoDay(i.at)]=by[isoDay(i.at)]||[]).push(i)});
+ const sel=UI.sel||(UI.calM===mkey()?isoDay(new Date()):isoDay(first)),selItems=by[sel]||[],today=isoDay(new Date());
+ let cells='';for(let i=0;i<lead;i++)cells+=`<button class="out" tabindex="-1" aria-hidden="true"></button>`;
+ for(let d=1;d<=last.getDate();d++){const k=y+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0'),it=by[k]||[],kinds=[...new Set(it.map(x=>x.kind))].slice(0,3);cells+=`<button class="${k===today?'today':''} ${k===sel?'sel':''}" data-act="cal-day" data-d="${k}" aria-label="${d} ${mlabel(UI.calM)}, ${it.length} items">${d}<span class="dots">${kinds.map(x=>`<i style="--c:${KIND[x][1]}"></i>`).join('')}</span></button>`}
+ const next=forecastItems(sod(new Date()),new Date(Date.now()+31*DAY));
+ const row=i=>`<div class="tli k-${i.kind}"><div class="dt">${D(i.at).getDate()}<small>${fdate(i.at,{weekday:'short',month:'short'})}</small></div><div class="sp" style="min-width:0"><b>${esc(i.title)}</b><br><small>${ftime(i.at)}${i.sub?' · '+esc(i.sub):''}</small></div>${chip(KIND[i.kind][0])}${isAdmin()&&i.kind!=='event'&&i.id&&DB.schedule.some(s=>s.id===i.id)?btn('',  'sched-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{id:i.id}}):''}</div>`;
+ return head('Forecast','What is coming up in the society: events, scheduled works, due dates and your bookings.',isAdmin()?btn('Schedule work','sched-new',{c:'pri',i:'plus'}):'')+
+ `<div class="split"><div class="card"><div class="row" style="margin-bottom:12px"><button class="iconbtn" data-act="cal-m" data-n="-1" aria-label="Previous month">${ic('cl')}</button><h3 style="margin:0;flex:1;text-align:center">${mlabel(UI.calM)}</h3><button class="iconbtn" data-act="cal-m" data-n="1" aria-label="Next month">${ic('cr')}</button></div><div class="cal">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="hd">${d}</div>`).join('')}${cells}</div><div class="legend" style="margin-top:14px">${Object.values(KIND).map(k=>`<span><i style="--c:${k[1]}"></i>${k[0]}</span>`).join('')}</div></div>
+ <div class="card"><h3>${ic('calendar')}${fwd(sel)}</h3>${selItems.length?`<div class="tl">${selItems.map(row).join('')}</div>`:empty('sunrise','A quiet day','Nothing is planned for this date.')}</div></div>
+ <div class="card"><h3>${ic('sunrise')}Next 30 days</h3>${next.length?`<div class="tl">${next.map(row).join('')}</div>`:empty('sunrise','Nothing scheduled')}</div>`};
+ACT['cal-day']=d=>{UI.sel=d.d;render()};ACT['cal-m']=d=>{UI.calM=mshift(UI.calM,+d.n);UI.sel=null;render()};
+ACT['sched-new']=()=>modal('Schedule work or meeting',formWrap('sched',F.t('s_title','Title',{req:true,cls:'full',ph:'Water tank cleaning'})+F.t('s_date','Date and time',{type:'datetime-local',req:true,v:isoLocal(new Date(Date.now()+3*DAY))})+F.s('s_kind','Type',[['maintenance','Maintenance work'],['meeting','Meeting']])+F.t('s_note','Note for residents',{cls:'full',ph:'Supply off 9 am to 3 pm'})+F.c('s_notify','Notify all residents',true),'Add to forecast'));
+FORMS.sched=d=>{if(!d.s_title.trim())return fErr('Add a title.');DB.schedule.push({id:uid('s'),title:d.s_title.trim(),date:new Date(d.s_date).toISOString(),kind:d.s_kind,note:d.s_note.trim()});if(d.s_notify)notify('all',`Scheduled: ${d.s_title.trim()} on ${fdate(d.s_date)}`,'forecast');save();closeModal();render();toast('Added to forecast')};
+ACT['sched-del']=d=>{DB.schedule=DB.schedule.filter(s=>s.id!==d.id);save();render()};
+
+/* ----- helpdesk ----- */
+const TCATS=['Plumbing','Electrical','Lift','Security','Housekeeping','Parking','Noise','Other'];
+ROUTES.helpdesk=()=>{const m=me(),adm=isAdmin(),tab=UI.tab||'all';let l=DB.complaints.filter(c=>adm||c.userId===m.id).sort((a,b)=>b.created-a.created);if(tab!=='all')l=l.filter(c=>c.status===tab);
+ const who=id=>{const u=DB.users.find(x=>x.id===id);return u?esc(flatKey(u))+' · '+esc(u.name):'Resident'};
+ return head(adm?'Helpdesk':'My tickets','Raise a complaint or request and track it until it is fixed.',btn('New ticket','ticket-new',{c:'pri',i:'plus'}))+`<div class="filters">${[['all','All'],['open','Open'],['in-progress','In progress'],['resolved','Resolved']].map(t=>`<button class="pill ${tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${t[1]}</button>`).join('')}</div><div class="stack">${l.length?l.map(c=>`<div class="notice ${c.priority==='high'?'urgent':''}" data-act="ticket-open" data-id="${c.id}" tabindex="0"><div class="ni">${ic('chat')}</div><div class="sp" style="min-width:0"><h4>${esc(c.title)}</h4><p>${esc(c.body)}</p><div class="meta">${sChip(c.status)}${chip(esc(c.category))}${c.priority==='high'?chip('Urgent','bad'):''}<span>${adm?who(c.userId)+' · ':''}${rel(c.created)}</span><span>${c.comments.length} update${c.comments.length===1?'':'s'}</span></div></div></div>`).join(''):empty('chat','No tickets here','Raise a ticket and the office will respond.')}</div>`};
+ACT['ticket-new']=()=>modal('Raise a ticket',formWrap('ticket',F.t('t_title','Short title',{req:true,cls:'full',ph:'Water leakage in bathroom'})+F.s('t_cat','Category',TCATS)+F.s('t_pri','Priority',[['normal','Normal'],['high','Urgent']])+F.a('t_body','Describe the problem',{req:true,cls:'full'}),'Submit ticket'));
+FORMS.ticket=d=>{if(!d.t_title.trim()||!d.t_body.trim())return fErr('Add a title and describe the problem.');const m=me();DB.complaints.unshift({id:uid('c'),userId:m.id,category:d.t_cat,title:d.t_title.trim(),body:d.t_body.trim(),priority:d.t_pri,status:'open',assignee:'',created:Date.now(),comments:[]});notify('admin',`New ticket from ${isAdmin()?'office':flatKey(m)}: ${d.t_title.trim()}`,'helpdesk');save();closeModal();render();toast('Ticket raised')};
+ACT['ticket-open']=d=>{const c=DB.complaints.find(x=>x.id===d.id),adm=isAdmin(),u=DB.users.find(x=>x.id===c.userId);
+ modal(esc(c.title),`<div class="stack"><div class="row wrap-r">${sChip(c.status)}${chip(esc(c.category))}${c.priority==='high'?chip('Urgent','bad'):''}<small>${u?esc(flatKey(u))+' · ':''}${fdatey(c.created)}</small></div><p style="white-space:pre-wrap">${esc(c.body)}</p>${c.assignee?`<div class="chip info">Assigned to ${esc(c.assignee)}</div>`:''}<div class="tl">${c.comments.map(x=>`<div class="tli"><div class="sp"><b>${esc(x.by)}</b> <small>${rel(x.at)}</small><br>${esc(x.text)}</div></div>`).join('')||'<small>No updates yet.</small>'}</div>
+ <form data-form="comment" class="row" style="align-items:flex-end"><input type="hidden" name="id" value="${c.id}"><label class="fld sp"><span>Add an update</span><input id="c_text" name="c_text" required></label><button class="btn pri" type="submit">${ic('send')}Send</button></form>
+ ${adm?`<hr class="hr"><div class="row wrap-r">${c.status!=='in-progress'?btn('Mark in progress','ticket-status',{sm:1,d:{id:c.id,s:'in-progress'}}):''}${c.status!=='resolved'?btn('Mark resolved','ticket-status',{sm:1,c:'good',d:{id:c.id,s:'resolved'}}):btn('Reopen','ticket-status',{sm:1,d:{id:c.id,s:'open'}})}${btn('Assign','ticket-assign',{sm:1,d:{id:c.id}})}</div>`:c.status==='resolved'?'':`<div class="row">${btn('Mark as resolved','ticket-status',{sm:1,c:'good',d:{id:c.id,s:'resolved'}})}</div>`}</div>`,{wide:1})};
+FORMS.comment=d=>{const c=DB.complaints.find(x=>x.id===d.id),m=me();c.comments.push({by:isAdmin()?'Society Office':m.name,text:d.c_text.trim(),at:Date.now(),admin:isAdmin()});if(isAdmin())notify(c.userId,'Update on your ticket: '+c.title,'helpdesk');else notify('admin',`${flatKey(m)} replied on: ${c.title}`,'helpdesk');save();ACT['ticket-open']({id:c.id});render()};
+ACT['ticket-status']=d=>{const c=DB.complaints.find(x=>x.id===d.id);c.status=d.s;if(isAdmin())notify(c.userId,`Your ticket "${c.title}" is now ${d.s.replace('-',' ')}`,'helpdesk');save();ACT['ticket-open']({id:c.id});render()};
+ACT['ticket-assign']=d=>{const c=DB.complaints.find(x=>x.id===d.id);modal('Assign ticket',formWrap('assign',hid(c.id)+F.t('a_to','Assign to (person or vendor)',{req:true,cls:'full',v:c.assignee,ph:'Mr. Biswas, plumber'}),'Assign'))};
+FORMS.assign=d=>{const c=DB.complaints.find(x=>x.id===d.id);c.assignee=d.a_to.trim();if(c.status==='open')c.status='in-progress';save();ACT['ticket-open']({id:c.id});render()};
+/* ========== resident views (part 2) ========== */
+const uname=id=>{const u=DB.users.find(x=>x.id===id);return u?u.name:'Resident'};
+const uflat=id=>{const u=DB.users.find(x=>x.id===id);return u?flatKey(u):''};
+
+/* ----- amenities ----- */
+const SLOTS=['Morning (6 am to 12 pm)','Afternoon (12 pm to 5 pm)','Evening (5 pm to 9 pm)','Night (9 pm to 11 pm)'];
+ROUTES.amenities=()=>{const m=me(),adm=isAdmin(),bs=DB.bookings.filter(b=>adm||b.userId===m.id).sort((a,b)=>D(b.date)-D(a.date)),pend=bs.filter(b=>b.status==='pending');
+ return head('Amenities','Book the clubhouse, hall, courts and guest rooms.',adm?btn('Add amenity','amenity-new',{c:'pri',i:'plus'}):'')+
+ `<div class="grid g3">${DB.amenities.map(a=>`<article class="ev"><div class="cv" style="cursor:default">${scene(a.scene,hashStr(a.id))}</div><div class="bd"><h4>${esc(a.name)}</h4><p class="muted">${esc(a.desc)}</p><div class="meta"><span>${ic('wallet')}${a.rate?inr(a.rate)+' '+esc(a.unit):esc(a.unit)}</span><span>${ic('users')}Up to ${a.capacity}</span><span>${ic('clock')}${esc(a.hours)}</span></div><div class="ft">${adm?btn('Remove','amenity-del',{sm:1,c:'bad',confirm:1,d:{id:a.id}}):btn('Book now','book',{sm:1,c:'pri',i:'calendar',d:{id:a.id}})}</div></div></article>`).join('')}</div>
+ <div class="card"><h3>${ic('key')}${adm?'Booking requests':'My bookings'}${adm&&pend.length?chip(pend.length+' pending','warn'):''}</h3>${bs.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Amenity</th>${adm?'<th>Flat</th>':''}<th>Date</th><th>Slot</th><th>Status</th><th></th></tr></thead><tbody>${bs.map(b=>{const a=DB.amenities.find(x=>x.id===b.amenityId)||{name:'Removed'};return`<tr><td><b>${esc(a.name)}</b><br><small>${esc(b.purpose||'')}</small></td>${adm?`<td>${esc(uflat(b.userId))}<br><small>${esc(uname(b.userId))}</small></td>`:''}<td>${fwd(b.date)}</td><td>${esc(b.slot.split(' (')[0])}</td><td>${sChip(b.status)}</td><td class="r">${adm&&b.status==='pending'?btn('Approve','bk-status',{sm:1,c:'good',d:{id:b.id,s:'approved'}})+' '+btn('Decline','bk-status',{sm:1,c:'bad',d:{id:b.id,s:'rejected'}}):!adm&&b.status!=='rejected'&&daysTo(b.date)>=0?btn('Cancel','bk-cancel',{sm:1,confirm:1,d:{id:b.id}}):''}</td></tr>`}).join('')}</tbody></table></div>`:empty('key','No bookings yet','Pick an amenity above to make your first booking.')}</div>`};
+ACT.book=d=>{const a=DB.amenities.find(x=>x.id===d.id);modal('Book '+esc(a.name),formWrap('book',hid(a.id)+F.t('b_date','Date',{type:'date',req:true,v:isoDay(new Date(Date.now()+2*DAY)),attrs:`min="${isoDay(new Date())}"`})+F.s('b_slot','Slot',SLOTS)+F.t('b_purpose','Purpose',{req:true,cls:'full',ph:'Birthday party, 40 guests'})+`<p class="full muted">${a.rate?`Charge: <b>${inr(a.rate)} ${esc(a.unit)}</b>, added to your next maintenance bill after approval.`:'Free for residents.'}</p>`,'Request booking'))};
+FORMS.book=d=>{const day=new Date(d.b_date+'T00:00:00');if(isNaN(day)||daysTo(day)<0)return fErr('Pick a date from today onwards.');if(DB.bookings.some(b=>b.amenityId===d.id&&b.slot===d.b_slot&&isoDay(b.date)===d.b_date&&b.status!=='rejected'))return fErr('That slot is already taken. Choose another slot or date.');const m=me();DB.bookings.push({id:uid('k'),amenityId:d.id,userId:m.id,date:day.toISOString(),slot:d.b_slot,purpose:d.b_purpose.trim(),status:'pending',at:Date.now()});notify('admin',`${flatKey(m)} requested ${DB.amenities.find(a=>a.id===d.id).name} on ${fdate(day)}`,'amenities');save();closeModal();render();toast('Booking requested. You will be notified.')};
+ACT['bk-status']=d=>{const b=DB.bookings.find(x=>x.id===d.id);b.status=d.s;notify(b.userId,`Your booking was ${d.s}`,'amenities');logAct(`Booking ${d.s} for ${uflat(b.userId)}`);save();render()};
+ACT['bk-cancel']=d=>{DB.bookings=DB.bookings.filter(x=>x.id!==d.id);save();render();toast('Booking cancelled')};
+ACT['amenity-new']=()=>modal('Add amenity',formWrap('amenity',F.t('am_name','Name',{req:true,cls:'full'})+F.t('am_rate','Charge (₹)',{type:'number',v:0})+F.t('am_unit','Charge unit',{v:'per slot'})+F.t('am_cap','Capacity',{type:'number',v:20})+F.t('am_hours','Hours',{v:'8 am to 10 pm'})+F.a('am_desc','Description',{cls:'full'}),'Add'));
+FORMS.amenity=d=>{if(!d.am_name.trim())return fErr('Enter a name.');DB.amenities.push({id:uid('am'),name:d.am_name.trim(),rate:+d.am_rate||0,unit:d.am_unit,capacity:+d.am_cap||1,hours:d.am_hours,desc:d.am_desc.trim(),scene:'garden'});save();closeModal();render()};
+ACT['amenity-del']=d=>{DB.amenities=DB.amenities.filter(a=>a.id!==d.id);save();render()};
+
+/* ----- visitors ----- */
+ROUTES.visitors=()=>{const m=me(),adm=isAdmin(),l=DB.visitors.filter(v=>adm||v.userId===m.id).sort((a,b)=>D(b.date)-D(a.date));
+ return head('Visitors','Pre-approve guests and deliveries. Security checks the code at the gate.',btn(adm?'Walk-in entry':'Invite visitor','visitor-new',{c:'pri',i:'plus'}))+
+ (adm?`<div class="card"><h3>${ic('shield')}Gate desk</h3><form data-form="gate" class="row wrap-r" style="align-items:flex-end"><label class="fld" style="width:200px"><span>Visitor code</span><input id="g_code" name="g_code" inputmode="numeric" maxlength="6" placeholder="6 digit code" required></label><button class="btn pri" type="submit">Check code</button></form></div>`:'')+
+ `<div class="stack">${l.length?l.map(v=>`<div class="notice" style="cursor:default"><div class="ni">${ic('visitor')}</div><div class="sp" style="min-width:0"><h4>${esc(v.name)}</h4><p>${esc(v.purpose)}${v.vehicle?' · '+esc(v.vehicle):''}</p><div class="meta">${sChip(v.status)}<span>${fwd(v.date)}</span>${adm?`<span>Flat ${esc(uflat(v.userId))}</span>`:''}<b class="num">Code ${esc(v.code)}</b></div></div>${!adm&&v.status==='expected'?btn('Copy code','copy',{sm:1,d:{t:v.code}}):''}</div>`).join(''):empty('visitor','No visitors yet','Invite a guest and share the code with them.')}</div>`};
+ACT['visitor-new']=()=>modal('Invite a visitor',formWrap('visitor',(isAdmin()?F.s('v_flat','Visiting flat',approvedFlats().map(u=>[u.id,flatKey(u)+' · '+u.name]),{cls:'full'}):'')+F.t('v_name','Visitor name',{req:true,cls:'full'})+F.t('v_purpose','Purpose',{req:true,ph:'Family visit, delivery, repair'})+F.t('v_date','Expected on',{type:'date',v:isoDay(new Date()),attrs:`min="${isoDay(new Date())}"`})+F.t('v_veh','Vehicle number (optional)',{cls:'full'}),'Generate code'));
+FORMS.visitor=d=>{if(!d.v_name.trim())return fErr('Enter the visitor name.');const code=String(Math.floor(100000+Math.random()*900000));DB.visitors.unshift({id:uid('v'),userId:isAdmin()?d.v_flat:me().id,name:d.v_name.trim(),purpose:d.v_purpose.trim(),vehicle:d.v_veh.trim(),date:new Date(d.v_date+'T00:00:00').toISOString(),code,status:isAdmin()?'entered':'expected'});save();modal('Visitor code ready',`<div class="stack"><p>Share this code with <b>${esc(d.v_name)}</b>. Security will ask for it at the gate.</p><div class="code">${code}</div><div class="row" style="justify-content:flex-end">${btn('Copy code','copy',{c:'pri',i:'copy',d:{t:code}})}</div></div>`);render()};
+FORMS.gate=d=>{const v=DB.visitors.find(x=>x.code===d.g_code.trim());if(!v)return toast('No visitor with that code','x');modal('Visitor found',`<div class="stack"><div class="card flat"><div class="kv"><span>Name</span><span>${esc(v.name)}</span></div><div class="kv"><span>Visiting</span><span>${esc(uflat(v.userId))} · ${esc(uname(v.userId))}</span></div><div class="kv"><span>Purpose</span><span>${esc(v.purpose)}</span></div><div class="kv"><span>Expected</span><span>${fwd(v.date)}</span></div><div class="kv"><span>Status</span><span>${sChip(v.status)}</span></div></div><div class="row wrap-r">${v.status==='expected'?btn('Allow entry','v-status',{c:'good',d:{id:v.id,s:'entered'}}):''}${v.status==='entered'?btn('Mark as left','v-status',{d:{id:v.id,s:'exited'}}):''}</div></div>`)};
+ACT['v-status']=d=>{const v=DB.visitors.find(x=>x.id===d.id);v.status=d.s;if(d.s==='entered')notify(v.userId,`${v.name} has entered the gate`,'visitors');save();closeModal();render();toast('Updated')};
+
+/* ----- marketplace ----- */
+const ACATS=['Tuition','Food','Health','Beauty','Home Services','Buy and Sell','Real Estate','Other'];
+ROUTES.marketplace=()=>{const m=me(),adm=isAdmin(),tab=UI.tab||'all';let live=DB.ads.filter(a=>a.status==='live');if(tab==='banner')live=live.filter(a=>a.type==='banner');if(tab==='classified')live=live.filter(a=>a.type==='classified');if(UI.cat!=='all')live=live.filter(a=>a.category===UI.cat);if(UI.q)live=live.filter(a=>(a.title+a.body+a.business).toLowerCase().includes(UI.q.toLowerCase()));
+ const mine=DB.ads.filter(a=>a.userId===m.id),queue=DB.ads.filter(a=>a.status==='pending'),rates=DB.settings.adRates;
+ const card=a=>`<div class="ad" style="border-top:4px solid ${a.hue}">${a.type==='banner'?'<span class="sp-t">Sponsored</span>':'<span class="sp-t">Classified</span>'}<h4 style="font-size:17px">${esc(a.title)}</h4>${a.business?`<b>${esc(a.business)}</b>`:''}<p class="muted">${esc(a.body)}</p><div class="row wrap-r">${chip(esc(a.category),'brand')}${a.price?chip(esc(a.price)):''}</div><div class="row" style="margin-top:auto"><span class="num"><b>${esc(a.contact)}</b></span><span class="sp"></span>${btn('Copy','copy',{sm:1,d:{t:a.contact}})}${adm?btn('Take down','ad-status',{sm:1,c:'bad',d:{id:a.id,s:'expired'}}):''}</div><small>Posted by ${esc(uflat(a.userId))} · ${rel(a.created)}</small></div>`;
+ return head('Marketplace','Local business ads and classifieds from residents.',btn('Post an ad','ad-new',{c:'pri',i:'plus'}))+
+ (adm&&queue.length?`<div class="card"><h3>${ic('shield')}Ads awaiting approval ${chip(queue.length,'warn')}</h3><div class="stack">${queue.map(a=>`<div class="notice" style="cursor:default"><div class="ni">${ic('tag')}</div><div class="sp" style="min-width:0"><h4>${esc(a.title)}</h4><p>${esc(a.body)}</p><div class="meta">${chip(a.type==='banner'?'Banner · '+a.weeks+' wk':'Classified','brand')}${a.fee?chip(inr(a.fee)+(a.feePaid?' received':' due'),a.feePaid?'good':'warn'):chip('No fee')}<span>${esc(uflat(a.userId))} · ${esc(a.contact)}</span></div><div class="row wrap-r" style="margin-top:10px">${a.fee&&!a.feePaid?btn('Mark fee received','ad-fee',{sm:1,d:{id:a.id}}):''}${btn('Approve','ad-status',{sm:1,c:'good',d:{id:a.id,s:'live'}})}${btn('Reject','ad-status',{sm:1,c:'bad',d:{id:a.id,s:'rejected'}})}</div></div></div>`).join('')}</div></div>`:'')+
+ `<div class="filters"><div class="search">${ic('search')}<input id="q" value="${esc(UI.q)}" placeholder="Search ads" data-input="q" aria-label="Search ads"></div>${[['all','All'],['banner','Business'],['classified','Classifieds']].map(t=>`<button class="pill ${tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${t[1]}</button>`).join('')}</div><div class="filters">${['all',...ACATS].map(c=>`<button class="pill ${UI.cat===c?'on':''}" data-act="cat" data-v="${c}">${c==='all'?'Any category':c}</button>`).join('')}</div>
+ <div class="grid g3">${live.length?live.map(card).join(''):empty('tag','No ads match','Be the first to post one.')}</div>
+ ${mine.length&&!adm?`<div class="card"><h3>${ic('tag')}My ads</h3><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ad</th><th>Type</th><th>Fee</th><th>Status</th></tr></thead><tbody>${mine.map(a=>`<tr><td><b>${esc(a.title)}</b></td><td>${a.type==='banner'?'Banner':'Classified'}</td><td>${a.fee?inr(a.fee)+(a.feePaid?' · paid':' · pay at office'):'Free'}</td><td>${sChip(a.status)}</td></tr>`).join('')}</tbody></table></div></div>`:''}
+ <div class="demo">${ic('info')}<span>Banner ads appear on every resident's home page for ${inr(rates.banner)} per week. Classifieds are free for residents. All ads are reviewed by the admin before going live.</span></div>`};
+ACT['ad-new']=()=>modal('Post an ad',formWrap('ad',F.s('a_type','Ad type',[['classified','Classified (free)'],['banner','Banner on home page']],{cls:'full'})+F.t('a_title','Headline',{req:true,cls:'full',ph:'Home tuitions for classes 6 to 10'})+F.t('a_biz','Business name (optional)',{cls:'full'})+F.a('a_body','Details',{req:true,cls:'full'})+F.s('a_cat','Category',ACATS)+F.t('a_price','Price (optional)',{ph:'₹500 per month'})+F.t('a_contact','Contact number',{req:true,attrs:'inputmode="tel"'})+F.t('a_weeks','Banner weeks',{type:'number',v:2,attrs:'min="1" max="12"',hint:`Banner fee ${inr(DB.settings.adRates.banner)} per week`}),'Submit for review'));
+const HUES=['#E39A1B','#2FA39B','#2B6CB0','#C23B3B','#6B4FBB','#C77A0A'];
+FORMS.ad=d=>{if(!d.a_title.trim()||!d.a_body.trim()||!d.a_contact.trim())return fErr('Add a headline, details and contact number.');const ban=d.a_type==='banner',wk=Math.max(1,+d.a_weeks||1),m=me();DB.ads.unshift({id:uid('a'),userId:m.id,business:d.a_biz.trim(),title:d.a_title.trim(),body:d.a_body.trim(),category:d.a_cat,contact:d.a_contact.trim(),price:d.a_price.trim(),type:d.a_type,weeks:ban?wk:0,fee:ban?wk*DB.settings.adRates.banner:0,feePaid:!ban,status:isAdmin()?'live':'pending',hue:HUES[Math.floor(Math.random()*HUES.length)],created:Date.now()});notify('admin',`New ${ban?'banner':'classified'} ad from ${isAdmin()?'office':flatKey(m)}: ${d.a_title.trim()}`,'marketplace');save();closeModal();render();toast(isAdmin()?'Ad published':'Ad submitted for admin review')};
+ACT['ad-status']=d=>{const a=DB.ads.find(x=>x.id===d.id);a.status=d.s;notify(a.userId,`Your ad "${a.title}" is ${d.s==='live'?'now live':d.s}`,'marketplace');logAct(`Ad ${d.s}: ${a.title}`);save();render()};
+ACT['ad-fee']=d=>{const a=DB.ads.find(x=>x.id===d.id);a.feePaid=true;DB.entries.push({id:uid('x'),date:new Date().toISOString(),category:'Ad revenue',desc:'Banner ad: '+a.title,amount:a.fee,type:'income'});save();render();toast('Fee recorded in accounts')};
+
+/* ----- polls ----- */
+ROUTES.polls=()=>{const m=me(),adm=isAdmin(),fk=adm?null:flatKey(m);
+ const card=p=>{const tot=Object.keys(p.votes).length,mine=fk?p.votes[fk]:undefined,open=p.status==='open'&&daysTo(p.closes)>=0,show=adm||mine!==undefined||!open,counts=p.options.map((_,i)=>Object.values(p.votes).filter(v=>v===i).length);
+  return`<div class="card"><div class="row wrap-r">${chip(open?'Open':'Closed',open?'good':'')}<small>${open?'Closes '+fdate(p.closes):'Ended '+fdate(p.closes)} · ${tot} flats voted</small><span class="sp"></span>${adm&&open?btn('Close poll','poll-close',{sm:1,d:{id:p.id}}):''}</div><h3 style="margin:10px 0 14px;font-size:19px">${esc(p.question)}</h3><div class="bars">${p.options.map((o,i)=>{const pc=tot?Math.round(counts[i]/tot*100):0;return show?`<div class="bar-r"><div class="lbl"><span>${esc(o.t)}${mine===i?' '+chip('Your vote','good'):''}</span><span class="num">${pc}% · ${counts[i]}</span></div><div class="tr"><i style="--w:${pc}%"></i></div></div>`:`<button class="btn block" style="justify-content:flex-start" data-act="vote" data-id="${p.id}" data-i="${i}">${esc(o.t)}</button>`}).join('')}</div>${!show?'<small>One vote per flat. You cannot change it later.</small>':''}</div>`};
+ return head('Polls and voting','Have your say on society decisions. Each flat gets one vote.',adm?btn('New poll','poll-new',{c:'pri',i:'plus'}):'')+`<div class="grid g2">${DB.polls.length?DB.polls.slice().sort((a,b)=>(b.status==='open')-(a.status==='open')||D(b.closes)-D(a.closes)).map(card).join(''):empty('vote','No polls yet')}</div>`};
+ACT.vote=d=>{const p=DB.polls.find(x=>x.id===d.id),fk=flatKey(me());if(p.votes[fk]!==undefined)return toast('Your flat has already voted','info');p.votes[fk]=+d.i;save();render();toast('Vote recorded')};
+ACT['poll-close']=d=>{DB.polls.find(x=>x.id===d.id).status='closed';save();render()};
+ACT['poll-new']=()=>modal('New poll',formWrap('poll',F.a('pl_q','Question',{req:true,cls:'full'})+F.a('pl_opts','Options, one per line',{req:true,cls:'full',v:'Yes\nNo'})+F.t('pl_close','Closes on',{type:'date',v:isoDay(new Date(Date.now()+10*DAY)),cls:'full'}),'Publish poll'));
+FORMS.poll=d=>{const o=d.pl_opts.split('\n').map(x=>x.trim()).filter(Boolean);if(!d.pl_q.trim()||o.length<2)return fErr('Add a question and at least two options.');DB.polls.unshift({id:uid('p'),question:d.pl_q.trim(),options:o.map(t=>({t})),votes:{},closes:new Date(d.pl_close+'T23:59:00').toISOString(),status:'open',by:'Committee'});notify('all','New poll: '+d.pl_q.trim(),'polls');save();closeModal();render();toast('Poll published')};
+
+/* ----- gallery ----- */
+ROUTES.gallery=()=>{const l=DB.events.filter(e=>+D(e.date)<Date.now()||e.cover||(e.photos||[]).length).sort((a,b)=>D(b.date)-D(a.date));
+ return head('Gallery','Photos from society events.')+`<div class="gal">${l.map(e=>`<figure data-act="album" data-id="${e.id}" tabindex="0">${cover(e)}<figcaption>${esc(e.title)}<br><small style="color:rgba(255,255,255,.8)">${fdatey(e.date)} · ${(e.photos||[]).length+(e.cover?1:0)||'no'} photos</small></figcaption></figure>`).join('')||empty('image','No albums yet')}</div>`+(isAdmin()?`<div class="demo">${ic('info')}<span>Open an event under Events and upload real photos to fill its album. Generated artwork is shown until then.</span></div>`:'')};
+ACT.album=d=>{const e=DB.events.find(x=>x.id===d.id),ph=(e.cover?[e.cover]:[]).concat(e.photos||[]);modal(esc(e.title),`<div class="stack"><small>${fdatey(e.date)} · ${esc(e.venue)}</small>${ph.length?`<div class="gal">${ph.map(p=>`<figure style="cursor:default"><img class="art" src="${p}" alt="Photo from ${esc(e.title)}"></figure>`).join('')}</div>`:`<div class="ev" style="box-shadow:none;border:0"><div class="cv" style="border-radius:14px;cursor:default">${cover(e)}</div></div><p class="muted">No photos have been uploaded for this event yet.</p>`}</div>`,{wide:1})};
+
+/* ----- accounts ----- */
+ROUTES.accounts=()=>{const adm=isAdmin(),L=ledger(6),cur=L[5],prev=L[4],mx=Math.max(1,...L.flatMap(x=>[x.inc,x.exp])),nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(v)));return[1,1.2,1.6,2,2.5,3,4,5,6,8,10].map(k=>k*p).find(x=>x>=v)},top=nice(mx),W=640,H=240,pl=48,pb=30,pt=12,bw=22,gap=(W-pl-10)/6;
+ const ticks=[0,.25,.5,.75,1].map(t=>t*top);
+ const svg=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Income and expense for the last six months" style="width:100%;height:auto">${ticks.map(t=>{const y=H-pb-(t/top)*(H-pb-pt);return`<line class="ax" x1="${pl}" x2="${W-6}" y1="${y}" y2="${y}"/><text x="${pl-8}" y="${y+4}" text-anchor="end">${t>=1e5?(t/1e5).toFixed(t%1e5?1:0)+'L':t>=1e3?Math.round(t/1e3)+'k':t}</text>`}).join('')}${L.map((x,i)=>{const cx=pl+gap*i+gap/2,h1=(x.inc/top)*(H-pb-pt),h2=(x.exp/top)*(H-pb-pt);return`<rect class="in" x="${cx-bw-2}" y="${H-pb-h1}" width="${bw}" height="${h1}" rx="4" style="animation-delay:${i*70}ms"><title>${mshort(x.k)} income ${inr(x.inc)}</title></rect><rect class="ex" x="${cx+2}" y="${H-pb-h2}" width="${bw}" height="${h2}" rx="4" style="animation-delay:${i*70+40}ms"><title>${mshort(x.k)} expense ${inr(x.exp)}</title></rect><text x="${cx}" y="${H-10}" text-anchor="middle">${mshort(x.k)}</text>`}).join('')}</svg>`;
+ const ent=DB.entries.slice().sort((a,b)=>D(b.date)-D(a.date)).slice(0,14);
+ return head('Society accounts','Transparent view of what comes in and what goes out.',adm?btn('Add entry','entry-new',{c:'pri',i:'plus'}):'')+
+ `<div class="grid g4"><div class="kpi"><span class="k-ic">${ic('wallet')}</span><div><b>${inr(cur.inc)}</b><small>Income this month</small></div></div><div class="kpi warn"><span class="k-ic">${ic('chart')}</span><div><b>${inr(cur.exp)}</b><small>Expenses this month</small></div></div><div class="kpi"><span class="k-ic">${ic('check')}</span><div><b>${inr(prev.inc-prev.exp)}</b><small>Surplus last month</small></div></div><div class="kpi"><span class="k-ic">${ic('building')}</span><div><b>${inr(L.reduce((a,x)=>a+x.inc-x.exp,0))}</b><small>Net, last 6 months</small></div></div></div>
+ <div class="card"><h3>${ic('chart')}Income and expenses<span class="legend" style="margin-left:auto"><span><i style="--c:var(--brand)"></i>Income</span><span><i style="--c:var(--accent)"></i>Expense</span></span></h3>${svg}</div>
+ <div class="card"><h3>${ic('book')}Recent entries</h3><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Category</th><th>Details</th><th class="r">Amount</th>${adm?'<th></th>':''}</tr></thead><tbody>${ent.map(e=>`<tr><td>${fdate(e.date)}</td><td>${chip(esc(e.category),e.type==='income'?'good':'warn')}</td><td>${esc(e.desc)}</td><td class="r num"><b style="color:var(--${e.type==='income'?'good':'bad'})">${e.type==='income'?'+':'−'}${inr(e.amount)}</b></td>${adm?`<td class="r">${btn('','entry-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{id:e.id}})}</td>`:''}</tr>`).join('')}</tbody></table></div><small>Maintenance collections are counted automatically from paid bills.</small></div>`};
+ACT['entry-new']=()=>modal('Add entry',formWrap('entry',F.s('x_type','Type',[['expense','Expense'],['income','Income']])+F.t('x_date','Date',{type:'date',v:isoDay(new Date())})+F.t('x_cat','Category',{req:true,ph:'Electricity, Repairs, Hall rent'})+F.t('x_amt','Amount (₹)',{type:'number',req:true,attrs:'min="1"'})+F.t('x_desc','Details',{cls:'full'}),'Add entry'));
+FORMS.entry=d=>{if(!d.x_cat.trim()||!(+d.x_amt>0))return fErr('Enter a category and an amount.');DB.entries.push({id:uid('x'),date:new Date(d.x_date+'T12:00:00').toISOString(),category:d.x_cat.trim(),desc:d.x_desc.trim()||d.x_cat.trim(),amount:+d.x_amt,type:d.x_type});save();closeModal();render();toast('Entry added')};
+ACT['entry-del']=d=>{DB.entries=DB.entries.filter(x=>x.id!==d.id);save();render()};
+
+/* ----- documents ----- */
+const DTYPES=['Bye-laws','Minutes','Audit','Forms','Circulars'];
+ROUTES.documents=()=>{let l=DB.docs.slice().sort((a,b)=>D(b.date)-D(a.date));if(UI.cat!=='all')l=l.filter(x=>x.type===UI.cat);
+ return head('Documents','Bye-laws, minutes, audit reports and forms.',isAdmin()?btn('Add document','doc-new',{c:'pri',i:'plus'}):'')+`<div class="filters">${['all',...DTYPES].map(c=>`<button class="pill ${UI.cat===c?'on':''}" data-act="cat" data-v="${c}">${c==='all'?'All':c}</button>`).join('')}</div><div class="grid g2">${l.map(x=>`<div class="notice" data-act="doc-open" data-id="${x.id}" tabindex="0"><div class="ni">${ic('book')}</div><div class="sp" style="min-width:0"><h4>${esc(x.title)}</h4><p>${esc(x.desc)}</p><div class="meta">${chip(esc(x.type),'brand')}<span>${fdatey(x.date)}</span></div></div></div>`).join('')||empty('book','No documents')}</div>`};
+ACT['doc-open']=d=>{const x=DB.docs.find(y=>y.id===d.id);modal(esc(x.title),`<div class="stack"><div class="row wrap-r">${chip(esc(x.type),'brand')}<small>${fdatey(x.date)}</small></div><p style="white-space:pre-wrap">${esc(x.desc)}</p>${x.link?`<a class="btn pri" href="${esc(x.link)}" target="_blank" rel="noopener">${ic('arrow')}Open document</a>`:'<small>The office keeps the signed copy. Ask for it at the society office.</small>'}${isAdmin()?`<hr class="hr">${btn('Delete','doc-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{id:x.id}})}`:''}</div>`)};
+ACT['doc-new']=()=>modal('Add document',formWrap('doc',F.t('d_title','Title',{req:true,cls:'full'})+F.s('d_type','Type',DTYPES)+F.t('d_date','Date',{type:'date',v:isoDay(new Date())})+F.a('d_desc','Summary',{cls:'full',req:true})+F.t('d_link','Link to file (optional)',{cls:'full',type:'url',ph:'https://drive.google.com/...',hint:'Upload the PDF to Drive or any host and paste the share link.'}),'Add document'));
+FORMS.doc=d=>{if(!d.d_title.trim())return fErr('Enter a title.');DB.docs.unshift({id:uid('d'),title:d.d_title.trim(),type:d.d_type,date:new Date(d.d_date+'T12:00:00').toISOString(),desc:d.d_desc.trim(),link:d.d_link.trim()});save();closeModal();render();toast('Document added')};
+ACT['doc-del']=d=>{DB.docs=DB.docs.filter(x=>x.id!==d.id);save();closeModal();render()};
+
+/* ----- directory ----- */
+ROUTES.directory=()=>{const adm=isAdmin(),tab=UI.tab||'res',com=DB.users.filter(u=>u.role==='committee'&&u.status==='approved');let body='';
+ if(tab==='res'){let l=DB.users.filter(u=>u.status==='approved').sort((a,b)=>flatKey(a).localeCompare(flatKey(b),undefined,{numeric:true}));if(UI.q)l=l.filter(u=>(u.name+flatKey(u)).toLowerCase().includes(UI.q.toLowerCase()));body=`<div class="filters"><div class="search">${ic('search')}<input id="q" value="${esc(UI.q)}" placeholder="Search by name or flat" data-input="q" aria-label="Search residents"></div></div><div class="grid g3">${l.slice(0,60).map(u=>`<div class="card flat row"><span class="av">${initials(u.name)}</span><div class="sp" style="min-width:0"><b>${esc(u.name)}</b><br><small>${esc(flatKey(u))} · ${esc(u.type)}${u.title?' · '+esc(u.title):''}</small></div>${adm||u.showPhone?`<a class="btn sm" href="tel:${esc(u.mobile)}" aria-label="Call ${esc(u.name)}">${ic('phone')}</a>`:''}</div>`).join('')||empty('users','No match')}</div>${l.length>60?'<small>Showing the first 60. Use search to narrow down.</small>':''}`}
+ else if(tab==='com')body=`<div class="grid g3">${com.map(u=>`<div class="card row"><span class="av" style="width:50px;height:50px;font-size:18px">${initials(u.name)}</span><div class="sp"><b>${esc(u.name)}</b><br>${chip(esc(u.title||'Member'),'brand')}<br><small>${esc(flatKey(u))}</small></div>${adm||u.showPhone?`<a class="btn sm" href="tel:${esc(u.mobile)}">${ic('phone')}</a>`:''}</div>`).join('')||empty('users','No committee members listed')}</div>`;
+ else{const cat=tab==='emg'?'Emergency':tab==='soc'?'Society':'Services';body=`<div class="grid g3">${DB.contacts.filter(c=>c.cat===cat).map(c=>`<div class="card flat row"><span class="k-ic" style="width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand)">${ic('phone')}</span><div class="sp" style="min-width:0"><b>${esc(c.name)}</b><br><small>${esc(c.role)}</small></div><a class="btn sm pri num" href="tel:${esc(c.phone)}">${esc(c.phone)}</a>${adm?btn('','contact-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{id:c.id}}):''}</div>`).join('')||empty('phone','No contacts')}</div>`}
+ return head('Directory','Residents, committee and useful numbers.',adm?btn('Add contact','contact-new',{c:'pri',i:'plus'}):'')+`<div class="filters">${[['res','Residents'],['com','Committee'],['emg','Emergency'],['soc','Society desk'],['svc','Services']].map(t=>`<button class="pill ${tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${t[1]}</button>`).join('')}</div>${body}`};
+ACT['contact-new']=()=>modal('Add contact',formWrap('contact',F.t('k_name','Name',{req:true})+F.s('k_cat','Group',['Emergency','Society','Services'])+F.t('k_role','Role or service',{cls:'full'})+F.t('k_phone','Phone',{req:true,cls:'full'}),'Add contact'));
+FORMS.contact=d=>{if(!d.k_name.trim()||!d.k_phone.trim())return fErr('Enter a name and phone number.');DB.contacts.push({id:uid('t'),name:d.k_name.trim(),role:d.k_role.trim(),phone:d.k_phone.trim(),cat:d.k_cat});save();closeModal();render()};
+ACT['contact-del']=d=>{DB.contacts=DB.contacts.filter(c=>c.id!==d.id);save();render()};
+
+/* ----- profile ----- */
+ROUTES.profile=()=>{const m=me(),adm=isAdmin();
+ return head('My profile')+(adm?`<div class="card"><div class="row"><span class="av" style="width:56px;height:56px;font-size:20px">AD</span><div><b>Society Admin</b><br><small>Username: ${esc(DB.settings.adminUser)}</small></div></div><hr class="hr"><p class="muted">Change the admin password and society details under Society setup.</p><div class="row" style="margin-top:12px">${btn('Open Society setup','nav',{c:'pri',d:{to:'setup'}})}${btn('Sign out','logout',{i:'logout'})}</div></div>`:
+ `<div class="split"><div class="card"><h3>${ic('user')}Details</h3>${formWrap('profile',F.t('pf_name','Full name',{req:true,v:m.name})+F.t('pf_email','Email',{type:'email',v:m.email})+F.t('pf_members','People in flat',{type:'number',v:m.members})+F.t('pf_veh','Vehicle number',{v:m.vehicle})+F.c('pf_show','Show my phone number to other residents',m.showPhone),'Save changes')}</div>
+ <div class="stack"><div class="card"><h3>${ic('building')}My flat</h3><div class="kv"><span>Flat</span><span>${esc(flatKey(m))}</span></div><div class="kv"><span>Resident type</span><span>${esc(m.type)}</span></div><div class="kv"><span>Mobile</span><span>${esc(m.mobile)}</span></div><div class="kv"><span>Status</span><span>${sChip(m.status)}</span></div></div>
+ <div class="card"><h3>${ic('lock')}Change password</h3>${formWrap('pw',F.t('pw_old','Current password',{type:'password',req:true,cls:'full'})+F.t('pw_new','New password',{type:'password',req:true,cls:'full'}),'Update password')}</div>
+ <div class="row">${btn('Sign out','logout',{i:'logout'})}</div></div></div>`)};
+FORMS.profile=d=>{const m=me();Object.assign(m,{name:d.pf_name.trim()||m.name,email:d.pf_email.trim(),members:+d.pf_members||1,vehicle:d.pf_veh.trim(),showPhone:!!d.pf_show});save();render();toast('Profile saved')};
+FORMS.pw=async d=>{const m=me();if(await sha(d.pw_old)!==m.passHash)return fErr('Current password is incorrect.');if(d.pw_new.length<6)return fErr('New password needs at least 6 characters.');m.passHash=await sha(d.pw_new);save();render();toast('Password updated')};
+/* ========== admin views + app wiring ========== */
+ROUTES.admin=()=>{const c=collection(mkey()),pend=DB.users.filter(u=>u.status==='pending'),ver=DB.bills.filter(b=>b.status==='verifying'),bk=DB.bookings.filter(b=>b.status==='pending'),ads=DB.ads.filter(a=>a.status==='pending'),open=DB.complaints.filter(x=>x.status==='open');
+ const q=(i,t,n,link)=>`<a class="kpi ${n?'warn':''}" href="#${link}"><span class="k-ic">${ic(i)}</span><div><b data-count="${n}">0</b><small>${t}</small></div></a>`;
+ return head('Admin dashboard','Everything that needs a decision, in one place.')+
+ (DB.settings.demo?`<div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Explore freely. When you are ready, clear the sample residents, bills and events.</span><span class="sp"></span>${btn('Clear demo data','clear-demo',{sm:1,c:'bad',confirm:1})}</div>`:'')+
+ `<div class="grid g4">${q('users','Registrations to approve',pend.length,'members')}${q('wallet','Payments to verify',ver.length,'billing')}${q('chat','Open tickets',open.length,'helpdesk')}${q('key','Bookings and ads',bk.length+ads.length,bk.length?'amenities':'marketplace')}</div>
+ <div class="split"><div class="card"><h3>${ic('users')}Registration requests<a class="more" href="#members">Open members</a></h3>${pend.length?`<div class="stack">${pend.slice(0,4).map(memberCard).join('')}</div>`:empty('check','No pending requests','New flat registrations show up here for approval.')}</div>
+ <div class="stack"><div class="card"><h3>${ic('wallet')}${mlabel(mkey())} collection</h3><div class="row" style="gap:18px">${ring(c.pct,'flats paid')}<div><b class="num" style="font-size:20px;font-family:var(--f-display)">${inr(c.got)}</b><br><small>of ${inr(c.billed)} billed</small><br>${c.ver?chip(c.ver+' to verify','info'):''}</div></div><div class="row" style="margin-top:14px">${btn('Open billing','nav',{c:'pri',sm:1,d:{to:'billing'}})}</div></div>
+ <div class="card"><h3>${ic('flag')}Quick actions</h3><div class="grid" style="grid-template-columns:1fr 1fr">${btn('Publish notice','notice-new',{i:'notice'})}${btn('Add event','event-new',{i:'calendar'})}${btn('Schedule work','sched-new',{i:'sunrise'})}${btn('Start a poll','poll-new',{i:'vote'})}</div></div></div></div>
+ <div class="card"><h3>${ic('clock')}Recent activity</h3>${DB.log.slice(0,8).map(l=>`<div class="kv"><span>${esc(l.t)}</span><span><small>${rel(l.at)}</small></span></div>`).join('')||empty('clock','No activity yet')}</div>`};
+
+function memberCard(u){const dup=DB.users.find(x=>x.id!==u.id&&x.status==='approved'&&x.tower===u.tower&&x.flat===u.flat&&x.type==='Owner'),pm=DB.users.some(x=>x.id!==u.id&&x.mobile===u.mobile);
+ return`<div class="notice" style="cursor:default"><span class="av" style="width:44px;height:44px;flex:none">${initials(u.name)}</span><div class="sp" style="min-width:0"><h4>${esc(u.name)}</h4><p style="-webkit-line-clamp:3">${esc(flatKey(u))} · ${esc(u.type)} · ${u.members} member${u.members>1?'s':''} · ${esc(u.mobile)}${u.email?' · '+esc(u.email):''}${u.ref?' · Proof: '+esc(u.ref):''}</p><div class="meta">${sChip(u.status)}${u.role==='committee'?chip(esc(u.title||'Committee'),'brand'):''}<span>Requested ${rel(u.created)}</span>${dup&&u.type==='Owner'?chip('Flat has an owner already','bad'):''}</div>
+ <div class="row wrap-r" style="margin-top:10px">${u.status==='pending'?btn('Approve','approve',{sm:1,c:'good',i:'check',d:{id:u.id}})+btn('Reject','reject',{sm:1,c:'bad',i:'x',d:{id:u.id}}):u.status==='approved'?btn('Make committee','committee',{sm:1,d:{id:u.id}})+btn('Remove access','reject',{sm:1,c:'bad',d:{id:u.id}}):btn('Approve now','approve',{sm:1,c:'good',d:{id:u.id}})}</div></div></div>`}
+ROUTES.members=()=>{const tab=UI.tab||'pending';let l=DB.users.filter(u=>u.status===tab);if(UI.q)l=l.filter(u=>(u.name+flatKey(u)+u.mobile).toLowerCase().includes(UI.q.toLowerCase()));const cnt=s=>DB.users.filter(u=>u.status===s).length;
+ return head('Members','Approve flat registrations and manage resident access.')+`<div class="filters">${['pending','approved','rejected'].map(t=>`<button class="pill ${tab===t?'on':''}" data-act="tab" data-v="${t}">${t[0].toUpperCase()+t.slice(1)} (${cnt(t)})</button>`).join('')}<div class="search">${ic('search')}<input id="q" value="${esc(UI.q)}" placeholder="Name, flat or mobile" data-input="q" aria-label="Search members"></div></div><div class="grid g2">${l.length?l.slice(0,60).map(memberCard).join(''):empty(tab==='pending'?'check':'users','Nothing here',tab==='pending'?'All registration requests are handled.':'')}</div>`};
+ACT.approve=d=>{const u=DB.users.find(x=>x.id===d.id);if(u.type==='Owner'&&DB.users.some(x=>x.id!==u.id&&x.status==='approved'&&x.type==='Owner'&&x.tower===u.tower&&x.flat===u.flat)&&!d.force){return modal('Flat already has an owner',`<div class="stack"><p>${esc(flatKey(u))} already has an approved owner. Approving ${esc(u.name)} as a second owner is usually for co-owners. Continue?</p><div class="row" style="justify-content:flex-end">${btn('Cancel','close-modal')}${btn('Approve anyway','approve',{c:'pri',d:{id:u.id,force:1}})}</div></div>`)}
+ u.status='approved';u.reason='';const n=DB.bills.some(b=>b.flat===flatKey(u)&&b.month===mkey())?0:genBills(mkey());notify(u.id,`Welcome to ${DB.settings.name}! Your registration for ${flatKey(u)} is approved.`,'home');logAct(`Approved ${u.name} (${flatKey(u)})`);save();closeModal();render();toast(`${u.name.split(' ')[0]} approved${n?'. Bill generated for this month':''}`)};
+ACT.reject=d=>{const u=DB.users.find(x=>x.id===d.id);modal((u.status==='approved'?'Remove access for ':'Reject ')+esc(u.name),formWrap('reject',hid(u.id)+F.t('rj_reason','Reason (shown to the resident)',{cls:'full',ph:'Could not verify ownership documents'}),u.status==='approved'?'Remove access':'Reject request'))};
+FORMS.reject=d=>{const u=DB.users.find(x=>x.id===d.id);u.status='rejected';u.reason=d.rj_reason.trim();notify(u.id,'Your registration was not approved','home');logAct(`Rejected ${u.name} (${flatKey(u)})`);save();closeModal();render();toast('Request rejected','x')};
+ACT.committee=d=>{const u=DB.users.find(x=>x.id===d.id);modal('Committee role for '+esc(u.name),formWrap('committee',hid(u.id)+F.s('cm_title','Role',['','President','Vice President','Secretary','Treasurer','Member'],{cls:'full',v:u.title}),'Save role'))};
+FORMS.committee=d=>{const u=DB.users.find(x=>x.id===d.id);u.title=d.cm_title;u.role=d.cm_title?'committee':'resident';save();closeModal();render();toast('Role updated')};
+
+/* ----- billing ----- */
+ROUTES.billing=()=>{const m=UI.month,bs=DB.bills.filter(b=>b.month===m).sort((a,b)=>a.flat.localeCompare(b.flat,undefined,{numeric:true})),c=collection(m),ver=bs.filter(b=>b.status==='verifying'),un=bs.filter(b=>b.status==='due'),flatUser=fk=>approvedFlats().find(u=>flatKey(u)===fk);
+ const tr=b=>{const u=flatUser(b.flat),od=b.status==='due'&&daysTo(b.dueDate)<0;return`<tr><td><b>${esc(b.flat)}</b></td><td>${esc(u?u.name:'—')}</td><td class="r num">${inr(billTotal(b))}</td><td>${od?sChip('overdue'):sChip(b.status)}</td><td>${b.ref?`<small>${esc(b.method||'')} · ${esc(b.ref)}</small>`:'<small>—</small>'}</td><td class="r"><div class="row" style="justify-content:flex-end;gap:6px">${b.status==='verifying'?btn('Verify','bill-verify',{sm:1,c:'good',d:{id:b.id}})+btn('Reject','bill-reject',{sm:1,c:'bad',d:{id:b.id}}):b.status==='due'?btn('Mark paid','bill-cash',{sm:1,d:{id:b.id}}):btn('Receipt','receipt',{sm:1,d:{id:b.id}})}</div></td></tr>`};
+ return head('Billing','Generate monthly bills, verify payments and chase dues.',btn('Generate bills','gen-bills',{c:'pri',i:'plus'})+(un.length?btn(`Remind ${un.length} flats`,'remind-all',{i:'bell'}):''))+
+ `<div class="filters"><button class="iconbtn" data-act="month" data-n="-1" aria-label="Previous month">${ic('cl')}</button><b style="font:700 18px var(--f-display);min-width:150px;text-align:center">${mlabel(m)}</b><button class="iconbtn" data-act="month" data-n="1" aria-label="Next month">${ic('cr')}</button></div>
+ <div class="grid g4"><div class="card flat row">${ring(c.pct,'paid')}<div><b class="num" style="font-size:20px">${c.paid}/${c.total}</b><br><small>flats paid</small></div></div><div class="kpi"><span class="k-ic">${ic('wallet')}</span><div><b>${inr(c.billed)}</b><small>Billed</small></div></div><div class="kpi"><span class="k-ic">${ic('check')}</span><div><b>${inr(c.got)}</b><small>Collected</small></div></div><div class="kpi ${c.billed-c.got>0?'warn':''}"><span class="k-ic">${ic('hourglass')}</span><div><b>${inr(Math.max(0,bs.filter(b=>b.status!=='paid').reduce((a,b)=>a+billTotal(b),0)))}</b><small>Outstanding · ${ver.length} to verify</small></div></div></div>
+ ${ver.length?`<div class="card"><h3>${ic('shield')}Payments to verify ${chip(ver.length,'info')}</h3><small>Match the reference with your bank statement or UPI app before verifying.</small><div class="tbl-wrap" style="margin-top:10px"><table class="tbl"><thead><tr><th>Flat</th><th>Resident</th><th class="r">Amount</th><th>Status</th><th>Reference</th><th></th></tr></thead><tbody>${ver.map(tr).join('')}</tbody></table></div></div>`:''}
+ <div class="card"><h3>${ic('book')}All flats · ${mlabel(m)}</h3>${bs.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Flat</th><th>Resident</th><th class="r">Amount</th><th>Status</th><th>Reference</th><th></th></tr></thead><tbody>${bs.map(tr).join('')}</tbody></table></div>`:empty('wallet','No bills for this month',`Press "Generate bills" to create a ${inr(chargeTotal())} bill for every approved flat.`)}</div>`};
+ACT.month=d=>{UI.month=mshift(UI.month,+d.n);render()};
+ACT['gen-bills']=()=>{const n=genBills(UI.month);if(n){notify('all',`Maintenance bills for ${mlabel(UI.month)} are ready`,'maintenance');logAct(`Generated ${n} bills for ${mlabel(UI.month)}`)}save();render();toast(n?`${n} bills generated`:'All bills already exist for this month','info')};
+ACT['remind-all']=()=>{DB.bills.filter(b=>b.month===UI.month&&b.status==='due').forEach(b=>{DB.users.filter(u=>flatKey(u)===b.flat&&u.status==='approved').forEach(u=>notify(u.id,`Reminder: maintenance for ${mlabel(b.month)} (${inr(billTotal(b))}) is pending`,'maintenance'))});save();toast('Reminders sent')};
+ACT['bill-verify']=d=>{const b=DB.bills.find(x=>x.id===d.id);b.status='paid';b.paidOn=b.submittedOn||new Date().toISOString();b.lateFee=b.lateFee||0;DB.users.filter(u=>flatKey(u)===b.flat).forEach(u=>notify(u.id,`Payment for ${mlabel(b.month)} verified. Receipt is ready.`,'maintenance'));logAct(`Verified payment from ${b.flat}`);save();render();toast('Payment verified. Receipt issued.')};
+ACT['bill-reject']=d=>{const b=DB.bills.find(x=>x.id===d.id);b.status='due';DB.users.filter(u=>flatKey(u)===b.flat).forEach(u=>notify(u.id,`We could not match your payment reference ${b.ref}. Please check and pay again.`,'maintenance'));b.ref='';save();render();toast('Sent back to resident','x')};
+ACT['bill-cash']=d=>{const b=DB.bills.find(x=>x.id===d.id);modal('Record payment for '+esc(b.flat),formWrap('cash',hid(b.id)+F.s('c_method','Received by',['Cash at office','Cheque','Bank transfer','UPI'],{cls:'full'})+F.t('c_ref','Reference or receipt book no.',{cls:'full'})+`<p class="full">Amount: <b>${inr(billTotal(b))}</b></p>`,'Mark as paid'))};
+FORMS.cash=d=>{const b=DB.bills.find(x=>x.id===d.id);b.lateFee=lateFee(b);b.status='paid';b.paidOn=new Date().toISOString();b.method=d.c_method;b.ref=d.c_ref.trim()||'OFFICE';DB.users.filter(u=>flatKey(u)===b.flat).forEach(u=>notify(u.id,`Payment for ${mlabel(b.month)} recorded. Thank you.`,'maintenance'));logAct(`Recorded ${d.c_method} payment for ${b.flat}`);save();closeModal();render();toast('Payment recorded')};
+
+/* ----- setup ----- */
+ROUTES.setup=()=>{const s=DB.settings;
+ return head('Society setup','Details, charges and account security.')+`<div class="split"><div class="card"><h3>${ic('building')}Society details</h3>${formWrap('setup',F.t('s_name','Society name',{req:true,v:s.name,cls:'full'})+F.t('s_tag','Tagline',{v:s.tagline,cls:'full'})+F.t('s_addr','Address',{v:s.address,cls:'full'})+F.t('s_upi','UPI ID for collection',{v:s.upi,hint:'Residents see a QR for this ID.'})+F.t('s_upin','Name on UPI account',{v:s.upiName})+F.a('s_bank','Bank transfer details (optional)',{v:s.bank||'',cls:'full',ph:'A/c name, number, IFSC, branch'})+F.a('s_charges','Monthly charges, one per line as Label | Amount',{v:s.charges.map(c=>c.label+' | '+c.amt).join('\n'),cls:'full'})+F.t('s_due','Due day of month',{type:'number',v:s.dueDay,attrs:'min="1" max="28"'})+F.t('s_late','Late fee % per month',{type:'number',v:s.latePct,attrs:'min="0" max="20" step="0.5"'})+F.t('s_banner','Banner ad rate per week (₹)',{type:'number',v:s.adRates.banner}),'Save setup')}</div>
+ <div class="stack"><div class="card"><h3>${ic('lock')}Admin login</h3>${formWrap('adminpw',F.t('ap_user','Admin username',{v:s.adminUser,req:true,cls:'full'})+F.t('ap_old','Current password',{type:'password',req:true,cls:'full'})+F.t('ap_new','New password',{type:'password',req:true,cls:'full',hint:'At least 8 characters.'}),'Update admin login')}</div>
+ <div class="card"><h3>${ic('upload')}Data</h3><p class="muted" style="margin-bottom:12px">Everything is stored in this browser. Take a backup before clearing data or switching device.</p><div class="row wrap-r">${btn('Backup','backup',{sm:1,i:'copy'})}${btn('Restore','restore',{sm:1,i:'upload'})}${btn('Reload demo data','reset-demo',{sm:1,confirm:1})}${btn('Clear demo data','clear-demo',{sm:1,c:'bad',confirm:1})}</div></div></div></div>`};
+FORMS.setup=d=>{const ch=d.s_charges.split('\n').map(l=>l.split('|')).filter(p=>p.length>=2&&+p[1]>0).map(p=>({label:p[0].trim(),amt:+p[1]}));if(!d.s_name.trim())return fErr('Society name is required.');if(!ch.length)return fErr('Add at least one charge, like: Maintenance | 2200');Object.assign(DB.settings,{name:d.s_name.trim(),tagline:d.s_tag.trim(),address:d.s_addr.trim(),upi:d.s_upi.trim(),upiName:d.s_upin.trim(),bank:d.s_bank.trim(),charges:ch,dueDay:Math.min(28,Math.max(1,+d.s_due||15)),latePct:+d.s_late||0});DB.settings.adRates.banner=+d.s_banner||0;save();render();toast('Setup saved')};
+FORMS.adminpw=async d=>{if(await sha(d.ap_old)!==DB.settings.adminHash)return fErr('Current password is incorrect.');if(d.ap_new.length<8)return fErr('New password needs at least 8 characters.');DB.settings.adminUser=d.ap_user.trim();DB.settings.adminHash=await sha(d.ap_new);save();render();toast('Admin login updated')};
+ACT.backup=()=>modal('Backup',`<div class="stack"><p class="muted">Copy this text and keep it somewhere safe. Paste it into Restore to get your data back.</p><textarea id="bk" readonly style="width:100%;min-height:200px;font:12px monospace;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px">${esc(JSON.stringify(DB))}</textarea><div class="row" style="justify-content:flex-end"><button class="btn pri" data-act="copy" data-t="${esc(JSON.stringify(DB))}">${ic('copy')}Copy backup</button></div></div>`);
+ACT.restore=()=>modal('Restore backup',formWrap('restore',`<label class="fld full"><span>Paste backup text</span><textarea id="rs" name="rs" required style="min-height:200px"></textarea></label>`,'Restore'));
+FORMS.restore=d=>{try{const x=JSON.parse(d.rs);if(!x.settings||!x.users)throw 0;DB=x;save();closeModal();render(true);toast('Backup restored')}catch(e){fErr('That text is not a valid backup.')}};
+ACT['reset-demo']=async()=>{DB=await seed();save();setSes({k:'admin'});render(true);toast('Demo data reloaded')};
+ACT['clear-demo']=async()=>{const s=DB.settings,am=DB.amenities,co=DB.contacts.filter(c=>c.cat==='Emergency');DB={v:1,settings:{...s,demo:false,upi:s.upi.includes('queenstown.society@upi')?'':s.upi},users:[],notices:[],events:[],bills:[],schedule:[],amenities:am,bookings:[],complaints:[],ads:[],polls:[],docs:[],contacts:co,entries:[],visitors:[],notifs:[],log:[{t:'Demo data cleared. Society is live.',at:Date.now()}]};save();render(true);toast('Demo data cleared. Add your UPI ID in Society setup.','info')};
+
+/* ----- global actions ----- */
+ACT.theme=()=>{const r=document.documentElement,dark=r.dataset.theme==='dark'||(!r.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches),n=dark?'light':'dark';r.dataset.theme=n;lsSet(TKEY,n);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=n==='dark'?'#0A1516':'#0B3B3A';render()};
+ACT.logout=()=>{closeModal();setSes(null);UI.auth='login';location.hash='';render(true)};
+ACT['close-modal']=()=>closeModal();
+ACT.bell=()=>{const m=me(),l=myNotifs().slice(0,30);l.forEach(n=>{if(!n.read.includes(m.id))n.read.push(m.id)});save();modal('Notifications',l.length?`<div class="stack">${l.map(n=>`<a class="notice" style="text-decoration:none;cursor:pointer" href="#${n.link||'home'}" data-act="close-modal"><div class="ni">${ic('bell')}</div><div class="sp" style="min-width:0"><b>${esc(n.text)}</b><div class="meta"><span>${rel(n.at)}</span></div></div></a>`).join('')}</div>`:empty('bell','You are all caught up'));render()};
+
+document.addEventListener('click',e=>{
+ const b=e.target.closest('.btn');if(b&&!b.disabled&&!matchMedia('(prefers-reduced-motion:reduce)').matches){const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height),sp=document.createElement('span');sp.className='ripple';sp.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;b.appendChild(sp);setTimeout(()=>sp.remove(),600)}
+ const t=e.target.closest('[data-act]');if(!t)return;const a=t.dataset.act;
+ if(t.dataset.confirm&&!t.classList.contains('armed')){e.preventDefault();e.stopPropagation();t.classList.add('armed');t.dataset.label=t.innerHTML;t.innerHTML='Tap again to confirm';setTimeout(()=>{if(t.isConnected&&t.dataset.label){t.classList.remove('armed');t.innerHTML=t.dataset.label}},3000);return}
+ if(a==='nav'||t.tagName==='A'&&a==='close-modal'){}
+ if(ACT[a]){if(t.tagName==='A'&&a!=='close-modal'&&a!=='noop')e.preventDefault();ACT[a](t.dataset,t,e)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-act][tabindex="0"]')){e.preventDefault();e.target.click()}});
+document.addEventListener('submit',async e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();const h=FORMS[f.dataset.form];if(!h)return;const d=Object.fromEntries(new FormData(f));const sb=f.querySelector('[type=submit]');if(sb)sb.disabled=true;try{await h(d,f)}finally{if(sb&&sb.isConnected)sb.disabled=false}});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.input){UI[t.dataset.input]=t.value;render()}});
+
+/* ----- boot ----- */
+(async function boot(){
+ try{const th=lsGet(TKEY);if(th)document.documentElement.dataset.theme=th}catch(e){}
+ loadDB();if(!DB||!DB.settings){DB=await seed();save()}
+ DB.entries=DB.entries||[];DB.visitors=DB.visitors||[];DB.notifs=DB.notifs||[];DB.log=DB.log||[];
+ if(SES&&SES.k==='user'&&!DB.users.some(u=>u.id===SES.id))SES=null;
+ render(true);
+ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();</script>
+</body></html>
