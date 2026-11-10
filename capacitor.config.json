@@ -1,0 +1,7 @@
+{
+  "appId": "in.queenstown.society",
+  "appName": "Queenstown Society",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "android": { "allowMixedContent": false }
+}

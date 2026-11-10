@@ -1,0 +1,20 @@
+{
+  "name": "queenstown-society",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Queenstown Society app (web + Android)",
+  "scripts": {
+    "build:web": "./build.sh && mkdir -p www && cp index.html manifest.webmanifest sw.js www/ && cp -r icons www/",
+    "android:add": "npx cap add android",
+    "android:sync": "npm run build:web && npx cap sync android",
+    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.2.0"
+  }
+}
