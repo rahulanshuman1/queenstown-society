@@ -20,7 +20,7 @@ ROUTES.home=()=>{
  const poll=DB.polls.find(p=>p.status==='open'&&(adm||p.votes[flatKey(m)]===undefined));
  const spon=a=>`<div class="sponsor" style="--h:${a.hue}"><span class="sp-t" style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--ink-2)">Sponsored</span><b>${esc(a.business||a.title)}</b><p>${esc(a.title)}</p></div>`;
  return`${hero()}
- <div class="ph" style="padding:0"><div><h2>${greet()}, ${esc(m.name.split(' ')[0])}</h2><p>${adm?'Here is what needs your attention today.':`${esc(flatKey(m))} · ${esc(DB.settings.name)}`}</p></div></div>
+ <div class="ph" style="padding:0"><div><h2>${greet()}, ${esc(m.name.split(' ')[0])}</h2><p>${adm?'Here is what needs your attention today.':`${esc(flatKey(m))} · ${esc(cfg().name)}`}</p>${cfg().site.content.welcome?`<p class="welcome">${esc(cfg().site.content.welcome)}</p>`:''}</div></div>
  <div class="grid g4">${kp.join('')}</div>
  <div class="split"><div class="card"><h3>${ic('notice')}Latest notices<a class="more" href="#notices">View all</a></h3><div class="stack">${sortedNotices().slice(0,3).map(noticeCard).join('')||empty('notice','No notices yet')}</div></div>
  <div class="stack"><div class="card"><h3>${ic('flag')}Quick actions</h3><div class="grid" style="grid-template-columns:1fr 1fr">${adm?`${btn('Publish notice','notice-new',{i:'notice'})}${btn('Add event','event-new',{i:'calendar'})}${btn('Generate bills','nav',{i:'wallet',d:{to:'billing'}})}${btn('Add expense','nav',{i:'chart',d:{to:'accounts'}})}`:`${btn('Pay dues','nav',{i:'wallet',d:{to:'maintenance'}})}${btn('Raise ticket','ticket-new',{i:'chat'})}${btn('Book amenity','nav',{i:'key',d:{to:'amenities'}})}${btn('Invite visitor','visitor-new',{i:'visitor'})}`}</div></div>

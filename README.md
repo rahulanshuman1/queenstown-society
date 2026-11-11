@@ -16,6 +16,19 @@ New residents register their flat and get access only after the admin approves t
 
 **Go live: read [DEPLOY.md](DEPLOY.md).** **Android APK: read [ANDROID.md](ANDROID.md).**
 
+## Site studio (admin)
+
+Admin > **Site studio** edits how the whole site looks and reads, without touching code:
+
+- Logo (upload), society name and tagline
+- Festive theme: Diwali, Holi, Christmas, New Year, Republic Day, Eid, Navratri, Ganesh Chaturthi or custom colours, with start and end dates, a greeting bar and optional falling effects
+- Landing page headline, intro, the three steps, the welcome line inside the app and an announcement bar
+- Footer: text, contact details, links, social links and a footer photo (upload)
+
+**Preview** shows the draft on the public page or inside the app without saving. **Discard** throws the draft away (tap twice). **Save changes** publishes it for everyone. Uploaded images are resized in the browser and checked again on the server.
+
+Notices, events and ads keep their own admin screens.
+
 ## Two ways to run the app
 
 - **With an API address** (`window.QS_API` in `config.js`, set from `QS_API_URL` on Vercel): real accounts, one shared database, admin approval across phones, Razorpay payments.
@@ -34,7 +47,7 @@ New residents register their flat and get access only after the admin approves t
 cd server && npm test
 ```
 
-24 tests cover registration, approval, roles, private data, bill rules, and every Razorpay case: amounts set by the server, late fees, wrong signatures, another resident's order, repeated webhooks and amount mismatch.
+29 tests cover registration, approval, roles, private data, site settings and image limits, bill rules, and every Razorpay case: amounts set by the server, late fees, wrong signatures, another resident's order, repeated webhooks and amount mismatch.
 
 ## Before real residents use it
 

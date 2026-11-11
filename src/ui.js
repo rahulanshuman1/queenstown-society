@@ -22,13 +22,13 @@ function copyText(t){const done=()=>toast('Copied');try{navigator.clipboard.writ
 
 /* ========== nav ========== */
 const NAV=[['home','Home','home'],['notices','Notices','notice'],['maintenance','Maintenance','wallet'],['events','Events','calendar'],['forecast','Forecast','sunrise'],['helpdesk','Helpdesk','chat'],['amenities','Amenities','key'],['visitors','Visitors','visitor'],['marketplace','Marketplace','tag'],['polls','Polls','vote'],['gallery','Gallery','image'],['accounts','Accounts','chart'],['documents','Documents','book'],['directory','Directory','users']];
-const ANAV=[['admin','Dashboard','shield'],['members','Members','users'],['billing','Billing','wallet'],['setup','Society setup','gear']];
+const ANAV=[['admin','Dashboard','shield'],['members','Members','users'],['billing','Billing','wallet'],['setup','Society setup','gear'],['studio','Site studio','palette']];
 const ROUTES={};
 const routeOf=()=>{let h=location.hash.slice(1)||(isAdmin()?'admin':'home');if(isAdmin()&&h==='maintenance')h='billing';if(!isAdmin()&&ANAV.some(a=>a[0]===h))h='home';if(h!=='profile'&&!NAV.some(n=>n[0]===h)&&!ANAV.some(n=>n[0]===h))h='home';return h};
 const pendingReviews=()=>DB.ads.filter(a=>a.status==='pending').length+DB.bookings.filter(b=>b.status==='pending').length+DB.bills.filter(b=>b.status==='verifying').length;
 function navBadge(id){if(!isAdmin())return 0;return id==='members'?DB.users.filter(u=>u.status==='pending').length:id==='billing'?DB.bills.filter(b=>b.status==='verifying').length:id==='helpdesk'?DB.complaints.filter(c=>c.status==='open').length:id==='amenities'?DB.bookings.filter(b=>b.status==='pending').length:id==='marketplace'?DB.ads.filter(a=>a.status==='pending').length:0}
 const logo=`<svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#E39A1B"/><path d="M9 31V19l5-3v15M16 31V12l6-4v23M24 31V17l7 3v11" fill="#0B3B3A"/><rect x="18" y="14" width="2" height="2" fill="#E39A1B"/><rect x="18" y="19" width="2" height="2" fill="#E39A1B"/><rect x="18" y="24" width="2" height="2" fill="#E39A1B"/></svg>`;
-const brand=()=>`<a class="brand" href="#${isAdmin()?'admin':'home'}">${logo}<div><b>${esc(DB.settings.name.split(' ')[0])}</b><span>${esc(DB.settings.name.split(' ').slice(1).join(' ')||'Society')}</span></div></a>`;
+const brand=()=>{const n=cfg().name||'Queenstown Society';return`<a class="brand" href="#${isAdmin()?'admin':'home'}">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b><span>${esc(n.split(' ').slice(1).join(' ')||'Society')}</span></div></a>`};
 
 function shell(route,inner){
  const m=me(),t=NAV.concat(ANAV,[['profile','My profile','user']]).find(n=>n[0]===route)?.[1]||'';
@@ -37,11 +37,11 @@ function shell(route,inner){
  const inTabs=tabs.some(x=>x[0]===route);
  const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);
  return`<div class="shell"><aside class="side">${brand()}<nav class="nav" aria-label="Main">${isAdmin()?`<h6>Admin</h6>${ANAV.map(link).join('')}`:''}<h6>${isAdmin()?'Society':'Menu'}</h6>${NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')).map(link).join('')}</nav><a class="me" href="#profile"><span class="av">${initials(m.name)}</span><div><b>${esc(m.name)}</b><small>${isAdmin()?'Administrator':esc(flatKey(m))+' · '+esc(m.title||m.type)}</small></div></a></aside>
- <div class="main"><header class="top">${brand()}<div class="ttl">${t}</div><div class="sp"></div><button class="iconbtn" data-act="bell" aria-label="Notifications">${ic('bell')}${unreadN()?`<span class="dot">${unreadN()}</span>`:''}</button><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic(dark?'sun':'moon')}</button><a class="iconbtn" href="#profile" aria-label="Profile"><span class="av" style="width:30px;height:30px;font-size:12px">${initials(m.name)}</span></a></header>
- <div class="wrap"><div class="view enter" id="view">${inner}</div></div></div>
+ <div class="main">${siteBars()}<header class="top">${brand()}<div class="ttl">${t}</div><div class="sp"></div><button class="iconbtn" data-act="bell" aria-label="Notifications">${ic('bell')}${unreadN()?`<span class="dot">${unreadN()}</span>`:''}</button><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic(dark?'sun':'moon')}</button><a class="iconbtn" href="#profile" aria-label="Profile"><span class="av" style="width:30px;height:30px;font-size:12px">${initials(m.name)}</span></a></header>
+ <div class="wrap"><div class="view enter" id="view">${inner}</div>${siteFooter()}</div></div>
  <nav class="tabbar" aria-label="Primary">${tabs.map(x=>`<a href="#${x[0]}" class="${route===x[0]?'on':''}">${ic(x[2])}${x[1]}</a>`).join('')}<button data-act="more" class="${!inTabs?'on':''}">${ic('more')}More</button></nav></div>`;
 }
-ACT.more=()=>{const items=(isAdmin()?ANAV.slice(0,0):[]).concat(NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')),isAdmin()?[ANAV[3]]:[],[['profile','Profile','user']]);modal('Menu',`<div class="sheet-grid">${items.map(n=>`<a href="#${n[0]}" data-act="close-modal">${ic(n[2])}${n[1]}</a>`).join('')}<button data-act="logout">${ic('logout')}Sign out</button></div>`)};
+ACT.more=()=>{const items=(isAdmin()?ANAV.slice(0,0):[]).concat(NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')),isAdmin()?ANAV.slice(3):[],[['profile','Profile','user']]);modal('Menu',`<div class="sheet-grid">${items.map(n=>`<a href="#${n[0]}" data-act="close-modal">${ic(n[2])}${n[1]}</a>`).join('')}<button data-act="logout">${ic('logout')}Sign out</button></div>`)};
 
 /* ========== hero ========== */
 function heroSlides(){const now=Date.now(),f=DB.events.filter(e=>e.featured);return[...f.filter(e=>+D(e.date)>=now-3*3600e3).sort((a,b)=>D(a.date)-D(b.date)).slice(0,4).map(e=>({e,tag:'Upcoming'})),...f.filter(e=>+D(e.date)<now-3*3600e3).sort((a,b)=>D(b.date)-D(a.date)).slice(0,1).map(e=>({e,tag:'Throwback'}))]}
@@ -63,12 +63,12 @@ setInterval(tickCd,1000);
 /* ========== render ========== */
 function countUp(){const red=matchMedia('(prefers-reduced-motion:reduce)').matches;$$('[data-count]').forEach(el=>{const to=+el.dataset.count,suf=el.dataset.suf||'',t0=performance.now();if(red||!to){el.textContent=to+suf;return}const step=t=>{const k=Math.min(1,(t-t0)/900),v=Math.round(to*(1-Math.pow(1-k,3)));el.textContent=v.toLocaleString('en-IN')+suf;if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)})}
 function render(nav=false){
- if(!DB)return;const root=$('#app'),y=scrollY,ae=document.activeElement,aid=ae&&ae.id&&root.contains(ae)?ae.id:null,pos=aid&&ae.selectionStart!=null?ae.selectionStart:null;
+ if(!DB)return;applyTheme();const root=$('#app'),y=scrollY,ae=document.activeElement,aid=ae&&ae.id&&root.contains(ae)?ae.id:null,pos=aid&&ae.selectionStart!=null?ae.selectionStart:null;
  const m=me();let html,route='';
- if(!SES||!m){html=landing()}
+ if(PV==='landing'||!SES||!m){html=landing()}
  else if(!isAdmin()&&m.status!=='approved'){html=waitScreen(m)}
  else{route=routeOf();html=shell(route,(ROUTES[route]||ROUTES.home)())}
- root.innerHTML=html;document.title=(route&&route!=='home'?($('.top .ttl')?.textContent+' · '):'')+DB.settings.name;
+ root.innerHTML=html;if(PV)root.insertAdjacentHTML('beforeend',pvBar());document.title=(route&&route!=='home'?($('.top .ttl')?.textContent+' · '):'')+DB.settings.name;
  const v=$('#view');if(v&&!nav)v.classList.remove('enter');
  if(!nav)scrollTo(0,y);else scrollTo(0,0);
  if(aid){const el=document.getElementById(aid);if(el){el.focus();try{if(pos!=null)el.setSelectionRange(pos,pos)}catch(e){}}}
@@ -78,17 +78,17 @@ window.addEventListener('hashchange',()=>{UI.q='';UI.cat='all';UI.tab='';UI.sel=
 
 /* ========== landing + wait ========== */
 function landing(){
- const s=DB.settings,reg=UI.auth==='register';
- const towers=['A','B','C','D'];
- return`<div class="wrap" style="max-width:1160px;padding-bottom:60px"><div class="landing-top"><a class="brand" href="#">${logo}<div><b>${esc(s.name.split(' ')[0])}</b><span>${esc(s.name.split(' ').slice(1).join(' ')||'Society')}</span></div></a><div class="sp"></div><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic('moon')}</button></div>
+ const c=cfg(),s=c,st=c.site.content,reg=UI.auth==='register';
+ const towers=['A','B','C','D'],n=c.name||'Queenstown Society';
+ return`${siteBars()}<div class="wrap" style="max-width:1160px;padding-bottom:40px"><div class="landing-top"><a class="brand" href="#">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b><span>${esc(n.split(' ').slice(1).join(' ')||'Society')}</span></div></a><div class="sp"></div><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic('moon')}</button></div>
  <div class="view enter">${hero(true)}
- <div class="split" style="align-items:start"><div class="stack"><h2 style="font-size:clamp(26px,4vw,38px)">${esc(s.tagline)} One place for everything at ${esc(s.name)}.</h2><p class="muted" style="max-width:56ch">Notices, maintenance payments, events, bookings, helpdesk and more. Residents register their flat and get access after the society admin approves the request.</p>
- <div class="steps card flat"><div><span class="n">1</span><div><b>Register your flat</b><br><small>Name, tower, flat number and mobile.</small></div></div><div><span class="n">2</span><div><b>Admin verifies</b><br><small>The committee checks ownership or tenancy.</small></div></div><div><span class="n">3</span><div><b>Start using the app</b><br><small>Pay dues, read notices, book amenities.</small></div></div></div>
+ <div class="split" style="align-items:start"><div class="stack"><h2 style="font-size:clamp(26px,4vw,38px)">${esc(st.headline||`${s.tagline} One place for everything at ${n}.`)}</h2><p class="muted" style="max-width:56ch">${esc(st.intro)}</p>
+ <div class="steps card flat">${st.steps.map((x,i)=>`<div><span class="n">${i+1}</span><div><b>${esc(x.t)}</b><br><small>${esc(x.d)}</small></div></div>`).join('')}</div>
  ${REMOTE?'':`<div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Try admin <code>admin</code> / <code>admin123</code> or resident <code>9876500001</code> / <code>resident123</code>.</span></div>`}</div>
  <div class="card auth"><div class="tabs2" role="tablist"><button class="${reg?'':'on'}" data-act="auth-tab" data-t="login">Sign in</button><button class="${reg?'on':''}" data-act="auth-tab" data-t="register">Register flat</button></div>
  ${reg?formWrap('register',F.t('r_name','Full name',{req:true,cls:'full',attrs:'autocomplete="name"'})+F.s('r_tower','Tower',towers.map(t=>[t,'Tower '+t]))+F.s('r_flat','Flat number',flatOpts(),{})+F.s('r_type','You are',['Owner','Tenant','Family member'])+F.t('r_members','People in flat',{type:'number',v:2,attrs:'min="1" max="12"'})+F.t('r_mobile','Mobile number',{req:true,attrs:'inputmode="numeric" maxlength="10" autocomplete="tel"',hint:'10 digits. This is your login.'})+F.t('r_email','Email (optional)',{type:'email'})+F.t('r_ref','Proof reference (optional)',{cls:'full',ph:'Allotment letter no. or rent agreement date',hint:'Helps the admin verify you faster.'})+F.t('r_pw','Create password',{type:'password',req:true,attrs:'autocomplete="new-password"'})+F.t('r_pw2','Confirm password',{type:'password',req:true,attrs:'autocomplete="new-password"'}),'Submit for approval'):
  formWrap('login',F.t('l_id','Mobile number, email or admin username',{req:true,cls:'full',attrs:'autocomplete="username"'})+F.t('l_pw','Password',{type:'password',req:true,cls:'full',attrs:'autocomplete="current-password"'}),'Sign in',`<span class="sp"></span>`)}
- ${reg||REMOTE?'':`<div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn sm ghost" data-act="demo-res">Fill demo resident</button><button class="btn sm ghost" data-act="demo-admin">Fill demo admin</button></div>`}</div></div></div></div>`;
+ ${reg||REMOTE?'':`<div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn sm ghost" data-act="demo-res">Fill demo resident</button><button class="btn sm ghost" data-act="demo-admin">Fill demo admin</button></div>`}</div></div></div>${siteFooter()}</div>`;
 }
 const flatOpts=(t='A')=>{const o=[];for(let f=1;f<=10;f++)for(let u=1;u<=4;u++)o.push(f+'0'+u);return o.map(x=>[x,'Flat '+x])};
 function waitScreen(m){const rej=m.status==='rejected';return`<div class="wrap"><div class="landing-top">${brand()}<div class="sp"></div><button class="btn sm" data-act="logout">${ic('logout')}Sign out</button></div><div class="wait view enter"><div class="big">${ic(rej?'x':'hourglass')}</div><h2>${rej?'Registration not approved':'Waiting for admin approval'}</h2><p class="muted">${rej?`The admin declined your request${m.reason?': '+esc(m.reason):'.'} You can contact the society office or register again with correct details.`:`Thanks, ${esc(m.name.split(' ')[0])}. Your request for <b>${esc(flatKey(m))}</b> as ${esc(m.type.toLowerCase())} is with the committee. You will get full access as soon as it is approved.`}</p><div class="card flat" style="width:100%;text-align:left"><div class="kv"><span>Name</span><span>${esc(m.name)}</span></div><div class="kv"><span>Flat</span><span>${esc(flatKey(m))}</span></div><div class="kv"><span>Mobile</span><span>${esc(m.mobile)}</span></div><div class="kv"><span>Status</span><span>${sChip(m.status)}</span></div></div><div class="row">${btn('Check status','refresh',{c:'pri'})}${rej?btn('Register again','reregister'):''}</div></div></div>`}

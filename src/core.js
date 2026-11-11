@@ -68,7 +68,11 @@ mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'
 hourglass:'<path d="M6 3h12M6 21h12M7 3c0 6 5 6 5 9s-5 3-5 9M17 3c0 6-5 6-5 9s5 3 5 9"/>',
 gym:'<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>',
 send:'<path d="M21 3L3 11l7 3 3 7 8-18z"/>',
-flag:'<path d="M5 21V4h11l-2 4 2 4H5"/>'
+flag:'<path d="M5 21V4h11l-2 4 2 4H5"/>',
+eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+palette:'<path d="M12 3a9 9 0 100 18c1.4 0 2-1 2-2 0-.9-.5-1.4-.5-2.2 0-1 .8-1.8 1.8-1.8H18a3 3 0 003-3c0-5-4-9-9-9z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/>',
+layout:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/>',
+undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/>'
 };
 const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IP[n]||''}</svg>`;
 

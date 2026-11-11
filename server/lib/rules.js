@@ -117,7 +117,7 @@ function viewFor(actor, data) {
 function publicView(data, now = Date.now()) {
   const out = { v: 1, settings: {}, public: true };
   const s = publicSettings(data.settings);
-  out.settings = { name: s.name, tagline: s.tagline, address: s.address };
+  out.settings = { name: s.name, tagline: s.tagline, address: s.address, site: s.site };
   for (const c of COLLS) out[c] = [];
   const from = now - 3 * 3600e3, to = now + 60 * 86400e3;
   const ev = (data.events || []).filter(e => +new Date(e.date) >= from && +new Date(e.date) <= to)
@@ -325,7 +325,50 @@ const RULES = {
   schedule: adminOnly, amenities: adminOnly, docs: adminOnly, contacts: adminOnly, entries: adminOnly
 };
 
-const SETTINGS_FIELDS = ['name', 'tagline', 'address', 'upi', 'upiName', 'bank', 'charges', 'dueDay', 'latePct', 'adRates', 'demo'];
+const SETTINGS_FIELDS = ['name', 'tagline', 'address', 'upi', 'upiName', 'bank', 'charges', 'dueDay', 'latePct', 'adRates', 'demo', 'site'];
+
+/* ---- site look and content (logo, festive theme, website text, footer) ----
+   Everything here is shown to visitors before they sign in, so it is checked field by field.
+   Text is escaped by the app when drawn; links must be web addresses; images must be small PNG, JPEG or WebP data. */
+const FESTIVALS = ['none', 'diwali', 'holi', 'christmas', 'newyear', 'republic', 'eid', 'navratri', 'ganesh', 'custom'];
+const IMG_RE = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
+const LOGO_MAX = 160000, PHOTO_MAX = 500000;
+function cleanImg(v, max, what) {
+  if (v == null || v === '') return '';
+  if (typeof v !== 'string' || v.length > max || !IMG_RE.test(v)) throw new Error('The ' + what + ' is too large or is not a PNG, JPEG or WebP image.');
+  return v;
+}
+const cleanUrl = v => { v = str(v, 300).trim(); return /^(?:https?:\/\/[^\s<>"']+|#[A-Za-z0-9\/_-]{0,40})$/i.test(v) ? v : ''; };
+const cleanWebUrl = v => { v = cleanUrl(v); return v.startsWith('#') ? '' : v; };
+const cleanColor = (v, def) => /^#[0-9a-fA-F]{6}$/.test(v) ? v : def;
+const cleanDay = v => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(new Date(v)) ? v : '';
+const cleanPhone = v => { v = str(v, 20).trim(); return /^[+0-9 ()-]{5,20}$/.test(v) ? v : ''; };
+const cleanEmail = v => { v = str(v, 120).trim(); return /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(v) ? v : ''; };
+
+function cleanSite(x) {
+  x = x && typeof x === 'object' && !Array.isArray(x) ? x : {};
+  const t = x.theme || {}, c = x.content || {}, f = x.footer || {}, an = c.announce || {}, so = f.social || {};
+  return {
+    logo: cleanImg(x.logo, LOGO_MAX, 'logo'),
+    theme: {
+      festival: FESTIVALS.includes(t.festival) ? t.festival : 'none',
+      from: cleanDay(t.from), to: cleanDay(t.to), effects: t.effects !== false,
+      greeting: str(t.greeting, 160), brand: cleanColor(t.brand, '#0F4C4A'), accent: cleanColor(t.accent, '#E39A1B')
+    },
+    content: {
+      headline: str(c.headline, 160), intro: str(c.intro, 500), welcome: str(c.welcome, 200),
+      steps: (Array.isArray(c.steps) ? c.steps : []).slice(0, 3).map(s => ({ t: str(s && s.t, 60), d: str(s && s.d, 160) })),
+      announce: { on: !!an.on, text: str(an.text, 200), link: cleanUrl(an.link) }
+    },
+    footer: {
+      about: str(f.about, 400), phone: cleanPhone(f.phone), email: cleanEmail(f.email), hours: str(f.hours, 120),
+      links: (Array.isArray(f.links) ? f.links : []).slice(0, 6).map(l => ({ label: str(l && l.label, 40).trim(), url: cleanUrl(l && l.url) })).filter(l => l.label && l.url),
+      social: { facebook: cleanWebUrl(so.facebook), instagram: cleanWebUrl(so.instagram), youtube: cleanWebUrl(so.youtube), whatsapp: cleanWebUrl(so.whatsapp), x: cleanWebUrl(so.x) },
+      image: cleanImg(f.image, PHOTO_MAX, 'footer image'), caption: str(f.caption, 120), showImage: f.showImage !== false,
+      copyright: str(f.copyright, 160)
+    }
+  };
+}
 
 function cleanSettings(ex, d) {
   const n = { ...(ex || {}) };
@@ -336,6 +379,7 @@ function cleanSettings(ex, d) {
   n.dueDay = Math.round(num(n.dueDay, 1, 28, 15));
   n.latePct = num(n.latePct, 0, 100, 0);
   n.adRates = { banner: num(n.adRates && n.adRates.banner, 0, 1e6, 0), classified: num(n.adRates && n.adRates.classified, 0, 1e6, 0) };
+  if ('site' in n) n.site = cleanSite(n.site);
   n.id = 'settings';
   delete n.adminUser; delete n.adminHash;
   return n;
@@ -404,4 +448,4 @@ async function applyChanges(actor, store, changes, now = Date.now()) {
   return { applied, rejected };
 }
 
-module.exports = { COLLS, UNSHIFT, HttpError, sanitize, viewFor, publicView, applyChanges, flatKey, userSafe, str, num, isId };
+module.exports = { cleanSite, COLLS, UNSHIFT, HttpError, sanitize, viewFor, publicView, applyChanges, flatKey, userSafe, str, num, isId };

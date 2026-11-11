@@ -77,10 +77,11 @@ QS_API_URL is read when the site is built. If you change it, redeploy on Vercel.
 
 1. Open the Vercel address and sign in as `admin` with your `ADMIN_PASSWORD`.
 2. **Society setup**: society name, monthly charges, due day and late fee.
-3. Ask a resident to register a flat. Approve them under **Members**.
-4. **Billing > Generate bills**.
-5. Sign in as the resident, open **Maintenance** and press **Pay**. In Test Mode, Razorpay shows its own test page. Its documentation lists test card numbers and a test UPI ID. Choose the success option.
-6. The bill turns **Paid** and a receipt appears. The admin sees it under Billing.
+3. **Site studio**: upload the logo, pick a festive theme and edit the footer. Use Preview, then Save changes.
+4. Ask a resident to register a flat. Approve them under **Members**.
+5. **Billing > Generate bills**.
+6. Sign in as the resident, open **Maintenance** and press **Pay**. In Test Mode, Razorpay shows its own test page. Its documentation lists test card numbers and a test UPI ID. Choose the success option.
+7. The bill turns **Paid** and a receipt appears. The admin sees it under Billing.
 
 ## How payment stays safe
 
@@ -99,7 +100,7 @@ Set a **repository variable** named `QS_API_URL` (GitHub repo > Settings > Secre
 ```
 cd server
 ADMIN_PASSWORD=adminpass1 node server.js        # API on port 8080, data kept in memory
-npm test                                         # 24 tests
+npm test                                         # 29 tests
 ```
 
 In another terminal, from the repo root:
