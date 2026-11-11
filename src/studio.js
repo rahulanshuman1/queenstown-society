@@ -83,7 +83,7 @@ function applyTheme(){
  document.body.classList.toggle('pv',!!PV)}
 
 /* ----- logo, bars, footer ----- */
-const logoOf=src=>src?`<img class="logo-img" src="${esc(src)}" alt="">`:logo;
+const logoOf=src=>src?`<img class="logo-img" src="${esc(src)}" alt="">`:animMark();
 const logoHtml=()=>logoOf(cfg().site.logo);
 const hrefOf=(u,label)=>String(u).startsWith('#')?`<a href="${esc(u)}">${label}</a>`:`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
 function siteBars(){

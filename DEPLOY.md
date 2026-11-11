@@ -73,6 +73,10 @@ The free Render plan sleeps after about 15 minutes without visits. The first req
 
 QS_API_URL is read when the site is built. If you change it, redeploy on Vercel.
 
+**Important:** if QS_API_URL is empty the site runs in demo mode and every phone or computer keeps its own copy. A logo changed on a laptop will then never appear on a phone. With QS_API_URL set, all devices read the same database.
+
+Also add **QS_APK_URL** here (see ANDROID.md) to show the "Get the app" download button on the website.
+
 ## 5. First run
 
 1. Open the Vercel address and sign in as `admin` with your `ADMIN_PASSWORD`.

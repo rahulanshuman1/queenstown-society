@@ -27,7 +27,9 @@ Admin > **Site studio** edits how the whole site looks and reads, without touchi
 
 **Preview** shows the draft on the public page or inside the app without saving. **Discard** throws the draft away (tap twice). **Save changes** publishes it for everyone. Uploaded images are resized in the browser and checked again on the server.
 
-Notices, events and ads keep their own admin screens.
+Notices, events and ads keep their own admin screens. **Publish notice** and **Add event** accept one attached file (PDF, image, Word or Excel, up to 5 MB). Residents tap Preview or Download, on the website and in the Android app.
+
+The society logo is animated (castle rises, name appears letter by letter, golden shine) on the splash screen and the public page. Uploading a logo in Site studio replaces it.
 
 ## Two ways to run the app
 

@@ -406,6 +406,75 @@ details.alt{border:1px dashed var(--line);border-radius:12px;padding:10px 14px}d
 .seg button.on{background:var(--brand);color:var(--brand-ink)}
 body.pv .auth{pointer-events:none}
 body.pv .wrap{padding-bottom:150px}
+/* ===== Queenstown animated logo ===== */
+.alogo{--a1:#F7E9C2;--a2:#D6AC57;--w:260px;position:relative;display:block;width:var(--w);max-width:100%;aspect-ratio:692/411;flex:none;animation:alGlow 5s ease-in-out 3.4s infinite}
+.al-p{position:absolute;inset:0}
+.al-i,.al-sh{position:absolute;inset:0;-webkit-mask:url(assets/queenstown-logo.png?v=20261111082721) 0 0/100% 100% no-repeat;mask:url(assets/queenstown-logo.png?v=20261111082721) 0 0/100% 100% no-repeat}
+.al-i{background:linear-gradient(180deg,var(--a1) 0%,var(--a2) 100%)}
+.al-sh{background:linear-gradient(105deg,transparent 38%,rgba(255,252,232,.95) 50%,transparent 62%) 130% 0/260% 100% no-repeat;animation:alSheen 6.5s ease-in-out 3.6s infinite;pointer-events:none}
+.al-c .al-i{animation:alBuild 2.1s cubic-bezier(.25,.6,.2,1) .15s both}
+.al-l .al-i{animation:alRise .95s cubic-bezier(.2,.8,.2,1) both}
+.al-s .al-i{animation:alWipe 1.2s ease-out 2.3s both}
+.al-sp{position:absolute;left:var(--x);top:var(--y);width:calc(var(--w)*.05);aspect-ratio:1;background:#FFF3C4;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);opacity:0;transform:translate(-50%,-50%) scale(.2);animation:alTwinkle 3.6s ease-in-out var(--d) infinite;pointer-events:none}
+@keyframes alBuild{from{clip-path:inset(62.8% 0 0 0);opacity:.15;filter:blur(3px)}55%{opacity:1}to{clip-path:inset(0 0 0 0);opacity:1;filter:blur(0)}}
+@keyframes alRise{from{opacity:0;transform:translateY(26%) scale(.97)}to{opacity:1;transform:none}}
+@keyframes alWipe{from{clip-path:inset(0 100% 0 0);opacity:.2}to{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes alSheen{0%{background-position:130% 0}45%,100%{background-position:-40% 0}}
+@keyframes alGlow{0%,100%{filter:drop-shadow(0 0 3px rgba(240,196,102,.15))}50%{filter:drop-shadow(0 0 14px rgba(240,196,102,.5))}}
+@keyframes alTwinkle{0%,100%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}40%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(45deg)}70%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(90deg)}}
+@keyframes alFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* castle mark used next to the society name */
+.amark{--a1:#F7E9C2;--a2:#D6AC57;position:relative;display:block;flex:none;width:56px;aspect-ratio:311/241}
+.am-i,.am-sh{position:absolute;inset:0;-webkit-mask:url(assets/queenstown-castle.png?v=20261111082721) 0 0/100% 100% no-repeat;mask:url(assets/queenstown-castle.png?v=20261111082721) 0 0/100% 100% no-repeat}
+.am-i{background:linear-gradient(180deg,var(--a1),var(--a2));animation:amIn 1.3s cubic-bezier(.2,.8,.2,1) both}
+.am-sh{background:linear-gradient(105deg,transparent 40%,rgba(255,252,232,.95) 50%,transparent 60%) 130% 0/280% 100% no-repeat;animation:alSheen 7s ease-in-out 2.2s infinite}
+@keyframes amIn{from{opacity:0;transform:translateY(22%) scale(.96)}to{opacity:1;transform:none}}
+.top .amark,.landing-top .amark,.sitefoot .amark{--a1:var(--brand);--a2:var(--brand);width:48px}
+.brand .amark{margin-right:2px}
+
+/* splash screen */
+.splash{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:24px;background:radial-gradient(120% 90% at 50% 38%,#14595A 0%,#0B3B3A 55%,#06201F 100%);transition:opacity .65s ease,transform .65s ease;overflow:hidden}
+.splash.out{opacity:0;transform:scale(1.05);pointer-events:none}
+.splash::before{content:"";position:absolute;inset:0;background-image:radial-gradient(1.6px 1.6px at 12% 22%,rgba(255,240,200,.9),transparent),radial-gradient(1.2px 1.2px at 78% 14%,rgba(255,240,200,.8),transparent),radial-gradient(1.8px 1.8px at 88% 62%,rgba(255,240,200,.7),transparent),radial-gradient(1.3px 1.3px at 24% 78%,rgba(255,240,200,.8),transparent),radial-gradient(1.5px 1.5px at 56% 88%,rgba(255,240,200,.6),transparent),radial-gradient(1.2px 1.2px at 40% 10%,rgba(255,240,200,.7),transparent);animation:splashStars 4s ease-in-out infinite}
+@keyframes splashStars{0%,100%{opacity:.35}50%{opacity:.9}}
+.splash-in{position:relative;display:grid;justify-items:center;gap:26px}
+.splash-bar{width:min(220px,52vw);height:3px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+.splash-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,transparent,#F2C66B,transparent);animation:splashBar 1.6s ease-in-out infinite}
+@keyframes splashBar{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+/* public page banner */
+.lbanner{display:grid;justify-items:center;gap:12px;padding:28px 18px 22px;border-radius:24px;margin-bottom:18px;color:#CBB98A;background:radial-gradient(110% 130% at 50% 0%,#17615F 0%,#0B3B3A 60%,#072423 100%);box-shadow:var(--shadow);position:relative;overflow:hidden;isolation:isolate}
+.lbanner p{font:700 12.5px var(--f-body);letter-spacing:.24em;text-transform:uppercase;text-align:center}
+.lbanner .alogo.big{--w:min(400px,78vw)}
+.lbanner .logo-img.big{width:min(220px,60vw);height:auto;max-height:150px;object-fit:contain;animation:alFloat 5s ease-in-out infinite}
+
+/* get the app */
+.appbar{display:flex;align-items:center;gap:12px;padding:10px max(14px,env(safe-area-inset-left,0px));background:linear-gradient(90deg,#0B3B3A,#14595A);color:#F3E5BE}
+.appbar img{border-radius:10px;flex:none}
+.appbar .t{flex:1;min-width:0;line-height:1.25}
+.appbar b{display:block;color:#fff;font-size:14px}.appbar small{color:#BFD8D4;font-size:12px}
+.appbar a.go{background:var(--accent);color:var(--accent-ink);padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:800;font-size:13.5px;white-space:nowrap}
+.appbar button{background:none;border:0;color:#BFD8D4;cursor:pointer;padding:6px;display:grid}
+.appcard{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.appcard .ai{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);flex:none}
+.navbtn{display:flex;align-items:center;gap:12px;width:100%;padding:9px 12px;border-radius:11px;border:1px dashed var(--side-on);background:transparent;color:var(--side-ink);font:600 14px var(--f-body);cursor:pointer;text-align:left}
+.navbtn:hover{background:var(--side-on)}
+.appqr{width:176px;height:176px;padding:8px;background:#fff;border-radius:12px;display:grid;place-items:center}
+
+/* attachments */
+.attcard{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.attcard .atti{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);flex:none}
+.attm{min-width:0;flex:1 1 150px}.attm b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.attb{display:flex;gap:8px;flex-wrap:wrap}
+.attrow{display:grid;gap:8px}
+.attview{max-height:68vh;overflow:auto;background:var(--surface-2);border-radius:12px;padding:10px;display:grid;gap:10px;justify-items:center}
+.attpage{width:100%;height:auto;background:#fff;border-radius:6px;box-shadow:var(--shadow)}
+.attimg{max-width:100%;height:auto;border-radius:10px;display:block}
+.syncwarn{display:flex;gap:10px;align-items:flex-start;padding:10px max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--bad) 14%,var(--surface));color:var(--ink);border-bottom:1px solid color-mix(in srgb,var(--bad) 40%,transparent);font-size:13.5px;font-weight:600}
+.syncwarn .ic{color:var(--bad);margin-top:2px}
+
+@media (prefers-reduced-motion:reduce){.alogo,.alogo *,.amark *,.splash::before,.splash-bar i,.lbanner .logo-img.big{animation:none!important}.al-sp{display:none}.al-sh,.am-sh{display:none}}
 </style></head><body>
 <div id="app"></div><div id="modal-root"></div><div id="toasts" aria-live="polite"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -583,9 +652,10 @@ async function startRemote(){
   $('#app').innerHTML=`<div class="boot"><b>Cannot reach the Queenstown server</b><small>${esc(e.message)}</small><button class="btn pri" data-act="retry-boot">Try again</button></div>`;return false
  }finally{clearTimeout(t)}}
 async function pollRemote(){
- if(!REMOTE||!TOKEN||document.hidden||syncing||dirty||!DB)return;
+ if(!REMOTE||document.hidden||syncing||dirty||!DB)return;
  if($('#modal-root')?.classList.contains('open'))return;
  const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;
+ if(!TOKEN){try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const p=await api('/api/public');adopt(p.db,p.rev);render()}catch(e){}return}
  try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const s=await api('/api/state');if(dirty||syncing)return;adopt(s.db,s.rev);SES=s.session;render()}
  catch(e){if(e.status===401)endSession('Your session ended. Please sign in again.')}}
 if(typeof document!=='undefined'){setInterval(()=>pollRemote(),20000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollRemote()})}
@@ -757,9 +827,9 @@ function shell(route,inner){
  const tabs=isAdmin()?[['admin','Admin','shield'],['members','Members','users'],['billing','Billing','wallet'],['notices','Notices','notice']]:[['home','Home','home'],['notices','Notices','notice'],['maintenance','Pay','wallet'],['events','Events','calendar']];
  const inTabs=tabs.some(x=>x[0]===route);
  const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);
- return`<div class="shell"><aside class="side">${brand()}<nav class="nav" aria-label="Main">${isAdmin()?`<h6>Admin</h6>${ANAV.map(link).join('')}`:''}<h6>${isAdmin()?'Society':'Menu'}</h6>${NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')).map(link).join('')}</nav><a class="me" href="#profile"><span class="av">${initials(m.name)}</span><div><b>${esc(m.name)}</b><small>${isAdmin()?'Administrator':esc(flatKey(m))+' · '+esc(m.title||m.type)}</small></div></a></aside>
- <div class="main">${siteBars()}<header class="top">${brand()}<div class="ttl">${t}</div><div class="sp"></div><button class="iconbtn" data-act="bell" aria-label="Notifications">${ic('bell')}${unreadN()?`<span class="dot">${unreadN()}</span>`:''}</button><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic(dark?'sun':'moon')}</button><a class="iconbtn" href="#profile" aria-label="Profile"><span class="av" style="width:30px;height:30px;font-size:12px">${initials(m.name)}</span></a></header>
- <div class="wrap"><div class="view enter" id="view">${inner}</div>${siteFooter()}</div></div>
+ return`<div class="shell"><aside class="side">${brand()}<nav class="nav" aria-label="Main">${isAdmin()?`<h6>Admin</h6>${ANAV.map(link).join('')}`:''}<h6>${isAdmin()?'Society':'Menu'}</h6>${NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')).map(link).join('')}</nav>${appSide()}<a class="me" href="#profile"><span class="av">${initials(m.name)}</span><div><b>${esc(m.name)}</b><small>${isAdmin()?'Administrator':esc(flatKey(m))+' · '+esc(m.title||m.type)}</small></div></a></aside>
+ <div class="main">${appBanner()}${syncWarn()}${siteBars()}<header class="top">${brand()}<div class="ttl">${t}</div><div class="sp"></div><button class="iconbtn" data-act="bell" aria-label="Notifications">${ic('bell')}${unreadN()?`<span class="dot">${unreadN()}</span>`:''}</button><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic(dark?'sun':'moon')}</button><a class="iconbtn" href="#profile" aria-label="Profile"><span class="av" style="width:30px;height:30px;font-size:12px">${initials(m.name)}</span></a></header>
+ <div class="wrap"><div class="view enter" id="view">${route==='home'?appCard():''}${inner}</div>${siteFooter()}</div></div>
  <nav class="tabbar" aria-label="Primary">${tabs.map(x=>`<a href="#${x[0]}" class="${route===x[0]?'on':''}">${ic(x[2])}${x[1]}</a>`).join('')}<button data-act="more" class="${!inTabs?'on':''}">${ic('more')}More</button></nav></div>`;
 }
 ACT.more=()=>{const items=(isAdmin()?ANAV.slice(0,0):[]).concat(NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')),isAdmin()?ANAV.slice(3):[],[['profile','Profile','user']]);modal('Menu',`<div class="sheet-grid">${items.map(n=>`<a href="#${n[0]}" data-act="close-modal">${ic(n[2])}${n[1]}</a>`).join('')}<button data-act="logout">${ic('logout')}Sign out</button></div>`)};
@@ -801,11 +871,11 @@ window.addEventListener('hashchange',()=>{UI.q='';UI.cat='all';UI.tab='';UI.sel=
 function landing(){
  const c=cfg(),s=c,st=c.site.content,reg=UI.auth==='register';
  const towers=['A','B','C','D'],n=c.name||'Queenstown Society';
- return`${siteBars()}<div class="wrap" style="max-width:1160px;padding-bottom:40px"><div class="landing-top"><a class="brand" href="#">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b><span>${esc(n.split(' ').slice(1).join(' ')||'Society')}</span></div></a><div class="sp"></div><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic('moon')}</button></div>
- <div class="view enter">${hero(true)}
+ return`${appBanner()}${siteBars()}<div class="wrap" style="max-width:1160px;padding-bottom:40px"><div class="landing-top"><a class="brand" href="#">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b><span>${esc(n.split(' ').slice(1).join(' ')||'Society')}</span></div></a><div class="sp"></div><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic('moon')}</button></div>
+ <div class="view enter"><div class="lbanner">${bigLogo()}<p>${esc(c.tagline||'Home, together.')}</p></div>${hero(true)}
  <div class="split" style="align-items:start"><div class="stack"><h2 style="font-size:clamp(26px,4vw,38px)">${esc(st.headline||`${s.tagline} One place for everything at ${n}.`)}</h2><p class="muted" style="max-width:56ch">${esc(st.intro)}</p>
  <div class="steps card flat">${st.steps.map((x,i)=>`<div><span class="n">${i+1}</span><div><b>${esc(x.t)}</b><br><small>${esc(x.d)}</small></div></div>`).join('')}</div>
- ${REMOTE?'':`<div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Try admin <code>admin</code> / <code>admin123</code> or resident <code>9876500001</code> / <code>resident123</code>.</span></div>`}</div>
+ ${appCard()}${REMOTE?'':`<div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Try admin <code>admin</code> / <code>admin123</code> or resident <code>9876500001</code> / <code>resident123</code>.</span></div>`}</div>
  <div class="card auth"><div class="tabs2" role="tablist"><button class="${reg?'':'on'}" data-act="auth-tab" data-t="login">Sign in</button><button class="${reg?'on':''}" data-act="auth-tab" data-t="register">Register flat</button></div>
  ${reg?formWrap('register',F.t('r_name','Full name',{req:true,cls:'full',attrs:'autocomplete="name"'})+F.s('r_tower','Tower',towers.map(t=>[t,'Tower '+t]))+F.s('r_flat','Flat number',flatOpts(),{})+F.s('r_type','You are',['Owner','Tenant','Family member'])+F.t('r_members','People in flat',{type:'number',v:2,attrs:'min="1" max="12"'})+F.t('r_mobile','Mobile number',{req:true,attrs:'inputmode="numeric" maxlength="10" autocomplete="tel"',hint:'10 digits. This is your login.'})+F.t('r_email','Email (optional)',{type:'email'})+F.t('r_ref','Proof reference (optional)',{cls:'full',ph:'Allotment letter no. or rent agreement date',hint:'Helps the admin verify you faster.'})+F.t('r_pw','Create password',{type:'password',req:true,attrs:'autocomplete="new-password"'})+F.t('r_pw2','Confirm password',{type:'password',req:true,attrs:'autocomplete="new-password"'}),'Submit for approval'):
  formWrap('login',F.t('l_id','Mobile number, email or admin username',{req:true,cls:'full',attrs:'autocomplete="username"'})+F.t('l_pw','Password',{type:'password',req:true,cls:'full',attrs:'autocomplete="current-password"'}),'Sign in',`<span class="sp"></span>`)}
@@ -843,9 +913,9 @@ const kpi=(i,l,v,link,cls='',suf='')=>`<a class="kpi ${cls}" href="#${link}"><sp
 const ring=(pct,l)=>{const c=314;return`<div class="ring" style="--c:${c};--o:${c*(1-pct/100)}"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="50"/><circle class="fg" cx="60" cy="60" r="50"/></svg><div><b>${pct}%</b><small>${l}</small></div></div>`};
 
 function evCard(e){const adm=isAdmin(),m=me(),mine=e.rsvps[m.id],n=Object.values(e.rsvps).filter(v=>v==='yes').length,past=+D(e.date)<Date.now()-3*3600e3;
- return`<article class="ev"><div class="cv" data-act="event-open" data-id="${e.id}">${cover(e)}<div class="date"><b>${D(e.date).getDate()}</b><small>${fdate(e.date,{month:'short'})}</small></div></div><div class="bd"><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free','good')}</div><h4>${esc(e.title)}</h4><div class="meta"><span>${ic('clock')}${ftime(e.date)}</span><span>${ic('mappin')}${esc(e.venue)}</span><span>${ic('users')}${n} going</span></div><div class="ft">${past?chip('Completed'):adm?btn('Manage','event-edit',{sm:1,d:{id:e.id}}):`<button class="btn sm ${mine==='yes'?'good':'pri'}" data-act="rsvp" data-id="${e.id}" data-v="yes">${ic('check')}${mine==='yes'?'Going':'I will attend'}</button><button class="btn sm ${mine==='maybe'?'acc':''}" data-act="rsvp" data-id="${e.id}" data-v="maybe">Maybe</button>`}<button class="btn sm ghost" data-act="event-open" data-id="${e.id}">Details</button></div></div></article>`}
+ return`<article class="ev"><div class="cv" data-act="event-open" data-id="${e.id}">${cover(e)}<div class="date"><b>${D(e.date).getDate()}</b><small>${fdate(e.date,{month:'short'})}</small></div></div><div class="bd"><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free','good')}${e.attachment?chip(ic('paperclip')+'Details file','info'):''}</div><h4>${esc(e.title)}</h4><div class="meta"><span>${ic('clock')}${ftime(e.date)}</span><span>${ic('mappin')}${esc(e.venue)}</span><span>${ic('users')}${n} going</span></div><div class="ft">${past?chip('Completed'):adm?btn('Manage','event-edit',{sm:1,d:{id:e.id}}):`<button class="btn sm ${mine==='yes'?'good':'pri'}" data-act="rsvp" data-id="${e.id}" data-v="yes">${ic('check')}${mine==='yes'?'Going':'I will attend'}</button><button class="btn sm ${mine==='maybe'?'acc':''}" data-act="rsvp" data-id="${e.id}" data-v="maybe">Maybe</button>`}<button class="btn sm ghost" data-act="event-open" data-id="${e.id}">Details</button></div></div></article>`}
 function noticeCard(n){const m=me(),urgent=n.priority==='high',unread=!isAdmin()&&!n.readBy.includes(m.id);
- return`<div class="notice ${unread?'unread':''} ${urgent?'urgent':''}" data-act="notice-open" data-id="${n.id}" tabindex="0"><div class="ni">${ic(n.pinned?'pin':urgent?'info':'notice')}</div><div class="sp" style="min-width:0"><h4>${esc(n.title)}</h4><p>${esc(n.body)}</p><div class="meta">${chip(esc(n.category),'brand')}${urgent?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}${unread?chip('New','warn'):''}<span>${fdate(n.date)}</span>${isAdmin()?`<span>Seen by ${n.readBy.length} members</span>`:''}</div></div></div>`}
+ return`<div class="notice ${unread?'unread':''} ${urgent?'urgent':''}" data-act="notice-open" data-id="${n.id}" tabindex="0"><div class="ni">${ic(n.pinned?'pin':urgent?'info':'notice')}</div><div class="sp" style="min-width:0"><h4>${esc(n.title)}</h4><p>${esc(n.body)}</p><div class="meta">${chip(esc(n.category),'brand')}${urgent?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}${unread?chip('New','warn'):''}${n.attachment?chip(ic('paperclip')+'File','info'):''}<span>${fdate(n.date)}</span>${isAdmin()?`<span>Seen by ${n.readBy.length} members</span>`:''}</div></div></div>`}
 const sortedNotices=()=>[...DB.notices].sort((a,b)=>(b.pinned-a.pinned)||D(b.date)-D(a.date));
 
 ROUTES.home=()=>{
@@ -873,12 +943,13 @@ ROUTES.notices=()=>{let l=sortedNotices();if(UI.cat!=='all')l=l.filter(n=>n.cate
  return head('Notice board','Official announcements from the committee.',isAdmin()?btn('Publish notice','notice-new',{c:'pri',i:'plus'}):'')+`<div class="filters"><div class="search">${ic('search')}<input id="q" value="${esc(UI.q)}" placeholder="Search notices" data-input="q" aria-label="Search notices"></div>${['all',...NCATS].map(c=>`<button class="pill ${UI.cat===c?'on':''}" data-act="cat" data-v="${c}">${c==='all'?'All':c}</button>`).join('')}</div><div class="stack">${l.length?l.map(noticeCard).join(''):empty('notice','No notices found','Try another category or search term.')}</div>`};
 ACT.cat=d=>{UI.cat=d.v;render()};ACT.tab=d=>{UI.tab=d.v;render()};ACT.nav=d=>{closeModal();location.hash=d.to};
 ACT['notice-open']=d=>{const n=DB.notices.find(x=>x.id===d.id),m=me();if(!isAdmin()&&!n.readBy.includes(m.id)){n.readBy.push(m.id);save();render()}
- modal(esc(n.title),`<div class="stack"><div class="row wrap-r">${chip(esc(n.category),'brand')}${n.priority==='high'?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}<small>${fdatey(n.date)} · ${esc(n.author)}</small></div><p style="white-space:pre-wrap">${esc(n.body)}</p>${isAdmin()?`<hr class="hr"><div class="row wrap-r">${btn('Edit','notice-edit',{sm:1,i:'edit',d:{id:n.id}})}${btn(n.pinned?'Unpin':'Pin','notice-pin',{sm:1,i:'pin',d:{id:n.id}})}${btn('Delete','notice-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{id:n.id}})}</div>`:''}</div>`)};
-const noticeForm=n=>modal(n?'Edit notice':'Publish notice',formWrap('notice',hid(n?.id)+F.t('n_title','Title',{req:true,cls:'full',v:n?.title})+F.a('n_body','Message',{req:true,cls:'full',v:n?.body})+F.s('n_cat','Category',NCATS,{v:n?.category})+F.s('n_pri','Priority',[['normal','Normal'],['high','Important']],{v:n?.priority})+F.c('n_pin','Pin to the top',n?.pinned)+(n?'':F.c('n_notify','Send a notification to all residents',true)),n?'Save notice':'Publish'));
+ modal(esc(n.title),`<div class="stack"><div class="row wrap-r">${chip(esc(n.category),'brand')}${n.priority==='high'?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}<small>${fdatey(n.date)} · ${esc(n.author)}</small></div><p style="white-space:pre-wrap">${esc(n.body)}</p>${n.attachment?attBlock(n.attachment,'notice',n.id):''}${isAdmin()?`<hr class="hr"><div class="row wrap-r">${btn('Edit','notice-edit',{sm:1,i:'edit',d:{id:n.id}})}${btn(n.pinned?'Unpin':'Pin','notice-pin',{sm:1,i:'pin',d:{id:n.id}})}${btn('Delete','notice-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{id:n.id}})}</div>`:''}</div>`)};
+const noticeForm=n=>modal(n?'Edit notice':'Publish notice',formWrap('notice',hid(n?.id)+F.t('n_title','Title',{req:true,cls:'full',v:n?.title})+F.a('n_body','Message',{req:true,cls:'full',v:n?.body})+F.s('n_cat','Category',NCATS,{v:n?.category})+F.s('n_pri','Priority',[['normal','Normal'],['high','Important']],{v:n?.priority})+F.c('n_pin','Pin to the top',n?.pinned)+attachField('n_file',n?.attachment)+(n?'':F.c('n_notify','Send a notification to all residents',true)),n?'Save notice':'Publish'));
 ACT['notice-new']=()=>noticeForm();ACT['notice-edit']=d=>noticeForm(DB.notices.find(x=>x.id===d.id));
-FORMS.notice=d=>{if(!d.n_title.trim()||!d.n_body.trim())return fErr('Add a title and a message.');
- if(d.id){const n=DB.notices.find(x=>x.id===d.id);Object.assign(n,{title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin});toast('Notice updated')}
- else{DB.notices.unshift({id:uid('n'),title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin,date:new Date().toISOString(),author:'Society Office',readBy:[]});if(d.n_notify)notify('all','New notice: '+d.n_title.trim(),'notices');logAct('Published notice: '+d.n_title.trim());toast('Notice published')}
+FORMS.notice=async(d,f)=>{if(!d.n_title.trim()||!d.n_body.trim())return fErr('Add a title and a message.');
+ const cur=d.id?DB.notices.find(x=>x.id===d.id):null;let att;try{att=await pickAttachment(f,'n_file',cur&&cur.attachment,!!d.n_file_rm)}catch(e){return fErr(e.message)}
+ if(d.id){const n=cur;Object.assign(n,{title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin,attachment:att});toast('Notice updated')}
+ else{DB.notices.unshift({id:uid('n'),title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin,date:new Date().toISOString(),author:'Society Office',readBy:[],attachment:att});if(d.n_notify)notify('all','New notice: '+d.n_title.trim(),'notices');logAct('Published notice: '+d.n_title.trim());toast('Notice published')}
  save();closeModal();render()};
 ACT['notice-pin']=d=>{const n=DB.notices.find(x=>x.id===d.id);n.pinned=!n.pinned;save();closeModal();render()};
 ACT['notice-del']=d=>{DB.notices=DB.notices.filter(x=>x.id!==d.id);save();closeModal();render();toast('Notice deleted')};
@@ -928,13 +999,14 @@ ROUTES.events=()=>{const now=Date.now()-3*3600e3,m=me(),tab=UI.tab||'up';let l=D
  return head('Events','Festivals, sports, meetings and everything in between.',isAdmin()?btn('Add event','event-new',{c:'pri',i:'plus'}):'')+`<div class="filters">${[['up','Upcoming'],['past','Past'],['mine','My RSVPs']].filter(t=>!(isAdmin()&&t[0]==='mine')).map(t=>`<button class="pill ${tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${t[1]}</button>`).join('')}</div><div class="grid g3">${l.length?l.map(evCard).join(''):empty('calendar','Nothing here yet',tab==='mine'?'RSVP to an event and it shows up here.':'Check back soon.')}</div>`};
 ACT.rsvp=d=>{const e=DB.events.find(x=>x.id===d.id),m=me();if(e.rsvps[m.id]===d.v)delete e.rsvps[m.id];else{e.rsvps[m.id]=d.v;if(d.v==='yes')toast("You're going to "+e.title)}save();closeModal();render()};
 ACT['event-open']=d=>{const e=DB.events.find(x=>x.id===d.id),m=me(),past=+D(e.date)<Date.now()-3*3600e3,mine=e.rsvps[m.id],ent=Object.entries(e.rsvps),going=ent.filter(x=>x[1]==='yes'),mb=ent.filter(x=>x[1]==='maybe'),name=id=>(DB.users.find(u=>u.id===id)||{name:'Resident'}).name;
- modal(esc(e.title),`<div class="stack"><div class="ev" style="box-shadow:none;border:0"><div class="cv" style="border-radius:14px;cursor:default">${cover(e)}</div></div><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free entry','good')}${e.capacity?chip('Limited to '+e.capacity):''}</div><p style="white-space:pre-wrap">${esc(e.desc)}</p><div class="card flat"><div class="kv"><span>When</span><span>${fwd(e.date)}, ${ftime(e.date)}</span></div><div class="kv"><span>Where</span><span>${esc(e.venue)}</span></div><div class="kv"><span>Responses</span><span>${going.length} going · ${mb.length} maybe</span></div></div>${isAdmin()&&going.length?`<small>Going: ${going.map(x=>esc(name(x[0]))).join(', ')}</small>`:''}
+ modal(esc(e.title),`<div class="stack"><div class="ev" style="box-shadow:none;border:0"><div class="cv" style="border-radius:14px;cursor:default">${cover(e)}</div></div><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free entry','good')}${e.capacity?chip('Limited to '+e.capacity):''}</div><p style="white-space:pre-wrap">${esc(e.desc)}</p>${e.attachment?attBlock(e.attachment,'event',e.id):''}<div class="card flat"><div class="kv"><span>When</span><span>${fwd(e.date)}, ${ftime(e.date)}</span></div><div class="kv"><span>Where</span><span>${esc(e.venue)}</span></div><div class="kv"><span>Responses</span><span>${going.length} going · ${mb.length} maybe</span></div></div>${isAdmin()&&going.length?`<small>Going: ${going.map(x=>esc(name(x[0]))).join(', ')}</small>`:''}
  <div class="row wrap-r">${past?chip('This event has ended'):isAdmin()?btn('Edit event','event-edit',{c:'pri',i:'edit',d:{id:e.id}}):`<button class="btn ${mine==='yes'?'good':'pri'}" data-act="rsvp" data-id="${e.id}" data-v="yes">${ic('check')}${mine==='yes'?'You are going':'I will attend'}</button><button class="btn ${mine==='maybe'?'acc':''}" data-act="rsvp" data-id="${e.id}" data-v="maybe">Maybe</button>`}</div></div>`,{wide:1})};
 const ECATS=['Festival','Cultural','Sports','Wellness','Meeting','Kids','Community'],SCENES=[['festival','Festival lights'],['sports','Sports field'],['garden','Garden'],['yoga','Sunrise yoga'],['night','Night sky'],['meeting','Meeting dusk'],['kids','Kids fair']];
 ACT['event-new']=()=>eventForm();ACT['event-edit']=d=>eventForm(DB.events.find(x=>x.id===d.id));
-function eventForm(e){modal(e?'Edit event':'Add event',formWrap('event',hid(e?.id)+F.t('e_title','Event name',{req:true,cls:'full',v:e?.title})+F.t('e_date','Date and time',{type:'datetime-local',req:true,v:e?isoLocal(e.date):isoLocal(new Date(Date.now()+7*DAY))})+F.s('e_cat','Category',ECATS,{v:e?.category})+F.t('e_venue','Venue',{req:true,v:e?.venue})+F.t('e_fee','Fee per flat (₹)',{type:'number',v:e?.fee??0,attrs:'min="0"'})+F.a('e_desc','Description',{cls:'full',v:e?.desc})+F.s('e_scene','Artwork style',SCENES,{v:e?.scene,cls:'full'})+`<label class="fld full"><span>Cover photo (shown in the hero)</span><input type="file" id="e_cover" accept="image/*"><em class="hint">Upload a real photo. Without one, generated artwork is used.</em></label><label class="fld full"><span>Gallery photos</span><input type="file" id="e_photos" accept="image/*" multiple></label>`+F.c('e_feat','Show in the home page hero',e?e.featured:true)+(e?`<label class="chk full"><input type="checkbox" id="e_rmcover" name="e_rmcover">Remove current cover photo and gallery photos</label>`:''),e?'Save event':'Add event',e?btn('Delete','event-del',{c:'bad',confirm:1,d:{id:e.id}}):''),{wide:1})}
+function eventForm(e){modal(e?'Edit event':'Add event',formWrap('event',hid(e?.id)+F.t('e_title','Event name',{req:true,cls:'full',v:e?.title})+F.t('e_date','Date and time',{type:'datetime-local',req:true,v:e?isoLocal(e.date):isoLocal(new Date(Date.now()+7*DAY))})+F.s('e_cat','Category',ECATS,{v:e?.category})+F.t('e_venue','Venue',{req:true,v:e?.venue})+F.t('e_fee','Fee per flat (₹)',{type:'number',v:e?.fee??0,attrs:'min="0"'})+F.a('e_desc','Description',{cls:'full',v:e?.desc})+F.s('e_scene','Artwork style',SCENES,{v:e?.scene,cls:'full'})+`${attachField('e_file',e?.attachment,'Event details file (optional)')}<label class="fld full"><span>Cover photo (shown in the hero)</span><input type="file" id="e_cover" accept="image/*"><em class="hint">Upload a real photo. Without one, generated artwork is used.</em></label><label class="fld full"><span>Gallery photos</span><input type="file" id="e_photos" accept="image/*" multiple></label>`+F.c('e_feat','Show in the home page hero',e?e.featured:true)+(e?`<label class="chk full"><input type="checkbox" id="e_rmcover" name="e_rmcover">Remove current cover photo and gallery photos</label>`:''),e?'Save event':'Add event',e?btn('Delete','event-del',{c:'bad',confirm:1,d:{id:e.id}}):''),{wide:1})}
 FORMS.event=async(d,f)=>{if(!d.e_title.trim()||!d.e_date)return fErr('Event name and date are required.');
  const base={title:d.e_title.trim(),date:new Date(d.e_date).toISOString(),category:d.e_cat,venue:d.e_venue.trim(),fee:+d.e_fee||0,desc:d.e_desc.trim(),scene:d.e_scene,featured:!!d.e_feat};
+ const cur=d.id?DB.events.find(x=>x.id===d.id):null;try{base.attachment=await pickAttachment(f,'e_file',cur&&cur.attachment,!!d.e_file_rm)}catch(er){return fErr(er.message)}
  let cv=null,ph=[];try{const c=$('#e_cover',f).files[0];if(c)cv=await readImage(c,1400,.72);for(const p of [...$('#e_photos',f).files].slice(0,8))ph.push(await readImage(p,1000,.7))}catch(e){return fErr('Could not read one of the photos. Try a different image.')}
  if(d.id){const e=DB.events.find(x=>x.id===d.id);Object.assign(e,base);if(d.e_rmcover){e.cover=null;e.photos=[]}if(cv)e.cover=cv;if(ph.length)e.photos=(e.photos||[]).concat(ph);toast('Event updated')}
  else{DB.events.push({id:uid('e'),...base,rsvps:{},cover:cv,photos:ph,capacity:0});notify('all','New event: '+base.title+' on '+fdate(base.date),'events');logAct('Added event: '+base.title);toast('Event added')}
@@ -1160,7 +1232,7 @@ function applyTheme(){
  document.body.classList.toggle('pv',!!PV)}
 
 /* ----- logo, bars, footer ----- */
-const logoOf=src=>src?`<img class="logo-img" src="${esc(src)}" alt="">`:logo;
+const logoOf=src=>src?`<img class="logo-img" src="${esc(src)}" alt="">`:animMark();
 const logoHtml=()=>logoOf(cfg().site.logo);
 const hrefOf=(u,label)=>String(u).startsWith('#')?`<a href="${esc(u)}">${label}</a>`:`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
 function siteBars(){
@@ -1313,6 +1385,151 @@ ACT['site-save']=()=>{
  PV=null;studioStart();if(routeOf()!=='studio'&&isAdmin())location.hash='studio';
  render(true);toast('Saved. Residents and visitors see the changes now.')};
 window.addEventListener('beforeunload',e=>{if(siteDirty()){e.preventDefault();e.returnValue=''}});
+/* ========== file attachments for notices and events ==========
+   Admin picks a file in the notice or event form. With a server (REMOTE) the file is uploaded to the API and the notice keeps
+   only a small description of it. In the offline demo the file stays inside the browser data.
+   Residents see a card with Preview and Download. PDFs are drawn page by page, so previews work in the Android app too. */
+const ATT_MAX=5*1024*1024,ATT_EXT=['pdf','png','jpg','jpeg','webp','doc','docx','xls','xlsx'];
+const ATT_ACCEPT='.pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.xls,.xlsx,application/pdf,image/*';
+const ATT_MIME={pdf:'application/pdf',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xls:'application/vnd.ms-excel',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'};
+const attKind=a=>a.mime==='application/pdf'?'PDF':/^image\//.test(a.mime)?'Image':/word/.test(a.mime)?'Word':/sheet|excel/.test(a.mime)?'Excel':'File';
+const attCanView=a=>a.mime==='application/pdf'||/^image\//.test(a.mime);
+const fmtSize=n=>n<1024?n+' B':n<1048576?Math.round(n/1024)+' KB':(n/1048576).toFixed(1)+' MB';
+const attCard=(a,kind,id)=>`<div class="attcard"><span class="atti">${ic(/^image\//.test(a.mime)?'eye':'file')}</span><div class="attm"><b>${esc(a.name)}</b><small>${attKind(a)} · ${fmtSize(a.size||0)}</small></div>${kind?`<div class="attb">${attCanView(a)?btn('Preview','att-view',{sm:1,i:'eye',d:{k:kind,id}}):''}${btn('Download','att-dl',{sm:1,c:'pri',i:'download',d:{k:kind,id}})}</div>`:''}</div>`;
+const attBlock=(a,kind,id)=>`<div class="stack" style="gap:6px"><small><b>${kind==='event'?'Event details':'Attached file'}</b></small>${attCard(a,kind,id)}</div>`;
+const attachField=(id,att,label='Attach a file (optional)')=>`<label class="fld full"><span>${label}</span><input type="file" id="${id}" accept="${ATT_ACCEPT}"><em class="hint">PDF, image, Word or Excel, up to 5 MB. Residents can preview and download it.</em></label>${att?`<div class="full attrow">${attCard(att)}<label class="chk"><input type="checkbox" id="${id}_rm" name="${id}_rm">Remove the current file</label></div>`:''}`;
+const attOf=d=>((d.k==='event'?DB.events:DB.notices).find(x=>x.id===d.id)||{}).attachment;
+
+const fileToDataUrl=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(new Error('Could not read that file.'));r.readAsDataURL(f)});
+/* Returns the attachment the notice or event should have after saving: the new file, the current one, or null. */
+async function pickAttachment(form,id,cur,remove){
+ const el=$('#'+id,form),file=el&&el.files&&el.files[0];
+ if(!file)return remove?null:(cur||null);
+ const ext=(file.name.split('.').pop()||'').toLowerCase();
+ if(!ATT_EXT.includes(ext))throw new Error('Choose a PDF, image, Word or Excel file.');
+ if(file.size>ATT_MAX)throw new Error('That file is larger than 5 MB.');
+ if(!file.size)throw new Error('That file is empty.');
+ toast('Uploading '+file.name+'…','info');
+ const url=await fileToDataUrl(file);
+ if(REMOTE){
+  try{const r=await api('/api/files',{method:'POST',body:{name:file.name,data:url.slice(url.indexOf(',')+1)}});return r.file}
+  catch(e){throw new Error(e.net?e.message:'The file was not uploaded. '+e.message)}
+ }
+ if(file.size>1.2*1024*1024)throw new Error('In demo mode files are limited to 1 MB. Connect the server for 5 MB files.');
+ return{id:uid('f'),name:file.name,mime:ATT_MIME[ext],size:file.size,local:url};
+}
+
+/* address that opens the file: a signed link from the server, or a blob made from the demo data */
+async function attUrl(a,dl){
+ if(a.local){const b=await (await fetch(a.local)).blob();return URL.createObjectURL(b)}
+ const r=await api('/api/files/'+encodeURIComponent(a.id)+'/link',{method:'POST'});
+ return API+r.url+(dl?'&dl=1':'');
+}
+ACT['att-dl']=async d=>{
+ const a=attOf(d);if(!a)return;
+ try{const url=await attUrl(a,true),el=document.createElement('a');el.href=url;el.rel='noopener';
+  if(a.local)el.download=a.name;else if(isNativeApp())el.target='_blank';
+  document.body.appendChild(el);el.click();el.remove();toast('Download started','download')}
+ catch(e){toast(e.message||'Could not open the file.','x')}
+};
+let PDFLIB=null;
+async function pdfLib(){
+ if(PDFLIB)return PDFLIB;
+ const base='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+ if(!window.pdfjsLib)await new Promise((ok,no)=>{const s=document.createElement('script');s.src=base+'pdf.min.js';s.onload=ok;s.onerror=()=>no(new Error('The viewer could not load.'));document.head.appendChild(s)});
+ const code=await (await fetch(base+'pdf.worker.min.js')).text();
+ pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([code],{type:'text/javascript'}));
+ return PDFLIB=pdfjsLib;
+}
+async function drawPdf(box,url){
+ const lib=await pdfLib(),buf=await (await fetch(url)).arrayBuffer(),pdf=await lib.getDocument({data:buf}).promise;
+ box.innerHTML='';const w=Math.max(260,box.clientWidth-20),dpr=Math.min(2,window.devicePixelRatio||1),n=Math.min(pdf.numPages,40);
+ for(let i=1;i<=n;i++){
+  if(!box.isConnected)return;
+  const pg=await pdf.getPage(i),sc=w/pg.getViewport({scale:1}).width,v=pg.getViewport({scale:sc*dpr}),cv=document.createElement('canvas');
+  cv.width=v.width;cv.height=v.height;cv.className='attpage';box.appendChild(cv);
+  await pg.render({canvasContext:cv.getContext('2d'),viewport:v}).promise;
+ }
+ if(pdf.numPages>n)box.insertAdjacentHTML('beforeend',`<p class="muted" style="text-align:center">Showing the first ${n} of ${pdf.numPages} pages. Download the file to read the rest.</p>`);
+}
+ACT['att-view']=async d=>{
+ const a=attOf(d);if(!a)return;
+ modal(esc(a.name),`<div class="stack"><div class="attview" id="attview"><div class="boot" style="min-height:220px"><div class="spin"></div><small>Opening…</small></div></div><div class="row wrap-r">${btn('Back','att-back',{i:'arrow',d})}<span class="sp"></span>${btn('Download','att-dl',{c:'pri',i:'download',d})}</div></div>`,{wide:1,sub:attKind(a)+' · '+fmtSize(a.size||0)});
+ const box=$('#attview');
+ try{
+  const url=await attUrl(a,false);
+  if(!box||!box.isConnected)return;
+  if(/^image\//.test(a.mime))box.innerHTML=`<img class="attimg" src="${esc(url)}" alt="${esc(a.name)}">`;
+  else if(a.mime==='application/pdf')await drawPdf(box,url);
+  else box.innerHTML=`<p class="muted" style="padding:24px;text-align:center">A preview is not available for this type of file. Download it to open it.</p>`;
+ }catch(e){if(box&&box.isConnected)box.innerHTML=`<p class="muted" style="padding:24px;text-align:center">${esc(e.message||'The preview could not be shown.')} You can still download the file.</p>`}
+};
+ACT['att-back']=d=>ACT[d.k==='event'?'event-open':'notice-open']({id:d.id});
+/* ========== Queenstown brand: animated logo, splash screen, "get the Android app" ========== */
+Object.assign(IP,{
+ paperclip:'<path d="M21 11.5l-8.6 8.6a5 5 0 01-7.1-7.1l8.6-8.6a3.4 3.4 0 014.8 4.8l-8.6 8.6a1.8 1.8 0 01-2.5-2.5l7.9-7.9"/>',
+ download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+ file:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8zM14 3v5h5"/>',
+ app:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'
+});
+const isNativeApp=()=>{try{return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())||/QueenstownApp/.test(navigator.userAgent)}catch(e){return false}};
+
+/* ----- animated logo -----
+   The logo picture is cut into pieces with fixed rectangles (castle, each group of letters, "Chinchwad"),
+   so the castle can rise, the name can appear letter by letter, and a golden shine can sweep across it.
+   Colours come from CSS (--a1, --a2), so the same picture works on dark and light backgrounds. */
+const AL_W=692,AL_H=411;
+const AL_RECT=(x0,y0,x1,y1)=>`inset(${(y0/AL_H*100).toFixed(2)}% ${((AL_W-x1)/AL_W*100).toFixed(2)}% ${((AL_H-y1)/AL_H*100).toFixed(2)}% ${(x0/AL_W*100).toFixed(2)}%)`;
+const AL_LETTERS=[[0,0,172,360],[172,258,220,360],[220,258,333,360],[333,258,375,360],[375,258,434,360],[434,258,497,360],[497,258,585,360],[585,0,692,360]];
+const AL_SPARKS=[[46.5,2.4,3.0],[58.9,13.5,3.9],[37.2,11.8,4.6],[66,36,3.4],[43,28,5.1],[27,52,4.2]];
+function animLogo(cls='',style=''){
+ return`<span class="alogo ${cls}" style="${style}" role="img" aria-label="Queenstown, Chinchwad"><span class="al-p al-c" style="clip-path:${AL_RECT(172,0,560,258)}"><i class="al-i"></i></span>${AL_LETTERS.map((r,i)=>`<span class="al-p al-l" style="clip-path:${AL_RECT(...r)}"><i class="al-i" style="animation-delay:${(1.15+i*.11).toFixed(2)}s"></i></span>`).join('')}<span class="al-p al-s" style="clip-path:${AL_RECT(0,360,692,411)}"><i class="al-i"></i></span><i class="al-sh"></i>${AL_SPARKS.map(([x,y,d])=>`<b class="al-sp" style="--x:${x}%;--y:${y}%;--d:${d}s"></b>`).join('')}</span>`}
+const animMark=()=>`<span class="amark" aria-hidden="true"><i class="am-i"></i><i class="am-sh"></i></span>`;
+/* big logo on the public page: the society's own uploaded logo if the admin set one, else the animated castle */
+const bigLogo=()=>{const s=cfg().site.logo;return s?`<img class="logo-img big" src="${esc(s)}" alt="">`:animLogo('big')};
+
+/* ----- splash screen: shown once per visit while the app loads ----- */
+(function splash(){
+ try{if(sessionStorage.getItem('qs_splash'))return;sessionStorage.setItem('qs_splash','1')}catch(e){}
+ const el=document.createElement('div');el.id='splash';el.className='splash';
+ el.innerHTML=`<div class="splash-in">${animLogo('splash-logo','--w:min(470px,84vw)')}<div class="splash-bar"><i></i></div></div>`;
+ document.body.appendChild(el);
+ const t0=Date.now(),minMs=matchMedia('(prefers-reduced-motion:reduce)').matches?400:3000;let gone=false;
+ const bye=()=>{if(gone)return;gone=true;el.classList.add('out');setTimeout(()=>el.remove(),650)};
+ el.addEventListener('click',bye);
+ const tick=()=>{const a=document.getElementById('app'),first=a&&a.firstElementChild,ready=first&&!first.classList.contains('boot'),age=Date.now()-t0;
+  if((ready&&age>=minMs)||age>12000)bye();else setTimeout(tick,150)};tick();
+})();
+
+/* ----- Android app: open it if installed, otherwise download it ----- */
+const apkUrl=()=>String(window.QS_APK_URL||'').trim();
+const canOfferApp=()=>!!apkUrl()&&!isNativeApp();
+const isAndroidWeb=()=>/Android/i.test(navigator.userAgent)&&!isNativeApp();
+/* Chrome on Android opens the installed app through this address; if the app is missing it goes to the download instead. */
+const appOpenHref=()=>`intent://open#Intent;scheme=queenstown;package=in.queenstown.society;S.browser_fallback_url=${encodeURIComponent(apkUrl())};end`;
+function appBanner(){
+ if(!canOfferApp()||!isAndroidWeb())return'';
+ try{if(Date.now()<(+lsGet('qs_appbar')||0)||matchMedia('(display-mode: standalone)').matches)return''}catch(e){}
+ return`<div class="appbar" role="region" aria-label="Get the Android app"><img src="icons/icon-192.png" alt="" width="38" height="38"><div class="t"><b>Queenstown app for Android</b><small>Notices, bills and events on your phone</small></div><a class="go" href="${appOpenHref()}">Get app</a><button type="button" data-act="app-dismiss" aria-label="Hide">${ic('x')}</button></div>`}
+ACT['app-dismiss']=()=>{lsSet('qs_appbar',String(Date.now()+7*864e5));const b=$('.appbar');if(b)b.remove()};
+const appCard=()=>canOfferApp()?`<div class="card flat appcard"><span class="ai">${ic('app')}</span><div class="sp"><b>Get the Android app</b><br><small>Pay bills, read notices and see events from your home screen.</small></div><button type="button" class="btn sm pri" data-act="app-dl">${ic('download')}Get the app</button></div>`:'';
+const appSide=()=>canOfferApp()?`<button type="button" class="navbtn" data-act="app-dl">${ic('app')}Get the Android app</button>`:'';
+ACT['app-dl']=()=>{
+ if(!canOfferApp())return;
+ const apk=apkUrl(),android=isAndroidWeb(),ios=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+ modal('Get the Queenstown app',`<div class="stack"><p class="muted">Pay maintenance, read notices and see events from your home screen. It is the same Queenstown Society you see on the website, so every change shows up in both.</p>
+ ${android?`<div class="row" style="flex-wrap:wrap"><a class="btn pri" href="${appOpenHref()}">${ic('app')}Open app or install</a><a class="btn" href="${esc(apk)}" download>${ic('download')}Download APK</a></div>
+ <small>If the app is already on your phone, the first button opens it. If not, the download starts. When Android asks, allow installs from this source once, then open the downloaded file.</small>`
+ :ios?`<div class="card flat"><b>iPhone and iPad</b><p class="muted">The app file is for Android phones. On iPhone, open this site in Safari, tap Share, then Add to Home Screen.</p></div>`
+ :`<div class="row" style="align-items:center;gap:16px;flex-wrap:wrap"><div id="appqr" class="appqr" aria-label="QR code"></div><div class="sp" style="min-width:200px"><b>On your Android phone</b><p class="muted">Scan the code with the camera and tap the link. The page offers to open or download the app.</p></div></div>
+ <div class="row"><a class="btn" href="${esc(apk)}" download>${ic('download')}Download APK to this computer</a></div>`}
+ </div>`);
+ if(!android&&!ios&&window.QRCode)setTimeout(()=>{const b=$('#appqr');if(b&&!b.firstChild)try{new QRCode(b,{text:location.origin+location.pathname+'#getapp',width:160,height:160,colorDark:'#0B3B3A',colorLight:'#ffffff'})}catch(e){}},50)};
+
+/* ----- sync warning: in demo mode every phone and computer keeps its own copy, so a change on one never reaches the others ----- */
+const syncWarn=()=>(!REMOTE&&isAdmin())?`<div class="syncwarn" role="alert">${ic('info')}<span><b>Demo mode: changes stay on this device only.</b> A new logo, notice or event made here will not show on your phone or other residents' phones. Set <code>QS_API_URL</code> on Vercel to your Render server address (see DEPLOY.md) so every change is shared everywhere.</span></div>`:'';
+/* open the download dialog when someone scans the QR code or follows a #getapp link */
+setTimeout(()=>{if(location.hash==='#getapp'){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}if(canOfferApp())ACT['app-dl']()}},900);
 /* ========== admin views + app wiring ========== */
 ROUTES.admin=()=>{const c=collection(mkey()),pend=DB.users.filter(u=>u.status==='pending'),ver=DB.bills.filter(b=>b.status==='verifying'),bk=DB.bookings.filter(b=>b.status==='pending'),ads=DB.ads.filter(a=>a.status==='pending'),open=DB.complaints.filter(x=>x.status==='open');
  const q=(i,t,n,link)=>`<a class="kpi ${n?'warn':''}" href="#${link}"><span class="k-ic">${ic(i)}</span><div><b data-count="${n}">0</b><small>${t}</small></div></a>`;

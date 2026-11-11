@@ -20,3 +20,14 @@ Build on your own computer instead (needs Node 20, JDK 17, Android SDK):
 The APK appears in `android/app/build/outputs/apk/debug/`.
 
 With QS_API_URL set, the app uses the same accounts, database and Razorpay payments as the website. Add the Render CLIENT_ORIGINS value `https://localhost` as well (comma separated) only if sign-in from the APK is refused; the API already accepts it by default.
+
+## Website "Get the app" button and one set of changes everywhere
+
+1. In GitHub > Settings > Secrets and variables > Actions > **Variables** add:
+   - `QS_API_URL` = your Render address
+   - `QS_WEB_URL` = your Vercel address, for example `https://queenstown-society.vercel.app`. The app then shows the live website, so a new logo, notice or event appears in the app as soon as Vercel deploys, with no new APK.
+   - `QS_APK_URL` = `https://github.com/<your-user>/<your-repo>/releases/download/app-latest/queenstown-society.apk`
+2. Add the same `QS_APK_URL` (and `QS_API_URL`) in Vercel > Project > Settings > Environment Variables, then redeploy.
+3. Every APK build now also publishes `queenstown-society.apk` to the **app-latest** release, so that link always gives the newest app.
+
+On an Android phone the website shows a "Get app" bar. If the app is installed it opens it; if not, the APK downloads. On a computer the "Get the Android app" button shows a QR code and a download link. iPhone users get Add to Home Screen instructions.

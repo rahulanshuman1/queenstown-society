@@ -172,9 +172,10 @@ async function startRemote(){
   $('#app').innerHTML=`<div class="boot"><b>Cannot reach the Queenstown server</b><small>${esc(e.message)}</small><button class="btn pri" data-act="retry-boot">Try again</button></div>`;return false
  }finally{clearTimeout(t)}}
 async function pollRemote(){
- if(!REMOTE||!TOKEN||document.hidden||syncing||dirty||!DB)return;
+ if(!REMOTE||document.hidden||syncing||dirty||!DB)return;
  if($('#modal-root')?.classList.contains('open'))return;
  const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;
+ if(!TOKEN){try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const p=await api('/api/public');adopt(p.db,p.rev);render()}catch(e){}return}
  try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const s=await api('/api/state');if(dirty||syncing)return;adopt(s.db,s.rev);SES=s.session;render()}
  catch(e){if(e.status===401)endSession('Your session ended. Please sign in again.')}}
 if(typeof document!=='undefined'){setInterval(()=>pollRemote(),20000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollRemote()})}

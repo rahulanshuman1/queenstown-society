@@ -3,6 +3,7 @@
    The browser sends whole documents; this layer decides which parts are accepted.
    Residents never get to set fields like status, amount, userId or fee on their own. */
 
+const files = require('./files');
 const COLLS = ['users', 'notices', 'events', 'bills', 'schedule', 'amenities', 'bookings', 'complaints',
   'ads', 'polls', 'docs', 'contacts', 'entries', 'visitors', 'notifs', 'log'];
 // The browser keeps these newest first (it uses unshift), the others oldest first.
@@ -141,13 +142,22 @@ const adminOnly = {
   remove: c => c.admin ? { ok: true } : { err: 'Only the admin can delete this.' }
 };
 
+
+/* An attachment is only kept if the file really was uploaded; its name, type and size come from the upload record, not from the browser. */
+async function attOf(store, a) {
+  const c = files.cleanAtt(a);
+  if (!c) return null;
+  const meta = await store.get('files', c.id);
+  return meta ? { id: meta.id, name: meta.name, mime: meta.mime, size: meta.size } : null;
+}
+
 const USER_STATUS = ['pending', 'approved', 'rejected'];
 const PAY_METHODS = ['UPI', 'Bank transfer', 'Cheque', 'Cash at office'];
 
 const RULES = {
   notices: {
-    upsert(c, ex, d) {
-      if (c.admin) return { doc: { ...d, readBy: ex ? (ex.readBy || []) : [] } };
+    async upsert(c, ex, d) {
+      if (c.admin) return { doc: { ...d, readBy: ex ? (ex.readBy || []) : [], attachment: await attOf(c.store, d.attachment) } };
       if (!ex) return { err: 'Notice not found.' };
       const rb = ex.readBy || [];
       if (Array.isArray(d.readBy) && d.readBy.includes(c.aid) && !rb.includes(c.aid)) return { doc: { ...ex, readBy: [...rb, c.aid] } };
@@ -157,8 +167,8 @@ const RULES = {
   },
 
   events: {
-    upsert(c, ex, d) {
-      if (c.admin) return { doc: { ...d, rsvps: ex ? (ex.rsvps || {}) : {} } };
+    async upsert(c, ex, d) {
+      if (c.admin) return { doc: { ...d, rsvps: ex ? (ex.rsvps || {}) : {}, attachment: await attOf(c.store, d.attachment) } };
       if (!ex) return { err: 'Event not found.' };
       const r = { ...(ex.rsvps || {}) };
       const v = d.rsvps && d.rsvps[c.aid];
