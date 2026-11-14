@@ -30,6 +30,8 @@ The free cluster has no scheduled backups. Use **Society setup > Data > Backup**
 
 ## 2. Razorpay (payments)
 
+Card and net banking are not offered in the app. Residents pay by UPI or bank transfer.
+
 1. Create an account at razorpay.com. Stay in **Test Mode** (toggle at the top of the dashboard) until everything works.
 2. **Account & Settings > API Keys > Generate Key.** Copy the **Key Id** (`rzp_test_...`) and the **Key Secret**. The secret is shown only once.
 3. **Account & Settings > Payment capture**: choose **Automatic**, so a successful payment is captured without anyone clicking in the dashboard.
@@ -72,6 +74,10 @@ The free Render plan sleeps after about 15 minutes without visits. The first req
 4. Go back to Render and set **CLIENT_ORIGINS** to that exact address. If you add your own domain later, list both, separated by a comma. Render restarts by itself.
 
 QS_API_URL is read when the site is built. If you change it, redeploy on Vercel.
+
+**Important:** if QS_API_URL is empty the site runs in demo mode and every phone or computer keeps its own copy. A logo changed on a laptop will then never appear on a phone. With QS_API_URL set, all devices read the same database.
+
+Also add **QS_APK_URL** here (see ANDROID.md) to show the "Get the app" download button on the website.
 
 ## 5. First run
 

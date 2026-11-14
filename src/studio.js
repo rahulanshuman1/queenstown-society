@@ -7,7 +7,7 @@ const SITE_DEF=()=>({
  content:{headline:'',intro:'Notices, maintenance payments, events, bookings, helpdesk and more. Residents register their flat and get access after the society admin approves the request.',
   steps:[{t:'Register your flat',d:'Name, tower, flat number and mobile.'},{t:'Admin verifies',d:'The committee checks ownership or tenancy.'},{t:'Start using the app',d:'Pay dues, read notices, book amenities.'}],
   welcome:'',announce:{on:false,text:'',link:''}},
- footer:{about:'',phone:'',email:'',hours:'',links:[],social:{facebook:'',instagram:'',youtube:'',whatsapp:'',x:''},image:'',caption:'',showImage:true,copyright:''}
+ footer:{about:'',place:{name:'',line1:'',area:'',city:'',state:'',pin:''},mapUrl:'',phone:'',email:'',hours:'',links:[],social:{facebook:'',instagram:'',youtube:'',whatsapp:'',x:''},image:'',caption:'',showImage:true,copyright:''}
 });
 const BAD_KEY=k=>k==='__proto__'||k==='constructor'||k==='prototype';
 function deepMerge(d,s){
@@ -22,6 +22,15 @@ function mergeSite(s){
  o.content.steps=def.map((x,i)=>{const y=o.content.steps[i]||{};return{t:y.t||x.t,d:y.d||x.d}});
  return o}
 
+const PLACE_KEYS=['name','line1','area','city','state','pin'];
+/* The old single-line address may have a map link typed into it. Split it so the link becomes a button. */
+function splitAddr(a){a=String(a||'');const m=a.match(/https?:\/\/[^\s<>"']+/);return{url:m?m[0]:'',text:a.replace(/https?:\/\/[^\s<>"']+/g,'').replace(/[\s,]+$/,'').trim()}}
+/* What the footer shows: tidy address lines and the map link. */
+function placeOf(c){
+ const f=c.site.footer,p=f.place||{},old=splitAddr(c.address);
+ if(PLACE_KEYS.some(k=>p[k]))return{name:p.name||'',lines:[p.line1,p.area,[p.city,p.state].filter(Boolean).join(', ')+(p.pin?(p.city||p.state?'\u00a0':'')+p.pin:'')].filter(x=>x&&x.trim()),url:f.mapUrl||old.url};
+ return{name:'',lines:old.text?[old.text]:[],url:f.mapUrl||old.url}}
+
 let DRAFT=null,BASE='',PV=null;
 const siteDirty=()=>!!DRAFT&&JSON.stringify(DRAFT)!==BASE;
 function cfg(){
@@ -29,6 +38,7 @@ function cfg(){
  return{...s,...(dr?{name:DRAFT.name,tagline:DRAFT.tagline,address:DRAFT.address}:{}),site:mergeSite(dr?DRAFT.site:s.site)}}
 function studioStart(){
  const s=DB.settings,d={name:s.name||'',tagline:s.tagline||'',address:s.address||'',site:mergeSite(s.site)};
+ {const f=d.site.footer,old=splitAddr(s.address);if(!PLACE_KEYS.some(k=>f.place[k])){f.place.line1=old.text}if(!f.mapUrl&&old.url)f.mapUrl=old.url}
  while(d.site.footer.links.length<6)d.site.footer.links.push({label:'',url:''});
  DRAFT=JSON.parse(JSON.stringify(d));BASE=JSON.stringify(DRAFT)}
 
@@ -83,7 +93,7 @@ function applyTheme(){
  document.body.classList.toggle('pv',!!PV)}
 
 /* ----- logo, bars, footer ----- */
-const logoOf=src=>src?`<img class="logo-img" src="${esc(src)}" alt="">`:logo;
+const logoOf=src=>src?`<img class="logo-img" src="${esc(src)}" alt="">`:animMark();
 const logoHtml=()=>logoOf(cfg().site.logo);
 const hrefOf=(u,label)=>String(u).startsWith('#')?`<a href="${esc(u)}">${label}</a>`:`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
 function siteBars(){
@@ -94,14 +104,18 @@ function siteBars(){
 ACT['fest-close']=()=>{UI.fbOff=true;render()};
 const SOC=[['facebook','Facebook'],['instagram','Instagram'],['youtube','YouTube'],['whatsapp','WhatsApp'],['x','X']];
 function siteFooter(){
- const c=cfg(),f=c.site.footer,links=f.links.filter(l=>l.label&&l.url),soc=SOC.filter(([k])=>f.social[k]),addr=c.address;
+ const c=cfg(),f=c.site.footer,links=f.links.filter(l=>l.label&&l.url),soc=SOC.filter(([k])=>f.social[k]),pl=placeOf(c);
  const n=c.name||'Queenstown Society';
+ /* signed-in residents get handy links even when none were added in Site studio */
+ const ql=links.length?links:(SES?(isGuard()?[['Security desk','#gate'],['Notices','#notices']]:[['Notices','#notices'],['Events','#events'],['Maintenance','#maintenance'],['Helpdesk','#helpdesk']]).map(([label,url])=>({label,url})):[]);
+ const showName=pl.name&&pl.name.trim().toLowerCase()!==n.trim().toLowerCase(),hasAddr=pl.lines.length||showName||pl.url,hasContact=f.phone||f.email||f.hours;
  return`<footer class="sitefoot">${f.showImage&&f.image?`<figure class="foot-img"><img src="${esc(f.image)}" alt="${esc(f.caption||n)}">${f.caption?`<figcaption>${esc(f.caption)}</figcaption>`:''}</figure>`:''}
- <div class="foot-grid"><div class="fcol"><a class="brand" href="#${SES?(isAdmin()?'admin':'home'):''}">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b><span>${esc(n.split(' ').slice(1).join(' ')||'Society')}</span></div></a>
- <p style="margin-top:12px">${esc(f.about||c.tagline||'')}</p>${soc.length?`<div class="soc">${soc.map(([k,l])=>hrefOf(f.social[k],l)).join('')}</div>`:''}</div>
- <div class="fcol">${links.length?`<h5>Quick links</h5>${links.map(l=>hrefOf(l.url,esc(l.label))).join('')}`:''}</div>
- <div class="fcol"><h5>Contact</h5>${addr?`<p>${ic('mappin')}${esc(addr)}</p>`:''}${f.phone?`<a href="tel:${esc(f.phone.replace(/[^0-9+]/g,''))}">${ic('phone')}${esc(f.phone)}</a>`:''}${f.email?`<a href="mailto:${esc(f.email)}">${ic('mail')}${esc(f.email)}</a>`:''}${f.hours?`<p>${ic('clock')}${esc(f.hours)}</p>`:''}</div></div>
- <div class="foot-bottom">${esc(f.copyright||`© ${new Date().getFullYear()} ${n}. All rights reserved.`)}</div></footer>`}
+ <div class="foot-grid"><div class="fcol fbrand"><a class="brand" href="#${SES?(isAdmin()?'admin':'home'):''}">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b>${n.split(' ').slice(1).length?`<span>${esc(n.split(' ').slice(1).join(' '))}</span>`:''}</div></a>
+ ${(f.about||c.tagline)?`<p class="fabout">${esc(f.about||c.tagline)}</p>`:''}${soc.length?`<div class="soc">${soc.map(([k,l])=>hrefOf(f.social[k],l)).join('')}</div>`:''}${canOfferApp()?`<a class="footapp" href="${esc(apkUrl())}" download rel="noopener">${ic('download')}<span><b>Download the Android app</b><small>Free APK for residents</small></span></a>`:''}</div>
+ ${ql.length?`<nav class="fcol" aria-label="Quick links"><h5>Quick links</h5>${ql.map(l=>hrefOf(l.url,esc(l.label))).join('')}</nav>`:''}
+ ${hasAddr?`<div class="fcol"><h5>Visit us</h5><address class="addr">${showName?`<b>${esc(pl.name)}</b>`:''}${pl.lines.map(x=>`<span>${esc(x)}</span>`).join('')}</address>${pl.url?`<a class="mapbtn" href="${esc(pl.url)}" target="_blank" rel="noopener noreferrer">${ic('mappin')}View on Google Maps</a>`:''}</div>`:''}
+ ${hasContact?`<div class="fcol"><h5>Contact</h5>${f.phone?`<a href="tel:${esc(f.phone.replace(/[^0-9+]/g,''))}">${ic('phone')}${esc(f.phone)}</a>`:''}${f.email?`<a href="mailto:${esc(f.email)}">${ic('mail')}${esc(f.email)}</a>`:''}${f.hours?`<div class="hrs">${ic('clock')}<span>${esc(f.hours)}</span></div>`:''}</div>`:''}</div>
+ <div class="foot-bottom"><span>${esc(f.copyright||`© ${new Date().getFullYear()} ${n}. All rights reserved.`)}</span><a href="#" data-act="to-top">Back to top ↑</a></div></footer>`}
 
 /* ----- image upload: resized in the browser so it stays small ----- */
 function loadImg(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej(new Error('That file could not be read.'));fr.onload=()=>{const im=new Image();im.onerror=()=>rej(new Error('That image could not be opened. Try a PNG or JPEG.'));im.onload=()=>res(im);im.src=fr.result};fr.readAsDataURL(file)})}
@@ -164,7 +178,9 @@ ROUTES.studio=()=>{
 
  <section class="card"><h3>${ic('building')}Footer</h3><div class="stack">
  <div class="frm">${SF.a('site.footer.about','About text',{max:400,cls:'full',h:70,ph:'A line or two about the society. Leave empty to show the tagline.'})}
- ${SF.a('address','Address',{max:300,cls:'full',h:56})}${SF.t('site.footer.phone','Phone',{max:20,attrs:'inputmode="tel"',ph:'+91 98765 43210'})}${SF.t('site.footer.email','Email',{max:120,type:'email'})}${SF.t('site.footer.hours','Office hours',{max:120,cls:'full',ph:'Mon to Sat, 9 am to 6 pm'})}</div>
+ </div>
+ <div class="subcard"><h4>Society location</h4><div class="frm">${SF.t('site.footer.place.name','Society or building name',{max:80,cls:'full',ph:'Queenstown Society'})}${SF.t('site.footer.place.line1','Address line',{max:140,cls:'full',ph:'Survey no. 3876, Chinchwad Station Rd'})}${SF.t('site.footer.place.area','Area or locality',{max:80,ph:'Udyog Nagar'})}${SF.t('site.footer.place.city','City',{max:60,ph:'Pimpri-Chinchwad'})}${SF.t('site.footer.place.state','State',{max:60,ph:'Maharashtra'})}${SF.t('site.footer.place.pin','PIN code',{max:6,attrs:'inputmode="numeric"',ph:'411033'})}${SF.t('site.footer.mapUrl','Google Maps location link',{max:300,cls:'full',type:'url',ph:'https://maps.app.goo.gl/...',hint:'In Google Maps, open your society, tap Share, then Copy link. Visitors get a "View on Google Maps" button in the footer.'})}</div></div>
+ <div class="subcard"><h4>Contact</h4><div class="frm">${SF.t('site.footer.phone','Phone',{max:20,attrs:'inputmode="tel"',ph:'+91 98765 43210'})}${SF.t('site.footer.email','Email',{max:120,type:'email'})}${SF.t('site.footer.hours','Office hours',{max:120,cls:'full',ph:'Mon to Sat, 9 am to 6 pm'})}</div></div>
  <div class="subcard"><h4>Quick links</h4><div class="stack" style="gap:10px">${f.links.map((l,i)=>`<div class="frm pair">${SF.t(`site.footer.links.${i}.label`,`Link ${i+1} label`,{max:40})}${SF.t(`site.footer.links.${i}.url`,`Link ${i+1} address`,{max:300,ph:'https://... or #notices'})}</div>`).join('')}</div></div>
  <div class="subcard"><h4>Social links</h4><div class="frm">${SOC.map(([k,l])=>SF.t(`site.footer.social.${k}`,l,{max:300,ph:'https://',type:'url'})).join('')}</div></div>
  <div class="subcard"><h4>Footer image</h4>${imgBox('footer',f.image,'image','Shown as a wide banner above the footer. JPEG, PNG or WebP, resized for you.')}
@@ -219,11 +235,13 @@ function siteErrors(d){
  SOC.forEach(([k,l])=>{const v=(f.social[k]||'').trim();if(v&&!web(v))e.push(`${l} link must start with https://`)});
  if(f.email.trim()&&!/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(f.email.trim()))e.push('The footer email address does not look right.');
  if(f.phone.trim()&&!/^[+0-9 ()-]{5,20}$/.test(f.phone.trim()))e.push('The footer phone number can only have digits, spaces, + ( ) and -.');
+ if(f.mapUrl.trim()&&!web(f.mapUrl.trim()))e.push('The Google Maps link must start with https://');
+ if(f.place.pin.trim()&&!/^\d{6}$/.test(f.place.pin.trim()))e.push('The PIN code must be 6 digits.');
  if(c.announce.on&&!c.announce.text.trim())e.push('Write the announcement text, or switch the announcement bar off.');
  if(c.announce.link.trim()&&!url(c.announce.link.trim()))e.push('The announcement link must start with https:// or #.');
  if(t.from&&t.to&&t.to<t.from)e.push('The theme end date is before its start date.');
  return e}
-ACT['site-save']=()=>{
+ACT['site-save']=async()=>{
  if(!DRAFT)return;
  const errs=siteErrors(DRAFT);if(errs.length)return toast(errs[0],'x');
  const base=JSON.parse(BASE),d=JSON.parse(JSON.stringify(DRAFT)),f=d.site.footer;
@@ -231,8 +249,14 @@ ACT['site-save']=()=>{
  for(const k of Object.keys(f.social))f.social[k]=(f.social[k]||'').trim();
  for(const k of['about','phone','email','hours','caption','copyright'])f[k]=f[k].trim();
  d.site.content.announce.link=d.site.content.announce.link.trim();
+ f.mapUrl=f.mapUrl.trim();for(const k of PLACE_KEYS)f.place[k]=(f.place[k]||'').trim();
+ /* keep the one-line address (used on receipts) in step with the tidy fields */
+ if(PLACE_KEYS.some(k=>f.place[k]))d.address=[f.place.name,f.place.line1,f.place.area,f.place.city,[f.place.state,f.place.pin].filter(Boolean).join(' ')].filter(Boolean).join(', ');
  for(const k of['name','tagline','address'])if(d[k]!==base[k])DB.settings[k]=d[k].trim();
  DB.settings.site=d.site;save();
+ if(REMOTE){const rej=await flushWait();
+  if(rej.length)return;               /* the server refused it: flush already showed why, and the edits stay on screen so nothing is lost */
+  if(dirty)return}                    /* offline: it will save when the connection is back */
  PV=null;studioStart();if(routeOf()!=='studio'&&isAdmin())location.hash='studio';
  render(true);toast('Saved. Residents and visitors see the changes now.')};
 window.addEventListener('beforeunload',e=>{if(siteDirty()){e.preventDefault();e.returnValue=''}});

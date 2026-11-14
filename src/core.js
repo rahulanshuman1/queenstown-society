@@ -123,7 +123,9 @@ const adminName=()=>REMOTE?(SES&&SES.username)||'admin':DB.settings.adminUser;
 
 /* ----- remote mode: server calls and change syncing ----- */
 const SYNC_COLLS=['users','notices','events','bills','schedule','amenities','bookings','complaints','ads','polls','docs','contacts','entries','visitors','notifs','log'];
-let SNAP={},syncing=false,dirty=false,LASTREV=null,syncTimer=null,failStreak=0;
+let SNAP={},syncing=false,dirty=false,LASTREV=null,syncTimer=null,failStreak=0,LASTREJ=[];
+/* Saves now and waits for the server. Returns the changes the server refused (empty when all was saved). */
+async function flushWait(){if(!REMOTE||!TOKEN)return[];clearTimeout(syncTimer);for(let i=0;i<60&&syncing;i++)await new Promise(r=>setTimeout(r,100));LASTREJ=[];await flush();return LASTREJ}
 async function api(path,opt={}){
  const h={'Content-Type':'application/json'};if(TOKEN)h.Authorization='Bearer '+TOKEN;
  let r;try{r=await fetch(API+path,{method:opt.method||'GET',headers:h,body:opt.body?JSON.stringify(opt.body):undefined})}
@@ -151,6 +153,7 @@ async function flush(){
   const r=await api('/api/sync',{method:'POST',body:{changes}});failStreak=0;
   const rej=(r.rejected||[]).filter(x=>x.coll!=='log');
   if(!dirty)adopt(r.db,r.rev);
+  LASTREJ=rej;
   if(rej.length){toast(rej[0].err||'Some changes could not be saved.','x');render()}
  }catch(e){
   if(e.status===401){syncing=false;return endSession('Your session ended. Please sign in again.')}
@@ -172,9 +175,10 @@ async function startRemote(){
   $('#app').innerHTML=`<div class="boot"><b>Cannot reach the Queenstown server</b><small>${esc(e.message)}</small><button class="btn pri" data-act="retry-boot">Try again</button></div>`;return false
  }finally{clearTimeout(t)}}
 async function pollRemote(){
- if(!REMOTE||!TOKEN||document.hidden||syncing||dirty||!DB)return;
+ if(!REMOTE||document.hidden||syncing||dirty||!DB)return;
  if($('#modal-root')?.classList.contains('open'))return;
  const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;
+ if(!TOKEN){try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const p=await api('/api/public');adopt(p.db,p.rev);render()}catch(e){}return}
  try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const s=await api('/api/state');if(dirty||syncing)return;adopt(s.db,s.rev);SES=s.session;render()}
  catch(e){if(e.status===401)endSession('Your session ended. Please sign in again.')}}
 if(typeof document!=='undefined'){setInterval(()=>pollRemote(),20000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollRemote()})}
@@ -222,9 +226,10 @@ async function seed(){
  for(let i=0;i<44;i++){const name=i===0?'Priya Nair':FN[(i*7)%FN.length]+' '+LN[(i*3+i%5)%LN.length];users.push(mk(i,name))}
  users[0].tower='A';users[0].flat='101';users[0].type='Owner';users[0].showPhone=true;
  users[1].role='committee';users[1].title='President';users[1].name='Sanjay Kulkarni';users[2].role='committee';users[2].title='Secretary';users[2].name='Meenakshi Iyer';users[3].role='committee';users[3].title='Treasurer';users[3].name='Farhan Qureshi';
+ users.push({id:'g1',name:'Ramesh Yadav',tower:'',flat:'',mobile:'9876500099',email:'',type:'Security',passHash:await sha('guard123'),status:'staff',role:'security',title:'Security',members:1,vehicle:'',showPhone:false,ref:'',created:now-20*DAY});
  users.push({id:'u90',name:'Neha Bansal',tower:'B',flat:'704',mobile:'9876500901',email:'neha.bansal@example.com',type:'Owner',passHash:ph,status:'pending',role:'resident',title:'',members:3,vehicle:'',showPhone:false,ref:'Allotment letter 1187',created:now-1*DAY});
  users.push({id:'u91',name:'Imran Sheikh',tower:'C',flat:'305',mobile:'9876500902',email:'imran.sheikh@example.com',type:'Tenant',passHash:ph,status:'pending',role:'resident',title:'',members:2,vehicle:'',showPhone:false,ref:'Rent agreement 11 months',created:now-3*3600e3});
- const settings={name:'Queenstown Society',tagline:'Home, together.',address:'Queenstown Society, Main Gate Road',upi:'queenstown.society@upi',upiName:'Queenstown Society',charges:[{label:'Maintenance charges',amt:2200},{label:'Sinking fund',amt:300},{label:'Water and common electricity',amt:450},{label:'Security and housekeeping',amt:350}],dueDay:15,latePct:2,adRates:{banner:500,classified:0},adminUser:'admin',adminHash:ah,demo:true};
+ const settings={name:'Queenstown Society',tagline:'Home, together.',address:'Queenstown Society, Main Gate Road',upi:'queenstown.society@upi',payMethods:{online:false,upi:true,bank:true},upiName:'Queenstown Society',charges:[{label:'Maintenance charges',amt:2200},{label:'Sinking fund',amt:300},{label:'Water and common electricity',amt:450},{label:'Security and housekeeping',amt:350}],dueDay:15,latePct:2,adRates:{banner:500,classified:0},adminUser:'admin',adminHash:ah,demo:true};
  const ev=(title,scene,d,h,venue,cat,fee,desc,o={})=>({id:uid('e'),title,scene,date:at(d,h),venue,category:cat,fee,desc,featured:true,rsvps:{},cover:null,photos:[],capacity:0,...o});
  const events=[
   ev('Yoga and Wellness Morning','yoga',3,6,'Central Lawn','Wellness',0,'A guided one hour yoga and breathing session for all ages, led by a certified instructor. Bring your own mat.'),
@@ -306,5 +311,5 @@ async function seed(){
   [['Salaries','Security and housekeeping staff',62000+Math.floor(r()*2000)],['Electricity','Common area electricity',26000+Math.floor(r()*6000)],['Lift AMC','Quarterly lift maintenance',9500],['Water','Tanker and treatment',10500+Math.floor(r()*2500)],['Garden','Gardener and supplies',4500],['Repairs','Plumbing and electrical repairs',3000+Math.floor(r()*9000)]].forEach(([c,t,a],j)=>entries.push({id:uid('x'),date:d(3+j*4),category:c,desc:t,amount:a,type:'expense'}));
   entries.push({id:uid('x'),date:d(11),category:'Hall rent',desc:'Banquet hall bookings',amount:3000+Math.floor(r()*6000),type:'income'})});
  const entriesDone=entries.filter(e=>+D(e.date)<=now);
- return{v:1,settings,users,notices,events,bills,schedule,amenities,bookings,complaints,ads,polls,docs,contacts,entries:entriesDone,visitors:[{id:uid('v'),userId:'u0',name:'Ravi (electrician)',purpose:'Repair visit',date:at(1,0),code:'482913',status:'expected'}],notifs:[{id:uid('n'),to:'admin',text:'New registration request from Neha Bansal (B-704)',link:'members',at:now-DAY,read:[]},{id:uid('n'),to:'admin',text:'New registration request from Imran Sheikh (C-305)',link:'members',at:now-3600e3*3,read:[]}],log:[{t:'Demo data loaded',at:now}]};
+ return{v:1,settings,users,notices,events,bills,schedule,amenities,bookings,complaints,ads,polls,docs,contacts,entries:entriesDone,visitors:[{id:uid('v'),userId:'u0',flat:users[0].tower+'-'+users[0].flat,name:'Amit (Amazon delivery)',phone:'9876512345',purpose:'Delivery',vehicle:'',photo:'',date:new Date(now-4*60e3).toISOString(),code:'',status:'waiting',by:'g1',byName:'Ramesh Yadav'},{id:uid('v'),userId:'u0',name:'Ravi (electrician)',purpose:'Repair visit',date:at(1,0),code:'482913',status:'expected'}],notifs:[{id:uid('n'),to:'admin',text:'New registration request from Neha Bansal (B-704)',link:'members',at:now-DAY,read:[]},{id:uid('n'),to:'admin',text:'New registration request from Imran Sheikh (C-305)',link:'members',at:now-3600e3*3,read:[]}],log:[{t:'Demo data loaded',at:now}]};
 }

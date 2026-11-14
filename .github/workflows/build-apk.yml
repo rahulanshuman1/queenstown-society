@@ -5,10 +5,18 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   apk:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      QS_API_URL: ${{ vars.QS_API_URL }}
+      # The live website address (your Vercel address). With it the app shows the live site, so every website change appears in the app with no new APK.
+      QS_WEB_URL: ${{ vars.QS_WEB_URL }}
+      QS_APK_URL: ${{ vars.QS_APK_URL }}
     steps:
       - uses: actions/checkout@v4
 
@@ -32,6 +40,9 @@ jobs:
       - name: Create Android project
         run: npx cap add android
 
+      - name: Let the website open the app (queenstown:// address)
+        run: bash scripts/android-patch.sh
+
       - name: Generate launcher icons (optional, skipped if it fails)
         continue-on-error: true
         run: npx capacitor-assets generate --android --iconBackgroundColor '#0B3B3A' --splashBackgroundColor '#0B3B3A'
@@ -44,6 +55,18 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
+
+      - name: Name the APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk queenstown-society.apk
+
+      - name: Publish APK for the website download button
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-latest
+          name: Queenstown Society app (latest)
+          body: Latest Android app. The website's "Get the app" button downloads this file.
+          files: queenstown-society.apk
+          make_latest: true
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
