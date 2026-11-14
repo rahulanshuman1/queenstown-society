@@ -3,6 +3,7 @@
    The browser sends whole documents; this layer decides which parts are accepted.
    Residents never get to set fields like status, amount, userId or fee on their own. */
 
+const files = require('./files');
 const COLLS = ['users', 'notices', 'events', 'bills', 'schedule', 'amenities', 'bookings', 'complaints',
   'ads', 'polls', 'docs', 'contacts', 'entries', 'visitors', 'notifs', 'log'];
 // The browser keeps these newest first (it uses unshift), the others oldest first.
@@ -56,20 +57,21 @@ function publicSettings(s) {
 }
 
 /* data = { settings, users, notices, ... } straight from the store (settings is one document) */
-function viewFor(actor, data) {
+function viewFor(actor, data, now = Date.now()) {
   const admin = actor.role === 'admin';
   const out = { v: 1, settings: publicSettings(data.settings) };
   for (const c of COLLS) out[c] = [];
-  const approved = admin || actor.status === 'approved';
+  const guard = isGuard(actor), approved = canAct(actor);
 
   if (!approved) { out.users = [userSafe(actor)]; return out; }
 
-  const fk = admin ? '' : flatKey(actor);
+  const fk = admin || guard ? '' : flatKey(actor);
   const aid = admin ? 'admin' : actor.id;
 
   for (const c of COLLS) {
     const rows = data[c] || [];
     let list;
+    if (guard && !['users', 'notices', 'events', 'schedule', 'contacts', 'visitors', 'notifs'].includes(c)) { out[c] = []; continue; }
     switch (c) {
       case 'users':
         list = admin
@@ -86,9 +88,14 @@ function viewFor(actor, data) {
           : { id: b.id, amenityId: b.amenityId, date: b.date, slot: b.slot, status: b.status, userId: '', purpose: '', redacted: true });
         break;
       case 'complaints':
-      case 'visitors':
         list = admin ? rows : rows.filter(r => r.userId === aid);
         break;
+      case 'visitors': {
+        /* guards and the office see every visitor; photos older than two weeks are left out to keep the page light */
+        const old = now - 14 * 86400e3;
+        list = admin || guard ? rows.map(r => +new Date(r.date) < old && r.photo ? { ...r, photo: '' } : r) : rows.filter(r => r.userId === aid || (r.flat && r.flat === fk));
+        break;
+      }
       case 'ads':
         list = admin ? rows : rows.filter(a => a.status === 'live' || a.userId === aid);
         break;
@@ -100,7 +107,7 @@ function viewFor(actor, data) {
         });
         break;
       case 'notifs':
-        list = admin ? rows : rows.filter(n => n.to === aid || n.to === 'all');
+        list = admin ? rows : rows.filter(n => n.to === aid || n.to === 'all' || (guard && n.to === 'security'));
         break;
       case 'log':
         list = admin ? rows : [];
@@ -141,13 +148,31 @@ const adminOnly = {
   remove: c => c.admin ? { ok: true } : { err: 'Only the admin can delete this.' }
 };
 
-const USER_STATUS = ['pending', 'approved', 'rejected'];
+
+/* An attachment is only kept if the file really was uploaded; its name, type and size come from the upload record, not from the browser. */
+async function attOf(store, a) {
+  const c = files.cleanAtt(a);
+  if (!c) return null;
+  const meta = await store.get('files', c.id);
+  return meta ? { id: meta.id, name: meta.name, mime: meta.mime, size: meta.size } : null;
+}
+
+const USER_STATUS = ['pending', 'approved', 'rejected', 'staff'];
+/* Security guards are staff accounts: they sign in, but they are not residents (no flat, no bills). */
+const isGuard = u => !!u && u.role === 'security';
+const canAct = u => !!u && (u.role === 'admin' || u.status === 'approved' || (u.role === 'security' && u.status === 'staff'));
+const VISITOR_PHOTO_MAX = 90000;
+function cleanPhoto(v) { return typeof v === 'string' && v.length <= VISITOR_PHOTO_MAX && IMG_RE.test(v) ? v : ''; }
+const digits = (v, max) => String(v == null ? '' : v).replace(/\D/g, '').slice(0, max);
+async function tell(store, to, text, link, now) {
+  await store.put('notifs', { id: 'n' + require('crypto').randomBytes(5).toString('hex'), to, text: str(text, 300), link, at: now, read: [] });
+}
 const PAY_METHODS = ['UPI', 'Bank transfer', 'Cheque', 'Cash at office'];
 
 const RULES = {
   notices: {
-    upsert(c, ex, d) {
-      if (c.admin) return { doc: { ...d, readBy: ex ? (ex.readBy || []) : [] } };
+    async upsert(c, ex, d) {
+      if (c.admin) return { doc: { ...d, readBy: ex ? (ex.readBy || []) : [], attachment: await attOf(c.store, d.attachment) } };
       if (!ex) return { err: 'Notice not found.' };
       const rb = ex.readBy || [];
       if (Array.isArray(d.readBy) && d.readBy.includes(c.aid) && !rb.includes(c.aid)) return { doc: { ...ex, readBy: [...rb, c.aid] } };
@@ -157,8 +182,8 @@ const RULES = {
   },
 
   events: {
-    upsert(c, ex, d) {
-      if (c.admin) return { doc: { ...d, rsvps: ex ? (ex.rsvps || {}) : {} } };
+    async upsert(c, ex, d) {
+      if (c.admin) return { doc: { ...d, rsvps: ex ? (ex.rsvps || {}) : {}, attachment: await attOf(c.store, d.attachment) } };
       if (!ex) return { err: 'Event not found.' };
       const r = { ...(ex.rsvps || {}) };
       const v = d.rsvps && d.rsvps[c.aid];
@@ -177,8 +202,8 @@ const RULES = {
         for (const k of ['name', 'tower', 'flat', 'type', 'email', 'vehicle', 'ref']) if (k in d) n[k] = str(d[k], 120);
         if ('members' in d) n.members = num(d.members, 1, 12, 1);
         if ('showPhone' in d) n.showPhone = !!d.showPhone;
-        if ('status' in d) { if (!USER_STATUS.includes(d.status)) return { err: 'Unknown status.' }; n.status = d.status; }
-        if ('role' in d) { if (!['resident', 'committee'].includes(d.role)) return { err: 'Unknown role.' }; n.role = d.role; }
+        if ('status' in d) { if (!USER_STATUS.includes(d.status)) return { err: 'Unknown status.' }; if (ex.role === 'security' ? !['staff', 'rejected'].includes(d.status) : d.status === 'staff') return { err: 'That status does not fit this account.' }; n.status = d.status; }
+        if ('role' in d) { if (ex.role === 'security') { if (d.role !== 'security') return { err: 'Security staff keep their role.' }; } else { if (!['resident', 'committee'].includes(d.role)) return { err: 'Unknown role.' }; n.role = d.role; } }
         if ('title' in d) n.title = str(d.title, 40);
         if ('reason' in d) n.reason = str(d.reason, 300);
         return { doc: n };
@@ -256,7 +281,33 @@ const RULES = {
 
   visitors: {
     async upsert(c, ex, d) {
-      if (c.admin) return { doc: d };
+      if (c.admin) return { doc: { ...d, photo: cleanPhoto(d.photo) } };
+
+      /* ---- security guard at the gate ---- */
+      if (c.guard) {
+        if (!ex) {
+          const u = await c.store.get('users', str(d.userId, 64));
+          if (!u || u.role === 'admin' || u.role === 'security' || u.status !== 'approved') return { err: 'Choose the flat this visitor is going to.' };
+          const name = str(d.name, 80).trim();
+          if (name.length < 2) return { err: 'Enter the visitor name.' };
+          const doc = { id: d.id, userId: u.id, name, phone: digits(d.phone, 12), purpose: str(d.purpose, 60).trim() || 'Visit', vehicle: str(d.vehicle, 30).trim(),
+            photo: cleanPhoto(d.photo), flat: flatKey(u), date: new Date(c.now).toISOString(), code: '', status: 'waiting', by: c.actor.id, byName: str(c.actor.name, 60), created: c.now };
+          /* everyone approved in that flat is asked, so whoever is home can answer */
+          const mates = (await c.store.all('users')).filter(x => x.status === 'approved' && x.role !== 'admin' && x.role !== 'security' && x.tower === u.tower && x.flat === u.flat);
+          for (const m of (mates.length ? mates : [u])) await tell(c.store, m.id, `${name} (${doc.purpose}) is at the gate for ${flatKey(u)}. Open Visitors to approve or deny.`, 'visitors', c.now);
+          return { doc };
+        }
+        const to = d.status;
+        if (to === 'entered' && ['expected', 'approved'].includes(ex.status)) {
+          await tell(c.store, ex.userId, `${ex.name} has entered the gate.`, 'visitors', c.now);
+          return { doc: { ...ex, status: 'entered', entryAt: c.now, enteredBy: str(c.actor.name, 60) } };
+        }
+        if (to === 'exited' && ex.status === 'entered') return { doc: { ...ex, status: 'exited', exitAt: c.now } };
+        if (to === 'cancelled' && ex.status === 'waiting') return { doc: { ...ex, status: 'cancelled' } };
+        return { ok: true };
+      }
+
+      /* ---- resident ---- */
       if (!ex) {
         const code = str(d.code, 6);
         if (!/^\d{6}$/.test(code)) return { err: 'Bad visitor code.' };
@@ -266,11 +317,16 @@ const RULES = {
         if (!date) return { err: 'Pick a valid date.' };
         return { doc: { id: d.id, userId: c.aid, name: str(d.name, 80), purpose: str(d.purpose, 120), vehicle: str(d.vehicle, 30), date, code, status: 'expected' } };
       }
-      if (ex.userId !== c.aid) return { err: 'That visitor pass is not yours.' };
-      if (d.status === 'cancelled' && ex.status === 'expected') return { doc: { ...ex, status: 'cancelled' } };
+      const sameFlat = !!ex.flat && ex.flat === c.fk;
+      if (ex.userId !== c.aid && !sameFlat) return { err: 'That visitor pass is not yours.' };
+      if (d.status === 'cancelled' && ex.status === 'expected' && ex.userId === c.aid) return { doc: { ...ex, status: 'cancelled' } };
+      if (ex.status === 'waiting' && (d.status === 'approved' || d.status === 'denied')) {
+        await tell(c.store, 'security', `${flatKey(c.actor)} ${d.status === 'approved' ? 'approved' : 'denied'} ${ex.name}.`, 'gate', c.now);
+        return { doc: { ...ex, status: d.status, decidedAt: c.now, decidedBy: str(c.actor.name, 60) } };
+      }
       return { ok: true };
     },
-    remove: (c, ex) => c.admin || (ex && ex.userId === c.aid) ? { ok: true } : { err: 'That visitor pass is not yours.' }
+    remove: (c, ex) => c.admin || (!c.guard && ex && ex.userId === c.aid) ? { ok: true } : { err: 'That visitor pass is not yours.' }
   },
 
   ads: {
@@ -310,7 +366,7 @@ const RULES = {
         if (d.to !== 'admin') return { err: 'Not allowed.' };
         return { doc: { id: d.id, to: 'admin', text: str(d.text, 300), link: str(d.link, 30), at: c.now, read: [] } };
       }
-      if (ex.to !== c.aid && ex.to !== 'all') return { err: 'Not allowed.' };
+      if (ex.to !== c.aid && ex.to !== 'all' && !(c.guard && ex.to === 'security')) return { err: 'Not allowed.' };
       if (Array.isArray(d.read) && d.read.includes(c.aid) && !(ex.read || []).includes(c.aid)) return { doc: { ...ex, read: [...(ex.read || []), c.aid] } };
       return { ok: true };
     },
@@ -325,14 +381,14 @@ const RULES = {
   schedule: adminOnly, amenities: adminOnly, docs: adminOnly, contacts: adminOnly, entries: adminOnly
 };
 
-const SETTINGS_FIELDS = ['name', 'tagline', 'address', 'upi', 'upiName', 'bank', 'charges', 'dueDay', 'latePct', 'adRates', 'demo', 'site'];
+const SETTINGS_FIELDS = ['name', 'tagline', 'address', 'upi', 'upiName', 'bank', 'bankDetails', 'payMethods', 'charges', 'dueDay', 'latePct', 'adRates', 'demo', 'site'];
 
 /* ---- site look and content (logo, festive theme, website text, footer) ----
    Everything here is shown to visitors before they sign in, so it is checked field by field.
    Text is escaped by the app when drawn; links must be web addresses; images must be small PNG, JPEG or WebP data. */
 const FESTIVALS = ['none', 'diwali', 'holi', 'christmas', 'newyear', 'republic', 'eid', 'navratri', 'ganesh', 'custom'];
 const IMG_RE = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
-const LOGO_MAX = 160000, PHOTO_MAX = 500000;
+const LOGO_MAX = 400000, PHOTO_MAX = 500000;
 function cleanImg(v, max, what) {
   if (v == null || v === '') return '';
   if (typeof v !== 'string' || v.length > max || !IMG_RE.test(v)) throw new Error('The ' + what + ' is too large or is not a PNG, JPEG or WebP image.');
@@ -361,6 +417,8 @@ function cleanSite(x) {
       announce: { on: !!an.on, text: str(an.text, 200), link: cleanUrl(an.link) }
     },
     footer: {
+      place: (p => ({ name: str(p.name, 80).trim(), line1: str(p.line1, 140).trim(), area: str(p.area, 80).trim(), city: str(p.city, 60).trim(), state: str(p.state, 60).trim(), pin: /^\d{6}$/.test(str(p.pin, 6).trim()) ? str(p.pin, 6).trim() : '' }))(f.place && typeof f.place === 'object' ? f.place : {}),
+      mapUrl: cleanWebUrl(f.mapUrl),
       about: str(f.about, 400), phone: cleanPhone(f.phone), email: cleanEmail(f.email), hours: str(f.hours, 120),
       links: (Array.isArray(f.links) ? f.links : []).slice(0, 6).map(l => ({ label: str(l && l.label, 40).trim(), url: cleanUrl(l && l.url) })).filter(l => l.label && l.url),
       social: { facebook: cleanWebUrl(so.facebook), instagram: cleanWebUrl(so.instagram), youtube: cleanWebUrl(so.youtube), whatsapp: cleanWebUrl(so.whatsapp), x: cleanWebUrl(so.x) },
@@ -375,6 +433,20 @@ function cleanSettings(ex, d) {
   for (const k of SETTINGS_FIELDS) if (k in d) n[k] = d[k];
   n.name = str(n.name, 80) || 'Queenstown Society';
   for (const k of ['tagline', 'address', 'upi', 'upiName', 'bank']) if (k in n) n[k] = str(n[k], 300);
+  if ('bankDetails' in n) {
+    const b = n.bankDetails && typeof n.bankDetails === 'object' ? n.bankDetails : {};
+    const number = str(b.number, 24).replace(/\s+/g, ''), ifsc = str(b.ifsc, 11).trim().toUpperCase();
+    n.bankDetails = {
+      holder: str(b.holder, 100).trim(), number: /^\d{9,18}$/.test(number) ? number : '',
+      ifsc: /^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc) ? ifsc : '', bank: str(b.bank, 80).trim(), branch: str(b.branch, 80).trim(),
+      type: b.type === 'Savings' ? 'Savings' : 'Current'
+    };
+  }
+  if ('payMethods' in n) {
+    const p = n.payMethods && typeof n.payMethods === 'object' ? n.payMethods : {};
+    n.payMethods = { online: false, upi: p.upi !== false, bank: p.bank !== false };
+    if (!n.payMethods.upi && !n.payMethods.bank) n.payMethods = { online: false, upi: true, bank: true };
+  }
   if (Array.isArray(n.charges)) n.charges = n.charges.slice(0, 20).map(x => ({ label: str(x && x.label, 80), amt: num(x && x.amt, 0, 1e7, 0) }));
   n.dueDay = Math.round(num(n.dueDay, 1, 28, 15));
   n.latePct = num(n.latePct, 0, 100, 0);
@@ -387,7 +459,7 @@ function cleanSettings(ex, d) {
 
 async function applyChanges(actor, store, changes, now = Date.now()) {
   const admin = actor.role === 'admin';
-  if (!admin && actor.status !== 'approved') throw new HttpError(403, 'Your registration is not approved yet.');
+  if (!canAct(actor)) throw new HttpError(403, 'Your registration is not approved yet.');
   if (!changes || typeof changes !== 'object' || Array.isArray(changes)) throw new HttpError(400, 'Bad request.');
 
   let total = 0;
@@ -398,7 +470,7 @@ async function applyChanges(actor, store, changes, now = Date.now()) {
   if (total > 600) throw new HttpError(413, 'Too many changes at once.');
 
   const settings = (await store.get('settings', 'settings')) || {};
-  const ctx = { actor, admin, aid: admin ? 'admin' : actor.id, fk: admin ? '' : flatKey(actor), store, now, settings, name: actor.name || '' };
+  const ctx = { actor, admin, guard: isGuard(actor), aid: admin ? 'admin' : actor.id, fk: admin || isGuard(actor) ? '' : flatKey(actor), store, now, settings, name: actor.name || '' };
   const rejected = [];
   let applied = 0, touchedNotifs = false;
 
@@ -448,4 +520,4 @@ async function applyChanges(actor, store, changes, now = Date.now()) {
   return { applied, rejected };
 }
 
-module.exports = { cleanSite, COLLS, UNSHIFT, HttpError, sanitize, viewFor, publicView, applyChanges, flatKey, userSafe, str, num, isId };
+module.exports = { isGuard, canAct, cleanSite, COLLS, UNSHIFT, HttpError, sanitize, viewFor, publicView, applyChanges, flatKey, userSafe, str, num, isId };

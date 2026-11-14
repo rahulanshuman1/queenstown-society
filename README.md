@@ -27,7 +27,9 @@ Admin > **Site studio** edits how the whole site looks and reads, without touchi
 
 **Preview** shows the draft on the public page or inside the app without saving. **Discard** throws the draft away (tap twice). **Save changes** publishes it for everyone. Uploaded images are resized in the browser and checked again on the server.
 
-Notices, events and ads keep their own admin screens.
+Notices, events and ads keep their own admin screens. **Publish notice** and **Add event** accept one attached file (PDF, image, Word or Excel, up to 5 MB). Residents tap Preview or Download, on the website and in the Android app.
+
+The society logo is animated (castle rises, name appears letter by letter, golden shine) on the splash screen and the public page. Uploading a logo in Site studio replaces it.
 
 ## Two ways to run the app
 
@@ -54,3 +56,11 @@ cd server && npm test
 1. Follow DEPLOY.md with Razorpay in Test Mode and pay one bill.
 2. Switch Razorpay to Live Mode (needs KYC in the society's name) and update the two Render variables and the webhook.
 3. Change the admin password if it was ever shared.
+
+## Security desk (visitor management)
+- **Admin** adds guards in Members > Security (name, mobile, password). Guards sign in with that mobile number and only see the Security desk and Notices.
+- **Guard** taps New visitor, picks the flat, types the name, takes a photo and sends the request. The resident is notified and answers Approve or Deny. The guard sees the answer within seconds, then taps Allow entry and later Mark exit. Pre-approved visitors are let in with their 6 digit code.
+- **Residents** get a pop-up with the visitor photo while the app is open (with a sound and, if allowed, a browser notification). Everyone approved in the flat is asked, and any of them can answer. Visitors show in Visitors with photo, entry and exit times.
+- Visitor photos are shrunk on the phone to about 40 KB and photos older than two weeks are dropped from the live view to keep pages light.
+- Demo mode has a guard: `9876500099` / `guard123`.
+- **Not included:** alerts when the app is completely closed need Firebase push notifications, which is a separate set up.

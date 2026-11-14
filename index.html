@@ -78,7 +78,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .tabbar .ic{transition:transform .2s}
 @media (max-width:900px){
   .shell{grid-template-columns:minmax(0,1fr)} .side{display:none}
-  .tabbar{display:flex} .top .brand{display:flex} .top .brand b{color:var(--ink);font-size:17px} .top .brand span{display:none}
+  .tabbar{display:flex} .top .brand{display:flex} .top .brand b{color:var(--ink);font-size:17px} .top .brand span:not(.amark){display:none}
   .top .ttl{display:none}.top .sp{flex:1}
 }
 
@@ -116,7 +116,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .pill{padding:7px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
 .pill.on{background:var(--brand);color:var(--brand-ink);border-color:transparent}
-.search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:0 12px;min-width:0;flex:1;max-width:340px}
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:0 12px;min-width:0;flex:1 1 240px;max-width:340px}
+@media (max-width:640px){.search{flex:1 1 100%;max-width:none;min-width:100%}.search input{font-size:16px}}
 .search input{border:0;background:none;outline:0;padding:10px 0;min-width:0;width:100%}
 .empty{text-align:center;padding:36px 16px;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:8px}
 .empty .ic{width:34px;height:34px;color:var(--brand)} .empty b{color:var(--ink);font:700 17px var(--f-display)}
@@ -356,23 +357,28 @@ details.alt{border:1px dashed var(--line);border-radius:12px;padding:10px 14px}d
 #fx.float i{opacity:.3}
 @media (prefers-reduced-motion:reduce){#fx{display:none}}
 
-.sitefoot{margin-top:56px;border-top:1px solid var(--line);padding-top:28px;display:flex;flex-direction:column;gap:24px}
-.foot-img{margin:0;border-radius:18px;overflow:hidden;position:relative;background:var(--surface-2)}
+.sitefoot{margin-top:56px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:34px 36px 18px;display:flex;flex-direction:column;gap:26px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.foot-img{margin:0;border-radius:16px;overflow:hidden;position:relative;background:var(--surface-2)}
 .foot-img img{display:block;width:100%;height:auto;max-height:300px;object-fit:cover}
 .foot-img figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 18px 14px;color:#fff;font-weight:700;background:linear-gradient(transparent,rgba(0,0,0,.62))}
-.foot-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1.3fr);gap:28px}
-@media (max-width:760px){.foot-grid{grid-template-columns:minmax(0,1fr)}}
-.fcol{min-width:0}
-.fcol h5{font:700 14px var(--f-display);margin-bottom:10px;color:var(--ink)}
-.fcol p{color:var(--ink-2);font-size:14px;max-width:46ch;display:flex;gap:8px;align-items:flex-start;margin:0 0 8px}
-.fcol a:not(.brand){color:var(--ink-2);text-decoration:none;display:flex;gap:8px;align-items:center;padding:4px 0;font-size:14px;overflow-wrap:anywhere}
-.fcol a:not(.brand):hover{color:var(--brand)}
-.fcol .ic{width:16px;height:16px;flex:none;color:var(--brand);margin-top:2px}
+.foot-grid{display:flex;flex-wrap:wrap;gap:30px 64px;align-items:flex-start}
+.fcol{min-width:0;flex:1 1 190px}.fcol.fbrand{flex:1.7 1 280px}
+.fcol h5{font:700 11.5px var(--f-body,inherit);letter-spacing:.09em;text-transform:uppercase;color:var(--ink);margin:0 0 14px;padding-bottom:9px;position:relative}
+.fcol h5::after{content:"";position:absolute;left:0;bottom:0;width:26px;height:2px;border-radius:2px;background:var(--brand)}
+.fcol .fabout{display:block;color:var(--ink-2);font-size:14px;line-height:1.6;max-width:44ch;margin:14px 0 0}
+.fcol .addr{font-style:normal;display:grid;gap:2px;color:var(--ink-2);font-size:14px;line-height:1.55;margin-bottom:14px}.fcol .addr b{color:var(--ink);font-size:14.5px;margin-bottom:2px}
+.fcol .hrs{display:flex;gap:9px;align-items:flex-start;color:var(--ink-2);font-size:14px;padding:5px 0}
+.fcol a.mapbtn,.fcol .soc a{text-decoration:none}
+.fcol a.mapbtn{display:inline-flex;width:auto;padding:8px 15px;border:1px solid var(--brand);border-radius:99px;color:var(--brand);font-weight:700;font-size:13px}.fcol a.mapbtn:hover,.fcol a.mapbtn:focus-visible{background:color-mix(in srgb,var(--brand) 14%,var(--surface,#fff));color:var(--ink);border-color:var(--brand)}.fcol a.mapbtn .ic{color:currentColor;margin:0}
+.fcol a:not(.brand):not(.mapbtn){color:var(--ink-2);text-decoration:none;display:flex;gap:9px;align-items:center;padding:5px 0;font-size:14px;overflow-wrap:anywhere;transition:color .15s,transform .15s}
+.fcol a:not(.brand):not(.mapbtn):hover{color:var(--brand);transform:translateX(2px)}
+.fcol .ic{width:16px;height:16px;flex:none;color:var(--brand)}
 .sitefoot .brand b{color:var(--ink)}.sitefoot .brand span{color:var(--ink-2)}
-.fcol>p:first-of-type{display:block}
-.soc{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.fcol .soc a{display:inline-flex;padding:6px 13px;border:1px solid var(--line);border-radius:99px;font-weight:700;font-size:12.5px;color:var(--ink)}
-.foot-bottom{border-top:1px solid var(--line);padding-block:16px 4px;color:var(--ink-2);font-size:13px}
+.soc{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.fcol .soc a:not(.brand):not(.mapbtn){display:inline-flex;padding:6px 14px;border:1px solid var(--line);border-radius:99px;font-weight:700;font-size:12.5px;color:var(--ink)}.fcol .soc a:not(.brand):not(.mapbtn):hover{transform:none;border-color:var(--brand);color:var(--brand)}
+.foot-bottom{border-top:1px solid var(--line);padding-top:16px;color:var(--ink-2);font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.foot-bottom a{color:var(--ink-2);text-decoration:none;font-weight:600}.foot-bottom a:hover{color:var(--brand)}
+@media (max-width:640px){.sitefoot{padding:26px 22px 16px;border-radius:18px}.foot-grid{gap:26px}}
 
 .studio{display:flex;flex-direction:column;gap:16px;max-width:900px}
 .studio-bar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);z-index:30;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:var(--shadow)}
@@ -406,6 +412,136 @@ details.alt{border:1px dashed var(--line);border-radius:12px;padding:10px 14px}d
 .seg button.on{background:var(--brand);color:var(--brand-ink)}
 body.pv .auth{pointer-events:none}
 body.pv .wrap{padding-bottom:150px}
+/* ===== Queenstown animated logo ===== */
+.alogo{--a1:#F7E9C2;--a2:#D6AC57;--w:260px;position:relative;display:block;width:var(--w);max-width:100%;aspect-ratio:692/411;flex:none;animation:alGlow 5s ease-in-out 3.4s infinite}
+.al-p{position:absolute;inset:0}
+.al-i,.al-sh{position:absolute;inset:0;-webkit-mask:url(assets/queenstown-logo.png?v=20261114075720) 0 0/100% 100% no-repeat;mask:url(assets/queenstown-logo.png?v=20261114075720) 0 0/100% 100% no-repeat}
+.al-i{background:linear-gradient(180deg,var(--a1) 0%,var(--a2) 100%)}
+.al-sh{background:linear-gradient(105deg,transparent 38%,rgba(255,252,232,.95) 50%,transparent 62%) 130% 0/260% 100% no-repeat;animation:alSheen 6.5s ease-in-out 3.6s infinite;pointer-events:none}
+.al-c .al-i{animation:alBuild 2.1s cubic-bezier(.25,.6,.2,1) .15s both}
+.al-l .al-i{animation:alRise .95s cubic-bezier(.2,.8,.2,1) both}
+.al-s .al-i{animation:alWipe 1.2s ease-out 2.3s both}
+.al-sp{position:absolute;left:var(--x);top:var(--y);width:calc(var(--w)*.05);aspect-ratio:1;background:#FFF3C4;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);opacity:0;transform:translate(-50%,-50%) scale(.2);animation:alTwinkle 3.6s ease-in-out var(--d) infinite;pointer-events:none}
+@keyframes alBuild{from{clip-path:inset(62.8% 0 0 0);opacity:.15;filter:blur(3px)}55%{opacity:1}to{clip-path:inset(0 0 0 0);opacity:1;filter:blur(0)}}
+@keyframes alRise{from{opacity:0;transform:translateY(26%) scale(.97)}to{opacity:1;transform:none}}
+@keyframes alWipe{from{clip-path:inset(0 100% 0 0);opacity:.2}to{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes alSheen{0%{background-position:130% 0}45%,100%{background-position:-40% 0}}
+@keyframes alGlow{0%,100%{filter:drop-shadow(0 0 3px rgba(240,196,102,.15))}50%{filter:drop-shadow(0 0 14px rgba(240,196,102,.5))}}
+@keyframes alTwinkle{0%,100%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}40%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(45deg)}70%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(90deg)}}
+@keyframes alFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* castle mark used next to the society name */
+.amark{--a1:#F7E9C2;--a2:#D6AC57;position:relative;display:block;flex:none;width:56px;aspect-ratio:311/241}
+.am-i,.am-sh{position:absolute;inset:0;-webkit-mask:url(assets/queenstown-castle.png?v=20261114075720) 0 0/100% 100% no-repeat;mask:url(assets/queenstown-castle.png?v=20261114075720) 0 0/100% 100% no-repeat}
+.am-i{background:linear-gradient(180deg,var(--a1),var(--a2));animation:amIn 1.3s cubic-bezier(.2,.8,.2,1) both}
+.am-sh{background:linear-gradient(105deg,transparent 40%,rgba(255,252,232,.95) 50%,transparent 60%) 130% 0/280% 100% no-repeat;animation:alSheen 7s ease-in-out 2.2s infinite}
+@keyframes amIn{from{opacity:0;transform:translateY(22%) scale(.96)}to{opacity:1;transform:none}}
+.top .amark,.landing-top .amark,.sitefoot .amark{--a1:var(--ink);--a2:var(--ink);width:52px}
+.side .amark{--a1:#FFF3CF;--a2:#F2C75C;width:52px}
+/* small marks have thin lines: thicken them a little so they stay clear on every colour theme */
+.top .amark,.landing-top .amark,.sitefoot .amark,.side .amark{filter:drop-shadow(0 0 .55px currentColor) drop-shadow(0 0 .55px currentColor)}
+.top .amark,.landing-top .amark,.sitefoot .amark{color:var(--ink)}.side .amark{color:#F2C75C}
+.brand .amark{margin-right:2px}
+
+/* splash screen */
+.splash{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:24px;background:radial-gradient(120% 90% at 50% 38%,#14595A 0%,#0B3B3A 55%,#06201F 100%);transition:opacity .65s ease,transform .65s ease;overflow:hidden}
+.splash.out{opacity:0;transform:scale(1.05);pointer-events:none}
+.splash::before{content:"";position:absolute;inset:0;background-image:radial-gradient(1.6px 1.6px at 12% 22%,rgba(255,240,200,.9),transparent),radial-gradient(1.2px 1.2px at 78% 14%,rgba(255,240,200,.8),transparent),radial-gradient(1.8px 1.8px at 88% 62%,rgba(255,240,200,.7),transparent),radial-gradient(1.3px 1.3px at 24% 78%,rgba(255,240,200,.8),transparent),radial-gradient(1.5px 1.5px at 56% 88%,rgba(255,240,200,.6),transparent),radial-gradient(1.2px 1.2px at 40% 10%,rgba(255,240,200,.7),transparent);animation:splashStars 4s ease-in-out infinite}
+@keyframes splashStars{0%,100%{opacity:.35}50%{opacity:.9}}
+.splash-in{position:relative;display:grid;justify-items:center;gap:26px}
+.splash-bar{width:min(220px,52vw);height:3px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+.splash-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,transparent,#F2C66B,transparent);animation:splashBar 1.6s ease-in-out infinite}
+@keyframes splashBar{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+/* public page banner */
+.lbanner{display:grid;justify-items:center;gap:12px;padding:28px 18px 22px;border-radius:24px;margin-bottom:18px;color:#CBB98A;background:radial-gradient(110% 130% at 50% 0%,#17615F 0%,#0B3B3A 60%,#072423 100%);box-shadow:var(--shadow);position:relative;overflow:hidden;isolation:isolate}
+.lbanner p{font:700 12.5px var(--f-body);letter-spacing:.24em;text-transform:uppercase;text-align:center}
+.lbanner .alogo.big{--w:min(400px,78vw)}
+.lbanner .logo-img.big{width:min(220px,60vw);height:auto;max-height:150px;object-fit:contain;animation:alFloat 5s ease-in-out infinite}
+
+/* get the app */
+.appbar{display:flex;align-items:center;gap:12px;padding:10px max(14px,env(safe-area-inset-left,0px));background:linear-gradient(90deg,#0B3B3A,#14595A);color:#F3E5BE}
+.appbar img{border-radius:10px;flex:none}
+.appbar .t{flex:1;min-width:0;line-height:1.25}
+.appbar b{display:block;color:#fff;font-size:14px}.appbar small{color:#BFD8D4;font-size:12px}
+.appbar a.go{background:var(--accent);color:var(--accent-ink);padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:800;font-size:13.5px;white-space:nowrap}
+.appbar button{background:none;border:0;color:#BFD8D4;cursor:pointer;padding:6px;display:grid}
+.appcard{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.appcard .ai{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);flex:none}
+.navbtn{display:flex;align-items:center;gap:12px;width:100%;padding:9px 12px;border-radius:11px;border:1px dashed var(--side-on);background:transparent;color:var(--side-ink);font:600 14px var(--f-body);cursor:pointer;text-align:left}
+.navbtn:hover{background:var(--side-on)}
+.appqr{width:176px;height:176px;padding:8px;background:#fff;border-radius:12px;display:grid;place-items:center}
+
+/* attachments */
+.attcard{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.attcard .atti{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);flex:none}
+.attm{min-width:0;flex:1 1 150px}.attm b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.attb{display:flex;gap:8px;flex-wrap:wrap}
+.attrow{display:grid;gap:8px}
+.attview{max-height:68vh;overflow:auto;background:var(--surface-2);border-radius:12px;padding:10px;display:grid;gap:10px;justify-items:center}
+.attpage{width:100%;height:auto;background:#fff;border-radius:6px;box-shadow:var(--shadow)}
+.attimg{max-width:100%;height:auto;border-radius:10px;display:block}
+.syncwarn{display:flex;gap:10px;align-items:flex-start;padding:10px max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--bad) 14%,var(--surface));color:var(--ink);border-bottom:1px solid color-mix(in srgb,var(--bad) 40%,transparent);font-size:13.5px;font-weight:600}
+.syncwarn .ic{color:var(--bad);margin-top:2px}
+
+@media (prefers-reduced-motion:reduce){.alogo,.alogo *,.amark *,.splash::before,.splash-bar i,.lbanner .logo-img.big{animation:none!important}.al-sp{display:none}.al-sh,.am-sh{display:none}}
+
+/* pay dialog: choose how to pay */
+.paytabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:14px}
+.paytabs button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 4px;border:0;border-radius:10px;background:transparent;color:var(--ink-2);font:700 12.5px var(--f-body,inherit);cursor:pointer;text-align:center}
+.paytabs button .ic{width:18px;height:18px}
+.paytabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.14)}
+.paypane{display:grid;gap:12px}.paypane[hidden],#paidform[hidden]{display:none!important}
+
+/* header sign in / sign out */
+.hdr-out,.hdr-in{gap:6px;white-space:nowrap}.hdr-out .ic,.hdr-in .ic{width:16px;height:16px}
+.landing-top .hdr-up{margin-left:2px}
+@media (max-width:560px){.hdr-out span{display:none}.hdr-out{padding:8px 10px}.hdr-in span{display:none}.hdr-in{padding:8px 10px}}
+
+/* account menu under the avatar */
+.umenu{position:relative}.avbtn{cursor:pointer}
+.umpop{position:absolute;right:0;top:calc(100% + 8px);min-width:220px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 36px rgba(0,0,0,.22);padding:8px;z-index:80;display:grid;gap:2px;animation:umIn .16s ease-out}
+.umpop[hidden]{display:none}
+@keyframes umIn{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+.umhead{padding:10px 12px 12px;border-bottom:1px solid var(--line);margin-bottom:6px;display:grid;gap:2px}.umhead b{font-size:14.5px;color:var(--ink)}.umhead small{color:var(--ink-2);font-size:12.5px}
+.umpop a,.umpop button.umout{display:flex;gap:10px;align-items:center;width:100%;padding:10px 12px;border:0;background:none;border-radius:10px;color:var(--ink);font:600 14px inherit;font-family:inherit;text-decoration:none;cursor:pointer;text-align:left}
+.umpop a:hover,.umpop button.umout:hover{background:var(--surface-2)}
+.umpop .ic{width:17px;height:17px;color:var(--ink-2)}.umpop .umout,.umpop .umout .ic{color:#B42318}
+/* footer: download the app */
+.fcol a.footapp,.footapp{display:inline-flex!important;align-items:center;gap:12px;margin-top:18px;padding:11px 16px!important;border-radius:14px;background:var(--ink);color:var(--surface)!important;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.footapp:hover{transform:translateY(-2px)!important;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.footapp .ic{width:22px;height:22px;color:var(--surface)!important}
+.footapp span{display:grid;line-height:1.2}.footapp b{font-size:14px}.footapp small{font-size:11.5px;opacity:.85;color:var(--surface)!important}.footapp b{color:var(--surface)!important}
+/* the small castle mark breathes and glints in the header, sidebar and footer */
+.top .amark,.side .amark,.sitefoot .amark{animation:amBreath 5.5s ease-in-out infinite}
+@keyframes amBreath{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.top .brand .amark{width:44px}
+@media (prefers-reduced-motion:reduce){.top .amark,.side .amark,.sitefoot .amark{animation:none}}
+
+/* ===== security desk ===== */
+.vthumb{width:48px;height:48px;border-radius:14px;object-fit:cover;flex:none;background:var(--surface-2);display:inline-grid;place-items:center;cursor:pointer;border:1px solid var(--line)}
+.vthumb.noimg{cursor:default;color:var(--ink-2)}.vthumb .ic,.vthumb.noimg .ic{width:22px;height:22px}
+.vthumb.lg{width:64px;height:64px;border-radius:16px}.vthumb.xl{width:96px;height:96px;border-radius:20px}.vthumb.huge{width:170px;height:170px;border-radius:26px}
+.vbig{display:block;width:100%;max-height:70vh;object-fit:contain;border-radius:14px;background:#000}
+.gkpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.gk{display:grid;gap:2px;text-align:left;padding:12px 14px;border:1px solid var(--line);background:var(--surface);border-radius:16px;cursor:pointer;font:inherit;color:var(--ink)}
+.gk b{font-size:26px;line-height:1}.gk span{font-size:12.5px;color:var(--ink-2)}.gk.on{border-color:var(--brand);box-shadow:0 0 0 2px color-mix(in srgb,var(--brand) 22%,transparent)}
+.gk.warn b{color:#B54708}
+.gcard{display:flex;gap:14px;align-items:flex-start;padding:14px;border:1px solid var(--line);background:var(--surface);border-radius:18px}
+.gcard h4{margin:0 0 2px;font-size:16px}.gcard p{margin:0;color:var(--ink-2);font-size:14px}
+.gcard .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:8px;font-size:12.5px;color:var(--ink-2)}
+.gcard .gnote{margin-top:8px;font-size:13px}.gact{display:grid;gap:8px;align-content:start}
+.gcard.waiting{border-color:#F0B429;background:color-mix(in srgb,#F0B429 9%,var(--surface))}.gcard.denied{border-color:#E5484D}
+.gcard.big{padding:18px;margin-bottom:12px;border-width:2px}
+.good-t{color:#067647}.bad-t{color:#B42318}
+.pulse{display:inline-flex;gap:8px;align-items:center;font-weight:700;font-size:12.5px;color:#B54708}
+.pulse::before{content:"";width:9px;height:9px;border-radius:50%;background:#F0B429;animation:gPulse 1.3s ease-in-out infinite}
+@keyframes gPulse{0%,100%{box-shadow:0 0 0 0 rgba(240,180,41,.6)}50%{box-shadow:0 0 0 7px rgba(240,180,41,0)}}
+.phbox{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.phprev{width:120px;height:120px;border-radius:18px;border:2px dashed var(--line);display:grid;place-items:center;align-content:center;gap:4px;color:var(--ink-2);overflow:hidden;background:var(--surface-2)}
+.phprev img{width:100%;height:100%;object-fit:cover}.phprev .ic{width:30px;height:30px}
+@media (max-width:640px){.gkpis{grid-template-columns:repeat(2,minmax(0,1fr))}.gcard{flex-wrap:wrap}.gact{width:100%;grid-auto-flow:column}.gact .btn{flex:1}.gcard.big{flex-direction:column}}
+@media (prefers-reduced-motion:reduce){.pulse::before{animation:none}}
 </style></head><body>
 <div id="app"></div><div id="modal-root"></div><div id="toasts" aria-live="polite"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -534,7 +670,9 @@ const adminName=()=>REMOTE?(SES&&SES.username)||'admin':DB.settings.adminUser;
 
 /* ----- remote mode: server calls and change syncing ----- */
 const SYNC_COLLS=['users','notices','events','bills','schedule','amenities','bookings','complaints','ads','polls','docs','contacts','entries','visitors','notifs','log'];
-let SNAP={},syncing=false,dirty=false,LASTREV=null,syncTimer=null,failStreak=0;
+let SNAP={},syncing=false,dirty=false,LASTREV=null,syncTimer=null,failStreak=0,LASTREJ=[];
+/* Saves now and waits for the server. Returns the changes the server refused (empty when all was saved). */
+async function flushWait(){if(!REMOTE||!TOKEN)return[];clearTimeout(syncTimer);for(let i=0;i<60&&syncing;i++)await new Promise(r=>setTimeout(r,100));LASTREJ=[];await flush();return LASTREJ}
 async function api(path,opt={}){
  const h={'Content-Type':'application/json'};if(TOKEN)h.Authorization='Bearer '+TOKEN;
  let r;try{r=await fetch(API+path,{method:opt.method||'GET',headers:h,body:opt.body?JSON.stringify(opt.body):undefined})}
@@ -562,6 +700,7 @@ async function flush(){
   const r=await api('/api/sync',{method:'POST',body:{changes}});failStreak=0;
   const rej=(r.rejected||[]).filter(x=>x.coll!=='log');
   if(!dirty)adopt(r.db,r.rev);
+  LASTREJ=rej;
   if(rej.length){toast(rej[0].err||'Some changes could not be saved.','x');render()}
  }catch(e){
   if(e.status===401){syncing=false;return endSession('Your session ended. Please sign in again.')}
@@ -583,9 +722,10 @@ async function startRemote(){
   $('#app').innerHTML=`<div class="boot"><b>Cannot reach the Queenstown server</b><small>${esc(e.message)}</small><button class="btn pri" data-act="retry-boot">Try again</button></div>`;return false
  }finally{clearTimeout(t)}}
 async function pollRemote(){
- if(!REMOTE||!TOKEN||document.hidden||syncing||dirty||!DB)return;
+ if(!REMOTE||document.hidden||syncing||dirty||!DB)return;
  if($('#modal-root')?.classList.contains('open'))return;
  const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return;
+ if(!TOKEN){try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const p=await api('/api/public');adopt(p.db,p.rev);render()}catch(e){}return}
  try{const r=await api('/api/rev');if(r.rev===LASTREV)return;const s=await api('/api/state');if(dirty||syncing)return;adopt(s.db,s.rev);SES=s.session;render()}
  catch(e){if(e.status===401)endSession('Your session ended. Please sign in again.')}}
 if(typeof document!=='undefined'){setInterval(()=>pollRemote(),20000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollRemote()})}
@@ -633,9 +773,10 @@ async function seed(){
  for(let i=0;i<44;i++){const name=i===0?'Priya Nair':FN[(i*7)%FN.length]+' '+LN[(i*3+i%5)%LN.length];users.push(mk(i,name))}
  users[0].tower='A';users[0].flat='101';users[0].type='Owner';users[0].showPhone=true;
  users[1].role='committee';users[1].title='President';users[1].name='Sanjay Kulkarni';users[2].role='committee';users[2].title='Secretary';users[2].name='Meenakshi Iyer';users[3].role='committee';users[3].title='Treasurer';users[3].name='Farhan Qureshi';
+ users.push({id:'g1',name:'Ramesh Yadav',tower:'',flat:'',mobile:'9876500099',email:'',type:'Security',passHash:await sha('guard123'),status:'staff',role:'security',title:'Security',members:1,vehicle:'',showPhone:false,ref:'',created:now-20*DAY});
  users.push({id:'u90',name:'Neha Bansal',tower:'B',flat:'704',mobile:'9876500901',email:'neha.bansal@example.com',type:'Owner',passHash:ph,status:'pending',role:'resident',title:'',members:3,vehicle:'',showPhone:false,ref:'Allotment letter 1187',created:now-1*DAY});
  users.push({id:'u91',name:'Imran Sheikh',tower:'C',flat:'305',mobile:'9876500902',email:'imran.sheikh@example.com',type:'Tenant',passHash:ph,status:'pending',role:'resident',title:'',members:2,vehicle:'',showPhone:false,ref:'Rent agreement 11 months',created:now-3*3600e3});
- const settings={name:'Queenstown Society',tagline:'Home, together.',address:'Queenstown Society, Main Gate Road',upi:'queenstown.society@upi',upiName:'Queenstown Society',charges:[{label:'Maintenance charges',amt:2200},{label:'Sinking fund',amt:300},{label:'Water and common electricity',amt:450},{label:'Security and housekeeping',amt:350}],dueDay:15,latePct:2,adRates:{banner:500,classified:0},adminUser:'admin',adminHash:ah,demo:true};
+ const settings={name:'Queenstown Society',tagline:'Home, together.',address:'Queenstown Society, Main Gate Road',upi:'queenstown.society@upi',payMethods:{online:false,upi:true,bank:true},upiName:'Queenstown Society',charges:[{label:'Maintenance charges',amt:2200},{label:'Sinking fund',amt:300},{label:'Water and common electricity',amt:450},{label:'Security and housekeeping',amt:350}],dueDay:15,latePct:2,adRates:{banner:500,classified:0},adminUser:'admin',adminHash:ah,demo:true};
  const ev=(title,scene,d,h,venue,cat,fee,desc,o={})=>({id:uid('e'),title,scene,date:at(d,h),venue,category:cat,fee,desc,featured:true,rsvps:{},cover:null,photos:[],capacity:0,...o});
  const events=[
   ev('Yoga and Wellness Morning','yoga',3,6,'Central Lawn','Wellness',0,'A guided one hour yoga and breathing session for all ages, led by a certified instructor. Bring your own mat.'),
@@ -717,13 +858,13 @@ async function seed(){
   [['Salaries','Security and housekeeping staff',62000+Math.floor(r()*2000)],['Electricity','Common area electricity',26000+Math.floor(r()*6000)],['Lift AMC','Quarterly lift maintenance',9500],['Water','Tanker and treatment',10500+Math.floor(r()*2500)],['Garden','Gardener and supplies',4500],['Repairs','Plumbing and electrical repairs',3000+Math.floor(r()*9000)]].forEach(([c,t,a],j)=>entries.push({id:uid('x'),date:d(3+j*4),category:c,desc:t,amount:a,type:'expense'}));
   entries.push({id:uid('x'),date:d(11),category:'Hall rent',desc:'Banquet hall bookings',amount:3000+Math.floor(r()*6000),type:'income'})});
  const entriesDone=entries.filter(e=>+D(e.date)<=now);
- return{v:1,settings,users,notices,events,bills,schedule,amenities,bookings,complaints,ads,polls,docs,contacts,entries:entriesDone,visitors:[{id:uid('v'),userId:'u0',name:'Ravi (electrician)',purpose:'Repair visit',date:at(1,0),code:'482913',status:'expected'}],notifs:[{id:uid('n'),to:'admin',text:'New registration request from Neha Bansal (B-704)',link:'members',at:now-DAY,read:[]},{id:uid('n'),to:'admin',text:'New registration request from Imran Sheikh (C-305)',link:'members',at:now-3600e3*3,read:[]}],log:[{t:'Demo data loaded',at:now}]};
+ return{v:1,settings,users,notices,events,bills,schedule,amenities,bookings,complaints,ads,polls,docs,contacts,entries:entriesDone,visitors:[{id:uid('v'),userId:'u0',flat:users[0].tower+'-'+users[0].flat,name:'Amit (Amazon delivery)',phone:'9876512345',purpose:'Delivery',vehicle:'',photo:'',date:new Date(now-4*60e3).toISOString(),code:'',status:'waiting',by:'g1',byName:'Ramesh Yadav'},{id:uid('v'),userId:'u0',name:'Ravi (electrician)',purpose:'Repair visit',date:at(1,0),code:'482913',status:'expected'}],notifs:[{id:uid('n'),to:'admin',text:'New registration request from Neha Bansal (B-704)',link:'members',at:now-DAY,read:[]},{id:uid('n'),to:'admin',text:'New registration request from Imran Sheikh (C-305)',link:'members',at:now-3600e3*3,read:[]}],log:[{t:'Demo data loaded',at:now}]};
 }
 /* ========== ui helpers ========== */
 const UI={q:'',cat:'all',tab:'',month:mkey(),auth:'login',sel:null,calM:mkey(),err:''};
 const FORMS={},ACT={};
 const chip=(t,c='')=>`<span class="chip ${c}">${t}</span>`;
-const STAT={paid:['Paid','good'],due:['Due','warn'],overdue:['Overdue','bad'],verifying:['Verifying','info'],open:['Open','warn'],'in-progress':['In progress','info'],resolved:['Resolved','good'],pending:['Pending','warn'],approved:['Approved','good'],rejected:['Rejected','bad'],live:['Live','good'],expired:['Expired','bad'],closed:['Closed',''],expected:['Expected','info'],entered:['Inside','good'],exited:['Left',''],yes:['Going','good'],maybe:['Maybe','warn']};
+const STAT={paid:['Paid','good'],due:['Due','warn'],overdue:['Overdue','bad'],verifying:['Verifying','info'],open:['Open','warn'],'in-progress':['In progress','info'],resolved:['Resolved','good'],pending:['Pending','warn'],approved:['Approved','good'],rejected:['Rejected','bad'],live:['Live','good'],expired:['Expired','bad'],closed:['Closed',''],expected:['Expected','info'],waiting:['Awaiting approval','warn'],denied:['Denied','bad'],cancelled:['Cancelled',''],entered:['Inside','good'],exited:['Left',''],yes:['Going','good'],maybe:['Maybe','warn']};
 const sChip=s=>{const[t,c]=STAT[s]||[s,''];return chip(t,c)};
 const head=(t,sub='',act='')=>`<div class="ph"><div><h2>${t}</h2>${sub?`<p>${sub}</p>`:''}</div><div class="ph-act">${act}</div></div>`;
 const empty=(i,t,s='',a='')=>`<div class="empty">${ic(i)}<b>${t}</b><span>${s}</span>${a}</div>`;
@@ -745,22 +886,22 @@ function copyText(t){const done=()=>toast('Copied');try{navigator.clipboard.writ
 const NAV=[['home','Home','home'],['notices','Notices','notice'],['maintenance','Maintenance','wallet'],['events','Events','calendar'],['forecast','Forecast','sunrise'],['helpdesk','Helpdesk','chat'],['amenities','Amenities','key'],['visitors','Visitors','visitor'],['marketplace','Marketplace','tag'],['polls','Polls','vote'],['gallery','Gallery','image'],['accounts','Accounts','chart'],['documents','Documents','book'],['directory','Directory','users']];
 const ANAV=[['admin','Dashboard','shield'],['members','Members','users'],['billing','Billing','wallet'],['setup','Society setup','gear'],['studio','Site studio','palette']];
 const ROUTES={};
-const routeOf=()=>{let h=location.hash.slice(1)||(isAdmin()?'admin':'home');if(isAdmin()&&h==='maintenance')h='billing';if(!isAdmin()&&ANAV.some(a=>a[0]===h))h='home';if(h!=='profile'&&!NAV.some(n=>n[0]===h)&&!ANAV.some(n=>n[0]===h))h='home';return h};
+const routeOf=()=>{if(isGuard()){const g=location.hash.slice(1);return['gate','notices','profile'].includes(g)?g:'gate'}let h=location.hash.slice(1)||(isAdmin()?'admin':'home');if(isAdmin()&&h==='maintenance')h='billing';if(!isAdmin()&&ANAV.some(a=>a[0]===h))h='home';if(h!=='profile'&&!NAV.some(n=>n[0]===h)&&!ANAV.some(n=>n[0]===h))h='home';return h};
 const pendingReviews=()=>DB.ads.filter(a=>a.status==='pending').length+DB.bookings.filter(b=>b.status==='pending').length+DB.bills.filter(b=>b.status==='verifying').length;
-function navBadge(id){if(!isAdmin())return 0;return id==='members'?DB.users.filter(u=>u.status==='pending').length:id==='billing'?DB.bills.filter(b=>b.status==='verifying').length:id==='helpdesk'?DB.complaints.filter(c=>c.status==='open').length:id==='amenities'?DB.bookings.filter(b=>b.status==='pending').length:id==='marketplace'?DB.ads.filter(a=>a.status==='pending').length:0}
+function navBadge(id){if(isGuard())return id==='gate'?DB.visitors.filter(v=>v.status==='waiting').length:0;if(!isAdmin())return 0;return id==='members'?DB.users.filter(u=>u.status==='pending').length:id==='billing'?DB.bills.filter(b=>b.status==='verifying').length:id==='helpdesk'?DB.complaints.filter(c=>c.status==='open').length:id==='amenities'?DB.bookings.filter(b=>b.status==='pending').length:id==='marketplace'?DB.ads.filter(a=>a.status==='pending').length:0}
 const logo=`<svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#E39A1B"/><path d="M9 31V19l5-3v15M16 31V12l6-4v23M24 31V17l7 3v11" fill="#0B3B3A"/><rect x="18" y="14" width="2" height="2" fill="#E39A1B"/><rect x="18" y="19" width="2" height="2" fill="#E39A1B"/><rect x="18" y="24" width="2" height="2" fill="#E39A1B"/></svg>`;
-const brand=()=>{const n=cfg().name||'Queenstown Society';return`<a class="brand" href="#${isAdmin()?'admin':'home'}">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b><span>${esc(n.split(' ').slice(1).join(' ')||'Society')}</span></div></a>`};
+const brand=()=>{const n=cfg().name||'Queenstown Society';return`<a class="brand" href="#${isAdmin()?'admin':isGuard()?'gate':'home'}">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b>${n.split(' ').slice(1).length?`<span>${esc(n.split(' ').slice(1).join(' '))}</span>`:''}</div></a>`};
 
 function shell(route,inner){
- const m=me(),t=NAV.concat(ANAV,[['profile','My profile','user']]).find(n=>n[0]===route)?.[1]||'';
+ const m=me(),t=NAV.concat(ANAV,[['profile','My profile','user'],['gate','Security desk','shield']]).find(n=>n[0]===route)?.[1]||'';
  const link=n=>`<a href="#${n[0]}" class="${route===n[0]?'on':''}">${ic(n[2])}${n[1]}${navBadge(n[0])?`<span class="badge-n">${navBadge(n[0])}</span>`:''}</a>`;
- const tabs=isAdmin()?[['admin','Admin','shield'],['members','Members','users'],['billing','Billing','wallet'],['notices','Notices','notice']]:[['home','Home','home'],['notices','Notices','notice'],['maintenance','Pay','wallet'],['events','Events','calendar']];
+ const tabs=isGuard()?[['gate','Gate','shield'],['notices','Notices','notice'],['profile','Profile','user']]:isAdmin()?[['admin','Admin','shield'],['members','Members','users'],['billing','Billing','wallet'],['notices','Notices','notice']]:[['home','Home','home'],['notices','Notices','notice'],['maintenance','Pay','wallet'],['events','Events','calendar']];
  const inTabs=tabs.some(x=>x[0]===route);
  const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);
- return`<div class="shell"><aside class="side">${brand()}<nav class="nav" aria-label="Main">${isAdmin()?`<h6>Admin</h6>${ANAV.map(link).join('')}`:''}<h6>${isAdmin()?'Society':'Menu'}</h6>${NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')).map(link).join('')}</nav><a class="me" href="#profile"><span class="av">${initials(m.name)}</span><div><b>${esc(m.name)}</b><small>${isAdmin()?'Administrator':esc(flatKey(m))+' · '+esc(m.title||m.type)}</small></div></a></aside>
- <div class="main">${siteBars()}<header class="top">${brand()}<div class="ttl">${t}</div><div class="sp"></div><button class="iconbtn" data-act="bell" aria-label="Notifications">${ic('bell')}${unreadN()?`<span class="dot">${unreadN()}</span>`:''}</button><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic(dark?'sun':'moon')}</button><a class="iconbtn" href="#profile" aria-label="Profile"><span class="av" style="width:30px;height:30px;font-size:12px">${initials(m.name)}</span></a></header>
- <div class="wrap"><div class="view enter" id="view">${inner}</div>${siteFooter()}</div></div>
- <nav class="tabbar" aria-label="Primary">${tabs.map(x=>`<a href="#${x[0]}" class="${route===x[0]?'on':''}">${ic(x[2])}${x[1]}</a>`).join('')}<button data-act="more" class="${!inTabs?'on':''}">${ic('more')}More</button></nav></div>`;
+ return`<div class="shell"><aside class="side">${brand()}<nav class="nav" aria-label="Main">${isGuard()?`<h6>Security</h6>${[['gate','Security desk','shield'],['notices','Notices','notice']].map(link).join('')}`:isAdmin()?`<h6>Admin</h6>${ANAV.map(link).join('')}`:''}${isGuard()?'':`<h6>${isAdmin()?'Society':'Menu'}</h6>${NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')).map(link).join('')}`}</nav>${isGuard()?'':appSide()}<a class="me" href="#profile"><span class="av">${initials(m.name)}</span><div><b>${esc(m.name)}</b><small>${isAdmin()?'Administrator':isGuard()?'Security staff':esc(flatKey(m))+' · '+esc(m.title||m.type)}</small></div></a></aside>
+ <div class="main">${appBanner()}${syncWarn()}${siteBars()}<header class="top">${brand()}<div class="ttl">${t}</div><div class="sp"></div><button class="iconbtn" data-act="bell" aria-label="Notifications">${ic('bell')}${unreadN()?`<span class="dot">${unreadN()}</span>`:''}</button><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic(dark?'sun':'moon')}</button><div class="umenu"><button type="button" class="iconbtn avbtn" data-act="umenu" aria-haspopup="menu" aria-expanded="false" aria-label="Account menu"><span class="av" style="width:30px;height:30px;font-size:12px">${initials(m.name)}</span></button><div class="umpop" role="menu" hidden><div class="umhead"><b>${esc(m.name)}</b><small>${isAdmin()?'Society admin':isGuard()?'Security staff':esc((m.tower?m.tower+'-'+m.flat:'')||'Resident')}</small></div><a role="menuitem" href="#profile">${ic('user')}My profile</a><button type="button" role="menuitem" class="umout" data-act="logout">${ic('logout')}Sign out</button></div></div></header>
+ <div class="wrap"><div class="view enter" id="view">${route==='home'?appCard():''}${inner}</div>${siteFooter()}</div></div>
+ <nav class="tabbar" aria-label="Primary">${tabs.map(x=>`<a href="#${x[0]}" class="${route===x[0]?'on':''}">${ic(x[2])}${x[1]}</a>`).join('')}${isGuard()?'':`<button data-act="more" class="${!inTabs?'on':''}">${ic('more')}More</button>`}</nav></div>`;
 }
 ACT.more=()=>{const items=(isAdmin()?ANAV.slice(0,0):[]).concat(NAV.filter(n=>!(isAdmin()&&n[0]==='maintenance')),isAdmin()?ANAV.slice(3):[],[['profile','Profile','user']]);modal('Menu',`<div class="sheet-grid">${items.map(n=>`<a href="#${n[0]}" data-act="close-modal">${ic(n[2])}${n[1]}</a>`).join('')}<button data-act="logout">${ic('logout')}Sign out</button></div>`)};
 
@@ -787,9 +928,10 @@ function render(nav=false){
  if(!DB)return;applyTheme();const root=$('#app'),y=scrollY,ae=document.activeElement,aid=ae&&ae.id&&root.contains(ae)?ae.id:null,pos=aid&&ae.selectionStart!=null?ae.selectionStart:null;
  const m=me();let html,route='';
  if(PV==='landing'||!SES||!m){html=landing()}
- else if(!isAdmin()&&m.status!=='approved'){html=waitScreen(m)}
+ else if(!isAdmin()&&!(m.status==='approved'||(m.role==='security'&&m.status==='staff'))){html=waitScreen(m)}
  else{route=routeOf();html=shell(route,(ROUTES[route]||ROUTES.home)())}
  root.innerHTML=html;if(PV)root.insertAdjacentHTML('beforeend',pvBar());document.title=(route&&route!=='home'?($('.top .ttl')?.textContent+' · '):'')+DB.settings.name;
+ setTimeout(()=>{try{gateAlerts()}catch(e){}},0);
  const v=$('#view');if(v&&!nav)v.classList.remove('enter');
  if(!nav)scrollTo(0,y);else scrollTo(0,0);
  if(aid){const el=document.getElementById(aid);if(el){el.focus();try{if(pos!=null)el.setSelectionRange(pos,pos)}catch(e){}}}
@@ -801,11 +943,11 @@ window.addEventListener('hashchange',()=>{UI.q='';UI.cat='all';UI.tab='';UI.sel=
 function landing(){
  const c=cfg(),s=c,st=c.site.content,reg=UI.auth==='register';
  const towers=['A','B','C','D'],n=c.name||'Queenstown Society';
- return`${siteBars()}<div class="wrap" style="max-width:1160px;padding-bottom:40px"><div class="landing-top"><a class="brand" href="#">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b><span>${esc(n.split(' ').slice(1).join(' ')||'Society')}</span></div></a><div class="sp"></div><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic('moon')}</button></div>
- <div class="view enter">${hero(true)}
+ return`${appBanner()}${siteBars()}<div class="wrap" style="max-width:1160px;padding-bottom:40px"><div class="landing-top"><a class="brand" href="#">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b>${n.split(' ').slice(1).length?`<span>${esc(n.split(' ').slice(1).join(' '))}</span>`:''}</div></a><div class="sp"></div><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic('moon')}</button><button class="btn sm hdr-in" data-act="auth-go" data-t="login">${ic('user')}<span>Sign in</span></button><button class="btn sm pri hdr-up" data-act="auth-go" data-t="register">Sign up</button></div>
+ <div class="view enter"><div class="lbanner">${bigLogo()}<p>${esc(c.tagline||'Home, together.')}</p></div>${hero(true)}
  <div class="split" style="align-items:start"><div class="stack"><h2 style="font-size:clamp(26px,4vw,38px)">${esc(st.headline||`${s.tagline} One place for everything at ${n}.`)}</h2><p class="muted" style="max-width:56ch">${esc(st.intro)}</p>
  <div class="steps card flat">${st.steps.map((x,i)=>`<div><span class="n">${i+1}</span><div><b>${esc(x.t)}</b><br><small>${esc(x.d)}</small></div></div>`).join('')}</div>
- ${REMOTE?'':`<div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Try admin <code>admin</code> / <code>admin123</code> or resident <code>9876500001</code> / <code>resident123</code>.</span></div>`}</div>
+ ${appCard()}${REMOTE?'':`<div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Try admin <code>admin</code> / <code>admin123</code> or resident <code>9876500001</code> / <code>resident123</code> or security guard <code>9876500099</code> / <code>guard123</code>.</span></div>`}</div>
  <div class="card auth"><div class="tabs2" role="tablist"><button class="${reg?'':'on'}" data-act="auth-tab" data-t="login">Sign in</button><button class="${reg?'on':''}" data-act="auth-tab" data-t="register">Register flat</button></div>
  ${reg?formWrap('register',F.t('r_name','Full name',{req:true,cls:'full',attrs:'autocomplete="name"'})+F.s('r_tower','Tower',towers.map(t=>[t,'Tower '+t]))+F.s('r_flat','Flat number',flatOpts(),{})+F.s('r_type','You are',['Owner','Tenant','Family member'])+F.t('r_members','People in flat',{type:'number',v:2,attrs:'min="1" max="12"'})+F.t('r_mobile','Mobile number',{req:true,attrs:'inputmode="numeric" maxlength="10" autocomplete="tel"',hint:'10 digits. This is your login.'})+F.t('r_email','Email (optional)',{type:'email'})+F.t('r_ref','Proof reference (optional)',{cls:'full',ph:'Allotment letter no. or rent agreement date',hint:'Helps the admin verify you faster.'})+F.t('r_pw','Create password',{type:'password',req:true,attrs:'autocomplete="new-password"'})+F.t('r_pw2','Confirm password',{type:'password',req:true,attrs:'autocomplete="new-password"'}),'Submit for approval'):
  formWrap('login',F.t('l_id','Mobile number, email or admin username',{req:true,cls:'full',attrs:'autocomplete="username"'})+F.t('l_pw','Password',{type:'password',req:true,cls:'full',attrs:'autocomplete="current-password"'}),'Sign in',`<span class="sp"></span>`)}
@@ -821,10 +963,10 @@ ACT.noop=()=>{};
 ACT['demo-res']=()=>{$('#l_id').value='9876500001';$('#l_pw').value='resident123'};
 ACT['demo-admin']=()=>{$('#l_id').value='admin';$('#l_pw').value='admin123'};
 FORMS.login=async(d,f)=>{
- if(REMOTE){try{const r=await api('/api/auth/login',{method:'POST',body:{id:d.l_id,password:d.l_pw}});await openSession(r.token,r.session);location.hash=SES.k==='admin'?'admin':'home';render(true);const m=me();if(m&&m.name)toast('Welcome back, '+m.name.split(' ')[0])}catch(e){TOKEN=null;lsDel(AKEY);fErr(e.message)}return}
+ if(REMOTE){try{const r=await api('/api/auth/login',{method:'POST',body:{id:d.l_id,password:d.l_pw}});await openSession(r.token,r.session);location.hash=SES.k==='admin'?'admin':(isGuard()?'gate':'home');render(true);const m=me();if(m&&m.name)toast('Welcome back, '+m.name.split(' ')[0])}catch(e){TOKEN=null;lsDel(AKEY);fErr(e.message)}return}
  const idf=d.l_id.trim().toLowerCase(),h=await sha(d.l_pw);
  if(idf===DB.settings.adminUser.toLowerCase()){if(h!==DB.settings.adminHash)return fErr('Incorrect admin password.');setSes({k:'admin'});location.hash='admin';render(true);return}
- const u=DB.users.find(u=>u.mobile===idf||(u.email&&u.email.toLowerCase()===idf));if(!u||u.passHash!==h)return fErr('Mobile, email or password is incorrect.');setSes({k:'user',id:u.id});location.hash='home';render(true);toast('Welcome back, '+u.name.split(' ')[0])};
+ const u=DB.users.find(u=>u.mobile===idf||(u.email&&u.email.toLowerCase()===idf));if(!u||u.passHash!==h)return fErr('Mobile, email or password is incorrect.');setSes({k:'user',id:u.id});location.hash=u.role==='security'?'gate':'home';render(true);toast('Welcome back, '+u.name.split(' ')[0])};
 FORMS.register=async(d)=>{const mob=d.r_mobile.trim();
  if(d.r_name.trim().length<3)return fErr('Enter your full name.');
  if(!/^[6-9]\d{9}$/.test(mob))return fErr('Enter a valid 10 digit Indian mobile number.');
@@ -843,9 +985,9 @@ const kpi=(i,l,v,link,cls='',suf='')=>`<a class="kpi ${cls}" href="#${link}"><sp
 const ring=(pct,l)=>{const c=314;return`<div class="ring" style="--c:${c};--o:${c*(1-pct/100)}"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="50"/><circle class="fg" cx="60" cy="60" r="50"/></svg><div><b>${pct}%</b><small>${l}</small></div></div>`};
 
 function evCard(e){const adm=isAdmin(),m=me(),mine=e.rsvps[m.id],n=Object.values(e.rsvps).filter(v=>v==='yes').length,past=+D(e.date)<Date.now()-3*3600e3;
- return`<article class="ev"><div class="cv" data-act="event-open" data-id="${e.id}">${cover(e)}<div class="date"><b>${D(e.date).getDate()}</b><small>${fdate(e.date,{month:'short'})}</small></div></div><div class="bd"><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free','good')}</div><h4>${esc(e.title)}</h4><div class="meta"><span>${ic('clock')}${ftime(e.date)}</span><span>${ic('mappin')}${esc(e.venue)}</span><span>${ic('users')}${n} going</span></div><div class="ft">${past?chip('Completed'):adm?btn('Manage','event-edit',{sm:1,d:{id:e.id}}):`<button class="btn sm ${mine==='yes'?'good':'pri'}" data-act="rsvp" data-id="${e.id}" data-v="yes">${ic('check')}${mine==='yes'?'Going':'I will attend'}</button><button class="btn sm ${mine==='maybe'?'acc':''}" data-act="rsvp" data-id="${e.id}" data-v="maybe">Maybe</button>`}<button class="btn sm ghost" data-act="event-open" data-id="${e.id}">Details</button></div></div></article>`}
+ return`<article class="ev"><div class="cv" data-act="event-open" data-id="${e.id}">${cover(e)}<div class="date"><b>${D(e.date).getDate()}</b><small>${fdate(e.date,{month:'short'})}</small></div></div><div class="bd"><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free','good')}${e.attachment?chip(ic('paperclip')+'Details file','info'):''}</div><h4>${esc(e.title)}</h4><div class="meta"><span>${ic('clock')}${ftime(e.date)}</span><span>${ic('mappin')}${esc(e.venue)}</span><span>${ic('users')}${n} going</span></div><div class="ft">${past?chip('Completed'):adm?btn('Manage','event-edit',{sm:1,d:{id:e.id}}):`<button class="btn sm ${mine==='yes'?'good':'pri'}" data-act="rsvp" data-id="${e.id}" data-v="yes">${ic('check')}${mine==='yes'?'Going':'I will attend'}</button><button class="btn sm ${mine==='maybe'?'acc':''}" data-act="rsvp" data-id="${e.id}" data-v="maybe">Maybe</button>`}<button class="btn sm ghost" data-act="event-open" data-id="${e.id}">Details</button></div></div></article>`}
 function noticeCard(n){const m=me(),urgent=n.priority==='high',unread=!isAdmin()&&!n.readBy.includes(m.id);
- return`<div class="notice ${unread?'unread':''} ${urgent?'urgent':''}" data-act="notice-open" data-id="${n.id}" tabindex="0"><div class="ni">${ic(n.pinned?'pin':urgent?'info':'notice')}</div><div class="sp" style="min-width:0"><h4>${esc(n.title)}</h4><p>${esc(n.body)}</p><div class="meta">${chip(esc(n.category),'brand')}${urgent?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}${unread?chip('New','warn'):''}<span>${fdate(n.date)}</span>${isAdmin()?`<span>Seen by ${n.readBy.length} members</span>`:''}</div></div></div>`}
+ return`<div class="notice ${unread?'unread':''} ${urgent?'urgent':''}" data-act="notice-open" data-id="${n.id}" tabindex="0"><div class="ni">${ic(n.pinned?'pin':urgent?'info':'notice')}</div><div class="sp" style="min-width:0"><h4>${esc(n.title)}</h4><p>${esc(n.body)}</p><div class="meta">${chip(esc(n.category),'brand')}${urgent?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}${unread?chip('New','warn'):''}${n.attachment?chip(ic('paperclip')+'File','info'):''}<span>${fdate(n.date)}</span>${isAdmin()?`<span>Seen by ${n.readBy.length} members</span>`:''}</div></div></div>`}
 const sortedNotices=()=>[...DB.notices].sort((a,b)=>(b.pinned-a.pinned)||D(b.date)-D(a.date));
 
 ROUTES.home=()=>{
@@ -873,12 +1015,13 @@ ROUTES.notices=()=>{let l=sortedNotices();if(UI.cat!=='all')l=l.filter(n=>n.cate
  return head('Notice board','Official announcements from the committee.',isAdmin()?btn('Publish notice','notice-new',{c:'pri',i:'plus'}):'')+`<div class="filters"><div class="search">${ic('search')}<input id="q" value="${esc(UI.q)}" placeholder="Search notices" data-input="q" aria-label="Search notices"></div>${['all',...NCATS].map(c=>`<button class="pill ${UI.cat===c?'on':''}" data-act="cat" data-v="${c}">${c==='all'?'All':c}</button>`).join('')}</div><div class="stack">${l.length?l.map(noticeCard).join(''):empty('notice','No notices found','Try another category or search term.')}</div>`};
 ACT.cat=d=>{UI.cat=d.v;render()};ACT.tab=d=>{UI.tab=d.v;render()};ACT.nav=d=>{closeModal();location.hash=d.to};
 ACT['notice-open']=d=>{const n=DB.notices.find(x=>x.id===d.id),m=me();if(!isAdmin()&&!n.readBy.includes(m.id)){n.readBy.push(m.id);save();render()}
- modal(esc(n.title),`<div class="stack"><div class="row wrap-r">${chip(esc(n.category),'brand')}${n.priority==='high'?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}<small>${fdatey(n.date)} · ${esc(n.author)}</small></div><p style="white-space:pre-wrap">${esc(n.body)}</p>${isAdmin()?`<hr class="hr"><div class="row wrap-r">${btn('Edit','notice-edit',{sm:1,i:'edit',d:{id:n.id}})}${btn(n.pinned?'Unpin':'Pin','notice-pin',{sm:1,i:'pin',d:{id:n.id}})}${btn('Delete','notice-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{id:n.id}})}</div>`:''}</div>`)};
-const noticeForm=n=>modal(n?'Edit notice':'Publish notice',formWrap('notice',hid(n?.id)+F.t('n_title','Title',{req:true,cls:'full',v:n?.title})+F.a('n_body','Message',{req:true,cls:'full',v:n?.body})+F.s('n_cat','Category',NCATS,{v:n?.category})+F.s('n_pri','Priority',[['normal','Normal'],['high','Important']],{v:n?.priority})+F.c('n_pin','Pin to the top',n?.pinned)+(n?'':F.c('n_notify','Send a notification to all residents',true)),n?'Save notice':'Publish'));
+ modal(esc(n.title),`<div class="stack"><div class="row wrap-r">${chip(esc(n.category),'brand')}${n.priority==='high'?chip('Important','bad'):''}${n.pinned?chip('Pinned'):''}<small>${fdatey(n.date)} · ${esc(n.author)}</small></div><p style="white-space:pre-wrap">${esc(n.body)}</p>${n.attachment?attBlock(n.attachment,'notice',n.id):''}${isAdmin()?`<hr class="hr"><div class="row wrap-r">${btn('Edit','notice-edit',{sm:1,i:'edit',d:{id:n.id}})}${btn(n.pinned?'Unpin':'Pin','notice-pin',{sm:1,i:'pin',d:{id:n.id}})}${btn('Delete','notice-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{id:n.id}})}</div>`:''}</div>`)};
+const noticeForm=n=>modal(n?'Edit notice':'Publish notice',formWrap('notice',hid(n?.id)+F.t('n_title','Title',{req:true,cls:'full',v:n?.title})+F.a('n_body','Message',{req:true,cls:'full',v:n?.body})+F.s('n_cat','Category',NCATS,{v:n?.category})+F.s('n_pri','Priority',[['normal','Normal'],['high','Important']],{v:n?.priority})+F.c('n_pin','Pin to the top',n?.pinned)+attachField('n_file',n?.attachment)+(n?'':F.c('n_notify','Send a notification to all residents',true)),n?'Save notice':'Publish'));
 ACT['notice-new']=()=>noticeForm();ACT['notice-edit']=d=>noticeForm(DB.notices.find(x=>x.id===d.id));
-FORMS.notice=d=>{if(!d.n_title.trim()||!d.n_body.trim())return fErr('Add a title and a message.');
- if(d.id){const n=DB.notices.find(x=>x.id===d.id);Object.assign(n,{title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin});toast('Notice updated')}
- else{DB.notices.unshift({id:uid('n'),title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin,date:new Date().toISOString(),author:'Society Office',readBy:[]});if(d.n_notify)notify('all','New notice: '+d.n_title.trim(),'notices');logAct('Published notice: '+d.n_title.trim());toast('Notice published')}
+FORMS.notice=async(d,f)=>{if(!d.n_title.trim()||!d.n_body.trim())return fErr('Add a title and a message.');
+ const cur=d.id?DB.notices.find(x=>x.id===d.id):null;let att;try{att=await pickAttachment(f,'n_file',cur&&cur.attachment,!!d.n_file_rm)}catch(e){return fErr(e.message)}
+ if(d.id){const n=cur;Object.assign(n,{title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin,attachment:att});toast('Notice updated')}
+ else{DB.notices.unshift({id:uid('n'),title:d.n_title.trim(),body:d.n_body.trim(),category:d.n_cat,priority:d.n_pri,pinned:!!d.n_pin,date:new Date().toISOString(),author:'Society Office',readBy:[],attachment:att});if(d.n_notify)notify('all','New notice: '+d.n_title.trim(),'notices');logAct('Published notice: '+d.n_title.trim());toast('Notice published')}
  save();closeModal();render()};
 ACT['notice-pin']=d=>{const n=DB.notices.find(x=>x.id===d.id);n.pinned=!n.pinned;save();closeModal();render()};
 ACT['notice-del']=d=>{DB.notices=DB.notices.filter(x=>x.id!==d.id);save();closeModal();render();toast('Notice deleted')};
@@ -892,13 +1035,20 @@ ROUTES.maintenance=()=>{
  <div class="stack"><div class="card"><h3>${ic('chart')}Society collection</h3><div class="row" style="gap:18px">${ring(cur.pct,'flats paid')}<div><b class="num" style="font-size:22px;font-family:var(--f-display)">${cur.paid} of ${cur.total}</b><br><small>flats have paid for ${mlabel(mkey())}</small></div></div></div>
  <div class="card"><h3>${ic('info')}What your bill covers</h3>${DB.settings.charges.map(c=>`<div class="kv"><span>${esc(c.label)}</span><span class="num">${inr(c.amt)}</span></div>`).join('')}<div class="kv"><span><b>Monthly total</b></span><span class="num">${inr(chargeTotal())}</span></div><small>Due on the ${DB.settings.dueDay}th of every month. Late fee ${DB.settings.latePct}% per month.</small></div></div></div>`};
 ACT.pay=d=>{const ids=d.ids.split(','),bs=DB.bills.filter(b=>ids.includes(b.id)),tot=bs.reduce((a,b)=>a+billTotal(b),0),s=DB.settings,m=me(),fk=flatKey(m),online=REMOTE&&!!DB.settings.payOnline,
- note=`Maint ${fk} ${bs.map(b=>b.month).join(',')}`,upi=`upi://pay?pa=${encodeURIComponent(s.upi)}&pn=${encodeURIComponent(s.upiName)}&am=${tot}&cu=INR&tn=${encodeURIComponent(note)}`;
+ note=`Maint ${fk} ${bs.map(b=>b.month).join(',')}`,upi=`upi://pay?pa=${encodeURIComponent(s.upi)}&pn=${encodeURIComponent(s.upiName)}&am=${tot}&cu=INR&tn=${encodeURIComponent(note)}`,
+ bd=s.bankDetails||{},bankRows=[['Account name',bd.holder],['Account number',bd.number],['IFSC code',bd.ifsc],['Bank and branch',[bd.bank,bd.branch].filter(Boolean).join(', ')],['Account type',bd.type]].filter(r=>r[1]),
+ copyRow=([l,v],c)=>`<div class="kv"><span>${l}</span><span class="row" style="gap:8px;justify-content:flex-end"><b class="num">${esc(v)}</b>${c?`<button class="btn sm" data-act="copy" data-t="${esc(v)}" aria-label="Copy ${l}">${ic('copy')}</button>`:''}</span></div>`,
+ pm=s.payMethods||{},showO=false,showU=pm.upi!==false,showB=pm.bank!==false,first=showU?'upi':showB?'bank':'upi';
  modal('Pay maintenance',`<div class="stack"><div class="card flat">${bs.map(b=>`<div class="kv"><span>${mlabel(b.month)}</span><span class="num">${inr(b.amount)}${lateFee(b)?' + '+inr(lateFee(b))+' late':''}</span></div>`).join('')}<div class="kv"><span><b>Total payable</b></span><span class="num" style="font-size:18px">${inr(tot)}</span></div></div>
- ${online?`<button class="btn acc block" id="rzpbtn" data-act="rzp-pay" data-ids="${ids.join(',')}">${ic('lock')}Pay ${inr(tot)} securely</button><small style="text-align:center;display:block">UPI, cards, net banking and wallets. Payments are processed by Razorpay and the bill is marked paid automatically.</small><details class="alt"><summary>I paid another way (bank transfer, cheque or cash)</summary>`:''}
- <div class="qr" id="qrbox"></div><div class="row" style="justify-content:center;flex-wrap:wrap"><span class="chip">UPI ID</span><b id="upiid">${esc(s.upi)}</b><button class="btn sm" data-act="copy" data-t="${esc(s.upi)}">${ic('copy')}Copy</button></div>
- <a class="btn pri block" href="${upi}">${ic('wallet')}Open UPI app</a>${s.bank?`<small>Bank transfer: ${esc(s.bank)}</small>`:'<small>For bank transfer or cheque, collect the account details from the society office.</small>'}
- <hr class="hr">${formWrap('pay',`<input type="hidden" name="ids" value="${ids.join(',')}">`+F.s('p_method','Paid using',['UPI','Bank transfer','Cheque','Cash at office'],{})+F.t('p_ref','Transaction ID or cheque number',{req:true,ph:'12 digit UPI reference (UTR)',hint:'The admin matches this with the bank statement.'}),'I have paid')}${online?'</details>':''}</div>`);
+ <div class="paytabs" role="tablist">${showO?`<button type="button" role="tab" class="${first==='online'?'on':''}" data-act="pay-tab" data-tab="online">${ic('lock')}Card and net banking</button>`:''}${showU?`<button type="button" role="tab" class="${first==='upi'?'on':''}" data-act="pay-tab" data-tab="upi">${ic('wallet')}UPI</button>`:''}${showB?`<button type="button" role="tab" class="${first==='bank'?'on':''}" data-act="pay-tab" data-tab="bank">${ic('building')}Bank transfer</button>`:''}</div>
+ ${showO?`<div class="paypane" data-pane="online" ${first==='online'?'':'hidden'}>${online?`<button class="btn acc block" id="rzpbtn" data-act="rzp-pay" data-ids="${ids.join(',')}">${ic('lock')}Pay ${inr(tot)} securely</button><small style="text-align:center;display:block">Credit card, debit card, net banking, UPI and wallets. The bill is marked paid automatically.</small>`:`<div class="card flat"><b>Card and net banking are not switched on yet.</b><p class="muted" style="margin:6px 0 0">Ask the society office to connect the online payment service. Until then, pay by UPI or bank transfer and submit the reference below.</p></div>`}</div>`:''}
+ ${showU?`<div class="paypane" data-pane="upi" ${first==='upi'?'':'hidden'}>${s.upi?'':'<div class="card flat"><b>The society UPI ID is not added yet.</b></div>'}<div class="qr" id="qrbox"></div><div class="row" style="justify-content:center;flex-wrap:wrap"><span class="chip">UPI ID</span><b id="upiid">${esc(s.upi)}</b><button class="btn sm" data-act="copy" data-t="${esc(s.upi)}">${ic('copy')}Copy</button></div><a class="btn pri block" href="${upi}">${ic('wallet')}Open UPI app</a><small style="text-align:center;display:block">Scan the QR or pay to the UPI ID with any UPI app. The amount and flat number are filled in for you.</small></div>`:''}
+ ${showB?`<div class="paypane" data-pane="bank" ${first==='bank'?'':'hidden'}>${bankRows.length?`<div class="card flat">${bankRows.map((r,k)=>copyRow(r,k<3)).join('')}</div><small>Pay ${inr(tot)} by NEFT, IMPS, RTGS or net banking to this account. Write <b>${esc(fk)}</b> in the remark so the office can match it.</small>`:s.bank?`<div class="card flat"><span style="white-space:pre-wrap">${esc(s.bank)}</span></div>`:'<small>Bank account details are not added yet. Collect them from the society office.</small>'}</div>`:''}
+ <div id="paidform" ${first==='online'?'hidden':''}><hr class="hr"><b style="display:block;margin-bottom:8px">Already paid? Send the reference to the office</b>${formWrap('pay',`<input type="hidden" name="ids" value="${ids.join(',')}">`+F.s('p_method','Paid using',['UPI','Bank transfer','Cheque','Cash at office'],{})+F.t('p_ref','Transaction ID or cheque number',{req:true,ph:'12 digit UPI reference (UTR)',hint:'The admin matches this with the bank statement.'}),'I have paid')}</div></div>`);
  try{if(window.QRCode)new QRCode($('#qrbox'),{text:upi,width:152,height:152,colorDark:'#0F2A2B',colorLight:'#ffffff'});else $('#qrbox').innerHTML='<small style="color:#333">QR unavailable offline</small>'}catch(e){}};
+ACT['pay-tab']=d=>{const root=document.querySelector('.paytabs');if(!root)return;root.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.tab===d.tab));
+ document.querySelectorAll('.paypane').forEach(p=>p.hidden=p.dataset.pane!==d.tab);const pf=$('#paidform');if(pf)pf.hidden=d.tab==='online';
+ const sel=document.querySelector('#paidform select[name=p_method]');if(sel&&d.tab!=='online')sel.value=d.tab==='bank'?'Bank transfer':'UPI'};
 /* Online payment with Razorpay Checkout. The server prices the order and confirms the payment; this only opens the window. */
 function rzpLoad(){return window.Razorpay?Promise.resolve():new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://checkout.razorpay.com/v1/checkout.js';sc.onload=res;sc.onerror=()=>rej(new Error('Could not open the payment window. Check your internet connection and try again.'));document.head.appendChild(sc)})}
 ACT['rzp-pay']=async d=>{
@@ -928,13 +1078,14 @@ ROUTES.events=()=>{const now=Date.now()-3*3600e3,m=me(),tab=UI.tab||'up';let l=D
  return head('Events','Festivals, sports, meetings and everything in between.',isAdmin()?btn('Add event','event-new',{c:'pri',i:'plus'}):'')+`<div class="filters">${[['up','Upcoming'],['past','Past'],['mine','My RSVPs']].filter(t=>!(isAdmin()&&t[0]==='mine')).map(t=>`<button class="pill ${tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${t[1]}</button>`).join('')}</div><div class="grid g3">${l.length?l.map(evCard).join(''):empty('calendar','Nothing here yet',tab==='mine'?'RSVP to an event and it shows up here.':'Check back soon.')}</div>`};
 ACT.rsvp=d=>{const e=DB.events.find(x=>x.id===d.id),m=me();if(e.rsvps[m.id]===d.v)delete e.rsvps[m.id];else{e.rsvps[m.id]=d.v;if(d.v==='yes')toast("You're going to "+e.title)}save();closeModal();render()};
 ACT['event-open']=d=>{const e=DB.events.find(x=>x.id===d.id),m=me(),past=+D(e.date)<Date.now()-3*3600e3,mine=e.rsvps[m.id],ent=Object.entries(e.rsvps),going=ent.filter(x=>x[1]==='yes'),mb=ent.filter(x=>x[1]==='maybe'),name=id=>(DB.users.find(u=>u.id===id)||{name:'Resident'}).name;
- modal(esc(e.title),`<div class="stack"><div class="ev" style="box-shadow:none;border:0"><div class="cv" style="border-radius:14px;cursor:default">${cover(e)}</div></div><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free entry','good')}${e.capacity?chip('Limited to '+e.capacity):''}</div><p style="white-space:pre-wrap">${esc(e.desc)}</p><div class="card flat"><div class="kv"><span>When</span><span>${fwd(e.date)}, ${ftime(e.date)}</span></div><div class="kv"><span>Where</span><span>${esc(e.venue)}</span></div><div class="kv"><span>Responses</span><span>${going.length} going · ${mb.length} maybe</span></div></div>${isAdmin()&&going.length?`<small>Going: ${going.map(x=>esc(name(x[0]))).join(', ')}</small>`:''}
+ modal(esc(e.title),`<div class="stack"><div class="ev" style="box-shadow:none;border:0"><div class="cv" style="border-radius:14px;cursor:default">${cover(e)}</div></div><div class="row wrap-r">${chip(esc(e.category),'brand')}${e.fee?chip(inr(e.fee)+' per flat'):chip('Free entry','good')}${e.capacity?chip('Limited to '+e.capacity):''}</div><p style="white-space:pre-wrap">${esc(e.desc)}</p>${e.attachment?attBlock(e.attachment,'event',e.id):''}<div class="card flat"><div class="kv"><span>When</span><span>${fwd(e.date)}, ${ftime(e.date)}</span></div><div class="kv"><span>Where</span><span>${esc(e.venue)}</span></div><div class="kv"><span>Responses</span><span>${going.length} going · ${mb.length} maybe</span></div></div>${isAdmin()&&going.length?`<small>Going: ${going.map(x=>esc(name(x[0]))).join(', ')}</small>`:''}
  <div class="row wrap-r">${past?chip('This event has ended'):isAdmin()?btn('Edit event','event-edit',{c:'pri',i:'edit',d:{id:e.id}}):`<button class="btn ${mine==='yes'?'good':'pri'}" data-act="rsvp" data-id="${e.id}" data-v="yes">${ic('check')}${mine==='yes'?'You are going':'I will attend'}</button><button class="btn ${mine==='maybe'?'acc':''}" data-act="rsvp" data-id="${e.id}" data-v="maybe">Maybe</button>`}</div></div>`,{wide:1})};
 const ECATS=['Festival','Cultural','Sports','Wellness','Meeting','Kids','Community'],SCENES=[['festival','Festival lights'],['sports','Sports field'],['garden','Garden'],['yoga','Sunrise yoga'],['night','Night sky'],['meeting','Meeting dusk'],['kids','Kids fair']];
 ACT['event-new']=()=>eventForm();ACT['event-edit']=d=>eventForm(DB.events.find(x=>x.id===d.id));
-function eventForm(e){modal(e?'Edit event':'Add event',formWrap('event',hid(e?.id)+F.t('e_title','Event name',{req:true,cls:'full',v:e?.title})+F.t('e_date','Date and time',{type:'datetime-local',req:true,v:e?isoLocal(e.date):isoLocal(new Date(Date.now()+7*DAY))})+F.s('e_cat','Category',ECATS,{v:e?.category})+F.t('e_venue','Venue',{req:true,v:e?.venue})+F.t('e_fee','Fee per flat (₹)',{type:'number',v:e?.fee??0,attrs:'min="0"'})+F.a('e_desc','Description',{cls:'full',v:e?.desc})+F.s('e_scene','Artwork style',SCENES,{v:e?.scene,cls:'full'})+`<label class="fld full"><span>Cover photo (shown in the hero)</span><input type="file" id="e_cover" accept="image/*"><em class="hint">Upload a real photo. Without one, generated artwork is used.</em></label><label class="fld full"><span>Gallery photos</span><input type="file" id="e_photos" accept="image/*" multiple></label>`+F.c('e_feat','Show in the home page hero',e?e.featured:true)+(e?`<label class="chk full"><input type="checkbox" id="e_rmcover" name="e_rmcover">Remove current cover photo and gallery photos</label>`:''),e?'Save event':'Add event',e?btn('Delete','event-del',{c:'bad',confirm:1,d:{id:e.id}}):''),{wide:1})}
+function eventForm(e){modal(e?'Edit event':'Add event',formWrap('event',hid(e?.id)+F.t('e_title','Event name',{req:true,cls:'full',v:e?.title})+F.t('e_date','Date and time',{type:'datetime-local',req:true,v:e?isoLocal(e.date):isoLocal(new Date(Date.now()+7*DAY))})+F.s('e_cat','Category',ECATS,{v:e?.category})+F.t('e_venue','Venue',{req:true,v:e?.venue})+F.t('e_fee','Fee per flat (₹)',{type:'number',v:e?.fee??0,attrs:'min="0"'})+F.a('e_desc','Description',{cls:'full',v:e?.desc})+F.s('e_scene','Artwork style',SCENES,{v:e?.scene,cls:'full'})+`${attachField('e_file',e?.attachment,'Event details file (optional)')}<label class="fld full"><span>Cover photo (shown in the hero)</span><input type="file" id="e_cover" accept="image/*"><em class="hint">Upload a real photo. Without one, generated artwork is used.</em></label><label class="fld full"><span>Gallery photos</span><input type="file" id="e_photos" accept="image/*" multiple></label>`+F.c('e_feat','Show in the home page hero',e?e.featured:true)+(e?`<label class="chk full"><input type="checkbox" id="e_rmcover" name="e_rmcover">Remove current cover photo and gallery photos</label>`:''),e?'Save event':'Add event',e?btn('Delete','event-del',{c:'bad',confirm:1,d:{id:e.id}}):''),{wide:1})}
 FORMS.event=async(d,f)=>{if(!d.e_title.trim()||!d.e_date)return fErr('Event name and date are required.');
  const base={title:d.e_title.trim(),date:new Date(d.e_date).toISOString(),category:d.e_cat,venue:d.e_venue.trim(),fee:+d.e_fee||0,desc:d.e_desc.trim(),scene:d.e_scene,featured:!!d.e_feat};
+ const cur=d.id?DB.events.find(x=>x.id===d.id):null;try{base.attachment=await pickAttachment(f,'e_file',cur&&cur.attachment,!!d.e_file_rm)}catch(er){return fErr(er.message)}
  let cv=null,ph=[];try{const c=$('#e_cover',f).files[0];if(c)cv=await readImage(c,1400,.72);for(const p of [...$('#e_photos',f).files].slice(0,8))ph.push(await readImage(p,1000,.7))}catch(e){return fErr('Could not read one of the photos. Try a different image.')}
  if(d.id){const e=DB.events.find(x=>x.id===d.id);Object.assign(e,base);if(d.e_rmcover){e.cover=null;e.photos=[]}if(cv)e.cover=cv;if(ph.length)e.photos=(e.photos||[]).concat(ph);toast('Event updated')}
  else{DB.events.push({id:uid('e'),...base,rsvps:{},cover:cv,photos:ph,capacity:0});notify('all','New event: '+base.title+' on '+fdate(base.date),'events');logAct('Added event: '+base.title);toast('Event added')}
@@ -996,11 +1147,11 @@ ACT['amenity-del']=d=>{DB.amenities=DB.amenities.filter(a=>a.id!==d.id);save();r
 ROUTES.visitors=()=>{const m=me(),adm=isAdmin(),l=DB.visitors.filter(v=>adm||v.userId===m.id).sort((a,b)=>D(b.date)-D(a.date));
  return head('Visitors','Pre-approve guests and deliveries. Security checks the code at the gate.',btn(adm?'Walk-in entry':'Invite visitor','visitor-new',{c:'pri',i:'plus'}))+
  (adm?`<div class="card"><h3>${ic('shield')}Gate desk</h3><form data-form="gate" class="row wrap-r" style="align-items:flex-end"><label class="fld" style="width:200px"><span>Visitor code</span><input id="g_code" name="g_code" inputmode="numeric" maxlength="6" placeholder="6 digit code" required></label><button class="btn pri" type="submit">Check code</button></form></div>`:'')+
- `<div class="stack">${l.length?l.map(v=>`<div class="notice" style="cursor:default"><div class="ni">${ic('visitor')}</div><div class="sp" style="min-width:0"><h4>${esc(v.name)}</h4><p>${esc(v.purpose)}${v.vehicle?' · '+esc(v.vehicle):''}</p><div class="meta">${sChip(v.status)}<span>${fwd(v.date)}</span>${adm?`<span>Flat ${esc(uflat(v.userId))}</span>`:''}<b class="num">Code ${esc(v.code)}</b></div></div>${!adm&&v.status==='expected'?btn('Copy code','copy',{sm:1,d:{t:v.code}}):''}</div>`).join(''):empty('visitor','No visitors yet','Invite a guest and share the code with them.')}</div>`};
+ (!adm?alertsCard()+l.filter(v=>v.status==='waiting').map(waitCard).join(''):'')+`<div class="stack">${l.length?l.filter(v=>adm||v.status!=='waiting').map(v=>`<div class="notice" style="cursor:default"><div class="ni" style="padding:0;background:none">${vThumb(v,'vthumb')}</div><div class="sp" style="min-width:0"><h4>${esc(v.name)}</h4><p>${esc(v.purpose)}${v.vehicle?' · '+esc(v.vehicle):''}</p><div class="meta">${sChip(v.status)}<span>${fwd(v.date)}${v.entryAt?' · in '+esc(ftime(v.entryAt)):''}${v.exitAt?' · out '+esc(ftime(v.exitAt)):''}</span>${adm?`<span>Flat ${esc(vFlat(v))}</span>`:''}${v.byName?`<span>Gate: ${esc(v.byName)}</span>`:''}${v.code?`<b class="num">Code ${esc(v.code)}</b>`:''}</div></div>${!adm&&v.status==='expected'?btn('Copy code','copy',{sm:1,d:{t:v.code}}):''}</div>`).join(''):empty('visitor','No visitors yet','Invite a guest and share the code with them.')}</div>`};
 ACT['visitor-new']=()=>modal('Invite a visitor',formWrap('visitor',(isAdmin()?F.s('v_flat','Visiting flat',approvedFlats().map(u=>[u.id,flatKey(u)+' · '+u.name]),{cls:'full'}):'')+F.t('v_name','Visitor name',{req:true,cls:'full'})+F.t('v_purpose','Purpose',{req:true,ph:'Family visit, delivery, repair'})+F.t('v_date','Expected on',{type:'date',v:isoDay(new Date()),attrs:`min="${isoDay(new Date())}"`})+F.t('v_veh','Vehicle number (optional)',{cls:'full'}),'Generate code'));
 FORMS.visitor=d=>{if(!d.v_name.trim())return fErr('Enter the visitor name.');const code=String(Math.floor(100000+Math.random()*900000));DB.visitors.unshift({id:uid('v'),userId:isAdmin()?d.v_flat:me().id,name:d.v_name.trim(),purpose:d.v_purpose.trim(),vehicle:d.v_veh.trim(),date:new Date(d.v_date+'T00:00:00').toISOString(),code,status:isAdmin()?'entered':'expected'});save();modal('Visitor code ready',`<div class="stack"><p>Share this code with <b>${esc(d.v_name)}</b>. Security will ask for it at the gate.</p><div class="code">${code}</div><div class="row" style="justify-content:flex-end">${btn('Copy code','copy',{c:'pri',i:'copy',d:{t:code}})}</div></div>`);render()};
-FORMS.gate=d=>{const v=DB.visitors.find(x=>x.code===d.g_code.trim());if(!v)return toast('No visitor with that code','x');modal('Visitor found',`<div class="stack"><div class="card flat"><div class="kv"><span>Name</span><span>${esc(v.name)}</span></div><div class="kv"><span>Visiting</span><span>${esc(uflat(v.userId))} · ${esc(uname(v.userId))}</span></div><div class="kv"><span>Purpose</span><span>${esc(v.purpose)}</span></div><div class="kv"><span>Expected</span><span>${fwd(v.date)}</span></div><div class="kv"><span>Status</span><span>${sChip(v.status)}</span></div></div><div class="row wrap-r">${v.status==='expected'?btn('Allow entry','v-status',{c:'good',d:{id:v.id,s:'entered'}}):''}${v.status==='entered'?btn('Mark as left','v-status',{d:{id:v.id,s:'exited'}}):''}</div></div>`)};
-ACT['v-status']=d=>{const v=DB.visitors.find(x=>x.id===d.id);v.status=d.s;if(d.s==='entered')notify(v.userId,`${v.name} has entered the gate`,'visitors');save();closeModal();render();toast('Updated')};
+FORMS.gate=d=>{const v=DB.visitors.find(x=>x.code===d.g_code.trim());if(!v)return toast('No visitor with that code','x');modal('Visitor found',`<div class="stack"><div class="card flat"><div class="kv"><span>Name</span><span>${esc(v.name)}</span></div><div class="kv"><span>Visiting</span><span>${esc(uflat(v.userId))} · ${esc(uname(v.userId))}</span></div><div class="kv"><span>Purpose</span><span>${esc(v.purpose)}</span></div><div class="kv"><span>Expected</span><span>${fwd(v.date)}</span></div><div class="kv"><span>Status</span><span>${sChip(v.status)}</span></div></div><div class="row wrap-r">${['expected','approved'].includes(v.status)?btn('Allow entry','v-status',{c:'good',d:{id:v.id,s:'entered'}}):v.status==='waiting'?'<b>Waiting for the resident to approve.</b>':v.status==='denied'?'<b>The resident denied this visitor.</b>':''}${v.status==='entered'?btn('Mark as left','v-status',{d:{id:v.id,s:'exited'}}):''}</div></div>`)};
+ACT['v-status']=d=>{const v=DB.visitors.find(x=>x.id===d.id);v.status=d.s;if(d.s==='entered')v.entryAt=Date.now();if(d.s==='exited')v.exitAt=Date.now();if(d.s==='entered'&&!isGuard())notify(v.userId,`${v.name} has entered the gate`,'visitors');save();closeModal();render();toast('Updated')};
 
 /* ----- marketplace ----- */
 const ACATS=['Tuition','Food','Health','Beauty','Home Services','Buy and Sell','Real Estate','Other'];
@@ -1084,7 +1235,7 @@ const SITE_DEF=()=>({
  content:{headline:'',intro:'Notices, maintenance payments, events, bookings, helpdesk and more. Residents register their flat and get access after the society admin approves the request.',
   steps:[{t:'Register your flat',d:'Name, tower, flat number and mobile.'},{t:'Admin verifies',d:'The committee checks ownership or tenancy.'},{t:'Start using the app',d:'Pay dues, read notices, book amenities.'}],
   welcome:'',announce:{on:false,text:'',link:''}},
- footer:{about:'',phone:'',email:'',hours:'',links:[],social:{facebook:'',instagram:'',youtube:'',whatsapp:'',x:''},image:'',caption:'',showImage:true,copyright:''}
+ footer:{about:'',place:{name:'',line1:'',area:'',city:'',state:'',pin:''},mapUrl:'',phone:'',email:'',hours:'',links:[],social:{facebook:'',instagram:'',youtube:'',whatsapp:'',x:''},image:'',caption:'',showImage:true,copyright:''}
 });
 const BAD_KEY=k=>k==='__proto__'||k==='constructor'||k==='prototype';
 function deepMerge(d,s){
@@ -1099,6 +1250,15 @@ function mergeSite(s){
  o.content.steps=def.map((x,i)=>{const y=o.content.steps[i]||{};return{t:y.t||x.t,d:y.d||x.d}});
  return o}
 
+const PLACE_KEYS=['name','line1','area','city','state','pin'];
+/* The old single-line address may have a map link typed into it. Split it so the link becomes a button. */
+function splitAddr(a){a=String(a||'');const m=a.match(/https?:\/\/[^\s<>"']+/);return{url:m?m[0]:'',text:a.replace(/https?:\/\/[^\s<>"']+/g,'').replace(/[\s,]+$/,'').trim()}}
+/* What the footer shows: tidy address lines and the map link. */
+function placeOf(c){
+ const f=c.site.footer,p=f.place||{},old=splitAddr(c.address);
+ if(PLACE_KEYS.some(k=>p[k]))return{name:p.name||'',lines:[p.line1,p.area,[p.city,p.state].filter(Boolean).join(', ')+(p.pin?(p.city||p.state?'\u00a0':'')+p.pin:'')].filter(x=>x&&x.trim()),url:f.mapUrl||old.url};
+ return{name:'',lines:old.text?[old.text]:[],url:f.mapUrl||old.url}}
+
 let DRAFT=null,BASE='',PV=null;
 const siteDirty=()=>!!DRAFT&&JSON.stringify(DRAFT)!==BASE;
 function cfg(){
@@ -1106,6 +1266,7 @@ function cfg(){
  return{...s,...(dr?{name:DRAFT.name,tagline:DRAFT.tagline,address:DRAFT.address}:{}),site:mergeSite(dr?DRAFT.site:s.site)}}
 function studioStart(){
  const s=DB.settings,d={name:s.name||'',tagline:s.tagline||'',address:s.address||'',site:mergeSite(s.site)};
+ {const f=d.site.footer,old=splitAddr(s.address);if(!PLACE_KEYS.some(k=>f.place[k])){f.place.line1=old.text}if(!f.mapUrl&&old.url)f.mapUrl=old.url}
  while(d.site.footer.links.length<6)d.site.footer.links.push({label:'',url:''});
  DRAFT=JSON.parse(JSON.stringify(d));BASE=JSON.stringify(DRAFT)}
 
@@ -1160,7 +1321,7 @@ function applyTheme(){
  document.body.classList.toggle('pv',!!PV)}
 
 /* ----- logo, bars, footer ----- */
-const logoOf=src=>src?`<img class="logo-img" src="${esc(src)}" alt="">`:logo;
+const logoOf=src=>src?`<img class="logo-img" src="${esc(src)}" alt="">`:animMark();
 const logoHtml=()=>logoOf(cfg().site.logo);
 const hrefOf=(u,label)=>String(u).startsWith('#')?`<a href="${esc(u)}">${label}</a>`:`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
 function siteBars(){
@@ -1171,14 +1332,18 @@ function siteBars(){
 ACT['fest-close']=()=>{UI.fbOff=true;render()};
 const SOC=[['facebook','Facebook'],['instagram','Instagram'],['youtube','YouTube'],['whatsapp','WhatsApp'],['x','X']];
 function siteFooter(){
- const c=cfg(),f=c.site.footer,links=f.links.filter(l=>l.label&&l.url),soc=SOC.filter(([k])=>f.social[k]),addr=c.address;
+ const c=cfg(),f=c.site.footer,links=f.links.filter(l=>l.label&&l.url),soc=SOC.filter(([k])=>f.social[k]),pl=placeOf(c);
  const n=c.name||'Queenstown Society';
+ /* signed-in residents get handy links even when none were added in Site studio */
+ const ql=links.length?links:(SES?(isGuard()?[['Security desk','#gate'],['Notices','#notices']]:[['Notices','#notices'],['Events','#events'],['Maintenance','#maintenance'],['Helpdesk','#helpdesk']]).map(([label,url])=>({label,url})):[]);
+ const showName=pl.name&&pl.name.trim().toLowerCase()!==n.trim().toLowerCase(),hasAddr=pl.lines.length||showName||pl.url,hasContact=f.phone||f.email||f.hours;
  return`<footer class="sitefoot">${f.showImage&&f.image?`<figure class="foot-img"><img src="${esc(f.image)}" alt="${esc(f.caption||n)}">${f.caption?`<figcaption>${esc(f.caption)}</figcaption>`:''}</figure>`:''}
- <div class="foot-grid"><div class="fcol"><a class="brand" href="#${SES?(isAdmin()?'admin':'home'):''}">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b><span>${esc(n.split(' ').slice(1).join(' ')||'Society')}</span></div></a>
- <p style="margin-top:12px">${esc(f.about||c.tagline||'')}</p>${soc.length?`<div class="soc">${soc.map(([k,l])=>hrefOf(f.social[k],l)).join('')}</div>`:''}</div>
- <div class="fcol">${links.length?`<h5>Quick links</h5>${links.map(l=>hrefOf(l.url,esc(l.label))).join('')}`:''}</div>
- <div class="fcol"><h5>Contact</h5>${addr?`<p>${ic('mappin')}${esc(addr)}</p>`:''}${f.phone?`<a href="tel:${esc(f.phone.replace(/[^0-9+]/g,''))}">${ic('phone')}${esc(f.phone)}</a>`:''}${f.email?`<a href="mailto:${esc(f.email)}">${ic('mail')}${esc(f.email)}</a>`:''}${f.hours?`<p>${ic('clock')}${esc(f.hours)}</p>`:''}</div></div>
- <div class="foot-bottom">${esc(f.copyright||`© ${new Date().getFullYear()} ${n}. All rights reserved.`)}</div></footer>`}
+ <div class="foot-grid"><div class="fcol fbrand"><a class="brand" href="#${SES?(isAdmin()?'admin':'home'):''}">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b>${n.split(' ').slice(1).length?`<span>${esc(n.split(' ').slice(1).join(' '))}</span>`:''}</div></a>
+ ${(f.about||c.tagline)?`<p class="fabout">${esc(f.about||c.tagline)}</p>`:''}${soc.length?`<div class="soc">${soc.map(([k,l])=>hrefOf(f.social[k],l)).join('')}</div>`:''}${canOfferApp()?`<a class="footapp" href="${esc(apkUrl())}" download rel="noopener">${ic('download')}<span><b>Download the Android app</b><small>Free APK for residents</small></span></a>`:''}</div>
+ ${ql.length?`<nav class="fcol" aria-label="Quick links"><h5>Quick links</h5>${ql.map(l=>hrefOf(l.url,esc(l.label))).join('')}</nav>`:''}
+ ${hasAddr?`<div class="fcol"><h5>Visit us</h5><address class="addr">${showName?`<b>${esc(pl.name)}</b>`:''}${pl.lines.map(x=>`<span>${esc(x)}</span>`).join('')}</address>${pl.url?`<a class="mapbtn" href="${esc(pl.url)}" target="_blank" rel="noopener noreferrer">${ic('mappin')}View on Google Maps</a>`:''}</div>`:''}
+ ${hasContact?`<div class="fcol"><h5>Contact</h5>${f.phone?`<a href="tel:${esc(f.phone.replace(/[^0-9+]/g,''))}">${ic('phone')}${esc(f.phone)}</a>`:''}${f.email?`<a href="mailto:${esc(f.email)}">${ic('mail')}${esc(f.email)}</a>`:''}${f.hours?`<div class="hrs">${ic('clock')}<span>${esc(f.hours)}</span></div>`:''}</div>`:''}</div>
+ <div class="foot-bottom"><span>${esc(f.copyright||`© ${new Date().getFullYear()} ${n}. All rights reserved.`)}</span><a href="#" data-act="to-top">Back to top ↑</a></div></footer>`}
 
 /* ----- image upload: resized in the browser so it stays small ----- */
 function loadImg(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej(new Error('That file could not be read.'));fr.onload=()=>{const im=new Image();im.onerror=()=>rej(new Error('That image could not be opened. Try a PNG or JPEG.'));im.onload=()=>res(im);im.src=fr.result};fr.readAsDataURL(file)})}
@@ -1241,7 +1406,9 @@ ROUTES.studio=()=>{
 
  <section class="card"><h3>${ic('building')}Footer</h3><div class="stack">
  <div class="frm">${SF.a('site.footer.about','About text',{max:400,cls:'full',h:70,ph:'A line or two about the society. Leave empty to show the tagline.'})}
- ${SF.a('address','Address',{max:300,cls:'full',h:56})}${SF.t('site.footer.phone','Phone',{max:20,attrs:'inputmode="tel"',ph:'+91 98765 43210'})}${SF.t('site.footer.email','Email',{max:120,type:'email'})}${SF.t('site.footer.hours','Office hours',{max:120,cls:'full',ph:'Mon to Sat, 9 am to 6 pm'})}</div>
+ </div>
+ <div class="subcard"><h4>Society location</h4><div class="frm">${SF.t('site.footer.place.name','Society or building name',{max:80,cls:'full',ph:'Queenstown Society'})}${SF.t('site.footer.place.line1','Address line',{max:140,cls:'full',ph:'Survey no. 3876, Chinchwad Station Rd'})}${SF.t('site.footer.place.area','Area or locality',{max:80,ph:'Udyog Nagar'})}${SF.t('site.footer.place.city','City',{max:60,ph:'Pimpri-Chinchwad'})}${SF.t('site.footer.place.state','State',{max:60,ph:'Maharashtra'})}${SF.t('site.footer.place.pin','PIN code',{max:6,attrs:'inputmode="numeric"',ph:'411033'})}${SF.t('site.footer.mapUrl','Google Maps location link',{max:300,cls:'full',type:'url',ph:'https://maps.app.goo.gl/...',hint:'In Google Maps, open your society, tap Share, then Copy link. Visitors get a "View on Google Maps" button in the footer.'})}</div></div>
+ <div class="subcard"><h4>Contact</h4><div class="frm">${SF.t('site.footer.phone','Phone',{max:20,attrs:'inputmode="tel"',ph:'+91 98765 43210'})}${SF.t('site.footer.email','Email',{max:120,type:'email'})}${SF.t('site.footer.hours','Office hours',{max:120,cls:'full',ph:'Mon to Sat, 9 am to 6 pm'})}</div></div>
  <div class="subcard"><h4>Quick links</h4><div class="stack" style="gap:10px">${f.links.map((l,i)=>`<div class="frm pair">${SF.t(`site.footer.links.${i}.label`,`Link ${i+1} label`,{max:40})}${SF.t(`site.footer.links.${i}.url`,`Link ${i+1} address`,{max:300,ph:'https://... or #notices'})}</div>`).join('')}</div></div>
  <div class="subcard"><h4>Social links</h4><div class="frm">${SOC.map(([k,l])=>SF.t(`site.footer.social.${k}`,l,{max:300,ph:'https://',type:'url'})).join('')}</div></div>
  <div class="subcard"><h4>Footer image</h4>${imgBox('footer',f.image,'image','Shown as a wide banner above the footer. JPEG, PNG or WebP, resized for you.')}
@@ -1296,11 +1463,13 @@ function siteErrors(d){
  SOC.forEach(([k,l])=>{const v=(f.social[k]||'').trim();if(v&&!web(v))e.push(`${l} link must start with https://`)});
  if(f.email.trim()&&!/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(f.email.trim()))e.push('The footer email address does not look right.');
  if(f.phone.trim()&&!/^[+0-9 ()-]{5,20}$/.test(f.phone.trim()))e.push('The footer phone number can only have digits, spaces, + ( ) and -.');
+ if(f.mapUrl.trim()&&!web(f.mapUrl.trim()))e.push('The Google Maps link must start with https://');
+ if(f.place.pin.trim()&&!/^\d{6}$/.test(f.place.pin.trim()))e.push('The PIN code must be 6 digits.');
  if(c.announce.on&&!c.announce.text.trim())e.push('Write the announcement text, or switch the announcement bar off.');
  if(c.announce.link.trim()&&!url(c.announce.link.trim()))e.push('The announcement link must start with https:// or #.');
  if(t.from&&t.to&&t.to<t.from)e.push('The theme end date is before its start date.');
  return e}
-ACT['site-save']=()=>{
+ACT['site-save']=async()=>{
  if(!DRAFT)return;
  const errs=siteErrors(DRAFT);if(errs.length)return toast(errs[0],'x');
  const base=JSON.parse(BASE),d=JSON.parse(JSON.stringify(DRAFT)),f=d.site.footer;
@@ -1308,11 +1477,318 @@ ACT['site-save']=()=>{
  for(const k of Object.keys(f.social))f.social[k]=(f.social[k]||'').trim();
  for(const k of['about','phone','email','hours','caption','copyright'])f[k]=f[k].trim();
  d.site.content.announce.link=d.site.content.announce.link.trim();
+ f.mapUrl=f.mapUrl.trim();for(const k of PLACE_KEYS)f.place[k]=(f.place[k]||'').trim();
+ /* keep the one-line address (used on receipts) in step with the tidy fields */
+ if(PLACE_KEYS.some(k=>f.place[k]))d.address=[f.place.name,f.place.line1,f.place.area,f.place.city,[f.place.state,f.place.pin].filter(Boolean).join(' ')].filter(Boolean).join(', ');
  for(const k of['name','tagline','address'])if(d[k]!==base[k])DB.settings[k]=d[k].trim();
  DB.settings.site=d.site;save();
+ if(REMOTE){const rej=await flushWait();
+  if(rej.length)return;               /* the server refused it: flush already showed why, and the edits stay on screen so nothing is lost */
+  if(dirty)return}                    /* offline: it will save when the connection is back */
  PV=null;studioStart();if(routeOf()!=='studio'&&isAdmin())location.hash='studio';
  render(true);toast('Saved. Residents and visitors see the changes now.')};
 window.addEventListener('beforeunload',e=>{if(siteDirty()){e.preventDefault();e.returnValue=''}});
+/* ========== file attachments for notices and events ==========
+   Admin picks a file in the notice or event form. With a server (REMOTE) the file is uploaded to the API and the notice keeps
+   only a small description of it. In the offline demo the file stays inside the browser data.
+   Residents see a card with Preview and Download. PDFs are drawn page by page, so previews work in the Android app too. */
+const ATT_MAX=5*1024*1024,ATT_EXT=['pdf','png','jpg','jpeg','webp','doc','docx','xls','xlsx'];
+const ATT_ACCEPT='.pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.xls,.xlsx,application/pdf,image/*';
+const ATT_MIME={pdf:'application/pdf',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xls:'application/vnd.ms-excel',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'};
+const attKind=a=>a.mime==='application/pdf'?'PDF':/^image\//.test(a.mime)?'Image':/word/.test(a.mime)?'Word':/sheet|excel/.test(a.mime)?'Excel':'File';
+const attCanView=a=>a.mime==='application/pdf'||/^image\//.test(a.mime);
+const fmtSize=n=>n<1024?n+' B':n<1048576?Math.round(n/1024)+' KB':(n/1048576).toFixed(1)+' MB';
+const attCard=(a,kind,id)=>`<div class="attcard"><span class="atti">${ic(/^image\//.test(a.mime)?'eye':'file')}</span><div class="attm"><b>${esc(a.name)}</b><small>${attKind(a)} · ${fmtSize(a.size||0)}</small></div>${kind?`<div class="attb">${attCanView(a)?btn('Preview','att-view',{sm:1,i:'eye',d:{k:kind,id}}):''}${btn('Download','att-dl',{sm:1,c:'pri',i:'download',d:{k:kind,id}})}</div>`:''}</div>`;
+const attBlock=(a,kind,id)=>`<div class="stack" style="gap:6px"><small><b>${kind==='event'?'Event details':'Attached file'}</b></small>${attCard(a,kind,id)}</div>`;
+const attachField=(id,att,label='Attach a file (optional)')=>`<label class="fld full"><span>${label}</span><input type="file" id="${id}" accept="${ATT_ACCEPT}"><em class="hint">PDF, image, Word or Excel, up to 5 MB. Residents can preview and download it.</em></label>${att?`<div class="full attrow">${attCard(att)}<label class="chk"><input type="checkbox" id="${id}_rm" name="${id}_rm">Remove the current file</label></div>`:''}`;
+const attOf=d=>((d.k==='event'?DB.events:DB.notices).find(x=>x.id===d.id)||{}).attachment;
+
+const fileToDataUrl=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(new Error('Could not read that file.'));r.readAsDataURL(f)});
+/* Returns the attachment the notice or event should have after saving: the new file, the current one, or null. */
+async function pickAttachment(form,id,cur,remove){
+ const el=$('#'+id,form),file=el&&el.files&&el.files[0];
+ if(!file)return remove?null:(cur||null);
+ const ext=(file.name.split('.').pop()||'').toLowerCase();
+ if(!ATT_EXT.includes(ext))throw new Error('Choose a PDF, image, Word or Excel file.');
+ if(file.size>ATT_MAX)throw new Error('That file is larger than 5 MB.');
+ if(!file.size)throw new Error('That file is empty.');
+ toast('Uploading '+file.name+'…','info');
+ const url=await fileToDataUrl(file);
+ if(REMOTE){
+  try{const r=await api('/api/files',{method:'POST',body:{name:file.name,data:url.slice(url.indexOf(',')+1)}});return r.file}
+  catch(e){throw new Error(e.net?e.message:'The file was not uploaded. '+e.message)}
+ }
+ if(file.size>1.2*1024*1024)throw new Error('In demo mode files are limited to 1 MB. Connect the server for 5 MB files.');
+ return{id:uid('f'),name:file.name,mime:ATT_MIME[ext],size:file.size,local:url};
+}
+
+/* address that opens the file: a signed link from the server, or a blob made from the demo data */
+async function attUrl(a,dl){
+ if(a.local){const b=await (await fetch(a.local)).blob();return URL.createObjectURL(b)}
+ const r=await api('/api/files/'+encodeURIComponent(a.id)+'/link',{method:'POST'});
+ return API+r.url+(dl?'&dl=1':'');
+}
+ACT['att-dl']=async d=>{
+ const a=attOf(d);if(!a)return;
+ try{const url=await attUrl(a,true),el=document.createElement('a');el.href=url;el.rel='noopener';
+  if(a.local)el.download=a.name;else if(isNativeApp())el.target='_blank';
+  document.body.appendChild(el);el.click();el.remove();toast('Download started','download')}
+ catch(e){toast(e.message||'Could not open the file.','x')}
+};
+let PDFLIB=null;
+async function pdfLib(){
+ if(PDFLIB)return PDFLIB;
+ const base='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+ if(!window.pdfjsLib)await new Promise((ok,no)=>{const s=document.createElement('script');s.src=base+'pdf.min.js';s.onload=ok;s.onerror=()=>no(new Error('The viewer could not load.'));document.head.appendChild(s)});
+ const code=await (await fetch(base+'pdf.worker.min.js')).text();
+ pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([code],{type:'text/javascript'}));
+ return PDFLIB=pdfjsLib;
+}
+async function drawPdf(box,url){
+ const lib=await pdfLib(),buf=await (await fetch(url)).arrayBuffer(),pdf=await lib.getDocument({data:buf}).promise;
+ box.innerHTML='';const w=Math.max(260,box.clientWidth-20),dpr=Math.min(2,window.devicePixelRatio||1),n=Math.min(pdf.numPages,40);
+ for(let i=1;i<=n;i++){
+  if(!box.isConnected)return;
+  const pg=await pdf.getPage(i),sc=w/pg.getViewport({scale:1}).width,v=pg.getViewport({scale:sc*dpr}),cv=document.createElement('canvas');
+  cv.width=v.width;cv.height=v.height;cv.className='attpage';box.appendChild(cv);
+  await pg.render({canvasContext:cv.getContext('2d'),viewport:v}).promise;
+ }
+ if(pdf.numPages>n)box.insertAdjacentHTML('beforeend',`<p class="muted" style="text-align:center">Showing the first ${n} of ${pdf.numPages} pages. Download the file to read the rest.</p>`);
+}
+ACT['att-view']=async d=>{
+ const a=attOf(d);if(!a)return;
+ modal(esc(a.name),`<div class="stack"><div class="attview" id="attview"><div class="boot" style="min-height:220px"><div class="spin"></div><small>Opening…</small></div></div><div class="row wrap-r">${btn('Back','att-back',{i:'arrow',d})}<span class="sp"></span>${btn('Download','att-dl',{c:'pri',i:'download',d})}</div></div>`,{wide:1,sub:attKind(a)+' · '+fmtSize(a.size||0)});
+ const box=$('#attview');
+ try{
+  const url=await attUrl(a,false);
+  if(!box||!box.isConnected)return;
+  if(/^image\//.test(a.mime))box.innerHTML=`<img class="attimg" src="${esc(url)}" alt="${esc(a.name)}">`;
+  else if(a.mime==='application/pdf')await drawPdf(box,url);
+  else box.innerHTML=`<p class="muted" style="padding:24px;text-align:center">A preview is not available for this type of file. Download it to open it.</p>`;
+ }catch(e){if(box&&box.isConnected)box.innerHTML=`<p class="muted" style="padding:24px;text-align:center">${esc(e.message||'The preview could not be shown.')} You can still download the file.</p>`}
+};
+ACT['att-back']=d=>ACT[d.k==='event'?'event-open':'notice-open']({id:d.id});
+/* ========== Queenstown brand: animated logo, splash screen, "get the Android app" ========== */
+Object.assign(IP,{camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/>',
+ paperclip:'<path d="M21 11.5l-8.6 8.6a5 5 0 01-7.1-7.1l8.6-8.6a3.4 3.4 0 014.8 4.8l-8.6 8.6a1.8 1.8 0 01-2.5-2.5l7.9-7.9"/>',
+ download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+ file:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8zM14 3v5h5"/>',
+ app:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'
+});
+const isNativeApp=()=>{try{return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())||/QueenstownApp/.test(navigator.userAgent)}catch(e){return false}};
+
+/* ----- animated logo -----
+   The logo picture is cut into pieces with fixed rectangles (castle, each group of letters, "Chinchwad"),
+   so the castle can rise, the name can appear letter by letter, and a golden shine can sweep across it.
+   Colours come from CSS (--a1, --a2), so the same picture works on dark and light backgrounds. */
+const AL_W=692,AL_H=411;
+const AL_RECT=(x0,y0,x1,y1)=>`inset(${(y0/AL_H*100).toFixed(2)}% ${((AL_W-x1)/AL_W*100).toFixed(2)}% ${((AL_H-y1)/AL_H*100).toFixed(2)}% ${(x0/AL_W*100).toFixed(2)}%)`;
+const AL_LETTERS=[[0,0,172,360],[172,258,220,360],[220,258,333,360],[333,258,375,360],[375,258,434,360],[434,258,497,360],[497,258,585,360],[585,0,692,360]];
+const AL_SPARKS=[[46.5,2.4,3.0],[58.9,13.5,3.9],[37.2,11.8,4.6],[66,36,3.4],[43,28,5.1],[27,52,4.2]];
+function animLogo(cls='',style=''){
+ return`<span class="alogo ${cls}" style="${style}" role="img" aria-label="Queenstown, Chinchwad"><span class="al-p al-c" style="clip-path:${AL_RECT(172,0,560,258)}"><i class="al-i"></i></span>${AL_LETTERS.map((r,i)=>`<span class="al-p al-l" style="clip-path:${AL_RECT(...r)}"><i class="al-i" style="animation-delay:${(1.15+i*.11).toFixed(2)}s"></i></span>`).join('')}<span class="al-p al-s" style="clip-path:${AL_RECT(0,360,692,411)}"><i class="al-i"></i></span><i class="al-sh"></i>${AL_SPARKS.map(([x,y,d])=>`<b class="al-sp" style="--x:${x}%;--y:${y}%;--d:${d}s"></b>`).join('')}</span>`}
+const animMark=()=>`<span class="amark" aria-hidden="true"><i class="am-i"></i><i class="am-sh"></i></span>`;
+/* big logo on the public page: the society's own uploaded logo if the admin set one, else the animated castle */
+const bigLogo=()=>{const s=cfg().site.logo;return s?`<img class="logo-img big" src="${esc(s)}" alt="">`:animLogo('big')};
+
+/* ----- splash screen: shown once per visit while the app loads ----- */
+(function splash(){
+ try{if(sessionStorage.getItem('qs_splash'))return;sessionStorage.setItem('qs_splash','1')}catch(e){}
+ const el=document.createElement('div');el.id='splash';el.className='splash';
+ el.innerHTML=`<div class="splash-in">${animLogo('splash-logo','--w:min(470px,84vw)')}<div class="splash-bar"><i></i></div></div>`;
+ document.body.appendChild(el);
+ const t0=Date.now(),minMs=matchMedia('(prefers-reduced-motion:reduce)').matches?400:3000;let gone=false;
+ const bye=()=>{if(gone)return;gone=true;el.classList.add('out');setTimeout(()=>el.remove(),650)};
+ el.addEventListener('click',bye);
+ const tick=()=>{const a=document.getElementById('app'),first=a&&a.firstElementChild,ready=first&&!first.classList.contains('boot'),age=Date.now()-t0;
+  if((ready&&age>=minMs)||age>12000)bye();else setTimeout(tick,150)};tick();
+})();
+
+/* ----- Android app: open it if installed, otherwise download it ----- */
+const apkUrl=()=>String(window.QS_APK_URL||'').trim();
+const canOfferApp=()=>!!apkUrl()&&!isNativeApp();
+const isAndroidWeb=()=>/Android/i.test(navigator.userAgent)&&!isNativeApp();
+/* Chrome on Android opens the installed app through this address; if the app is missing it goes to the download instead. */
+const appOpenHref=()=>`intent://open#Intent;scheme=queenstown;package=in.queenstown.society;S.browser_fallback_url=${encodeURIComponent(apkUrl())};end`;
+function appBanner(){
+ if(!canOfferApp()||!isAndroidWeb())return'';
+ try{if(Date.now()<(+lsGet('qs_appbar')||0)||matchMedia('(display-mode: standalone)').matches)return''}catch(e){}
+ return`<div class="appbar" role="region" aria-label="Get the Android app"><img src="icons/icon-192.png" alt="" width="38" height="38"><div class="t"><b>Queenstown app for Android</b><small>Notices, bills and events on your phone</small></div><a class="go" href="${appOpenHref()}">Get app</a><button type="button" data-act="app-dismiss" aria-label="Hide">${ic('x')}</button></div>`}
+ACT['app-dismiss']=()=>{lsSet('qs_appbar',String(Date.now()+7*864e5));const b=$('.appbar');if(b)b.remove()};
+/* on Android phones the top bar already offers the app, so the card would be a second banner */
+const appCard=()=>canOfferApp()&&!isAndroidWeb()?`<div class="card flat appcard"><span class="ai">${ic('app')}</span><div class="sp"><b>Get the Android app</b><br><small>Pay bills, read notices and see events from your home screen.</small></div><button type="button" class="btn sm pri" data-act="app-dl">${ic('download')}Get the app</button></div>`:'';
+const appSide=()=>canOfferApp()?`<button type="button" class="navbtn" data-act="app-dl">${ic('app')}Get the Android app</button>`:'';
+ACT['app-dl']=()=>{
+ if(!canOfferApp())return;
+ const apk=apkUrl(),android=isAndroidWeb(),ios=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+ modal('Get the Queenstown app',`<div class="stack"><p class="muted">Pay maintenance, read notices and see events from your home screen. It is the same Queenstown Society you see on the website, so every change shows up in both.</p>
+ ${android?`<div class="row" style="flex-wrap:wrap"><a class="btn pri" href="${appOpenHref()}">${ic('app')}Open app or install</a><a class="btn" href="${esc(apk)}" download>${ic('download')}Download APK</a></div>
+ <small>If the app is already on your phone, the first button opens it. If not, the download starts. When Android asks, allow installs from this source once, then open the downloaded file.</small>`
+ :ios?`<div class="card flat"><b>iPhone and iPad</b><p class="muted">The app file is for Android phones. On iPhone, open this site in Safari, tap Share, then Add to Home Screen.</p></div>`
+ :`<div class="row" style="align-items:center;gap:16px;flex-wrap:wrap"><div id="appqr" class="appqr" aria-label="QR code"></div><div class="sp" style="min-width:200px"><b>On your Android phone</b><p class="muted">Scan the code with the camera and tap the link. The page offers to open or download the app.</p></div></div>
+ <div class="row"><a class="btn" href="${esc(apk)}" download>${ic('download')}Download APK to this computer</a></div>`}
+ </div>`);
+ if(!android&&!ios&&window.QRCode)setTimeout(()=>{const b=$('#appqr');if(b&&!b.firstChild)try{new QRCode(b,{text:location.origin+location.pathname+'#getapp',width:160,height:160,colorDark:'#0B3B3A',colorLight:'#ffffff'})}catch(e){}},50)};
+
+/* ----- sync warning: in demo mode every phone and computer keeps its own copy, so a change on one never reaches the others ----- */
+const syncWarn=()=>(!REMOTE&&isAdmin())?`<div class="syncwarn" role="alert">${ic('info')}<span><b>Demo mode: changes stay on this device only.</b> A new logo, notice or event made here will not show on your phone or other residents' phones. Set <code>QS_API_URL</code> on Vercel to your Render server address (see DEPLOY.md) so every change is shared everywhere.</span></div>`:'';
+/* open the download dialog when someone scans the QR code or follows a #getapp link */
+setTimeout(()=>{if(location.hash==='#getapp'){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}if(canOfferApp())ACT['app-dl']()}},900);
+
+/* Header Sign in / Sign up: switch the form and bring it into view */
+ACT['auth-go']=d=>{UI.auth=d.t;render();setTimeout(()=>{const f=document.querySelector('form[data-form=login],form[data-form=register]');if(f){f.scrollIntoView({behavior:'smooth',block:'center'});const i=f.querySelector('input');if(i)i.focus({preventScroll:true})}},60)};
+
+ACT['to-top']=()=>{window.scrollTo({top:0,behavior:'smooth'});const v=document.querySelector('.main');if(v&&v.scrollTo)v.scrollTo({top:0,behavior:'smooth'})};
+
+/* ----- account menu (avatar) ----- */
+ACT.umenu=()=>{const p=document.querySelector('.umpop'),b=document.querySelector('.avbtn');if(!p)return;const open=p.hidden;p.hidden=!open;if(b)b.setAttribute('aria-expanded',String(open))};
+document.addEventListener('click',e=>{if(e.target.closest('.umenu'))return;const p=document.querySelector('.umpop');if(p&&!p.hidden){p.hidden=true;const b=document.querySelector('.avbtn');if(b)b.setAttribute('aria-expanded','false')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const p=document.querySelector('.umpop');if(p&&!p.hidden){p.hidden=true;const b=document.querySelector('.avbtn');if(b){b.setAttribute('aria-expanded','false');b.focus()}}}});
+
+/* ----- sample data: fills the empty modules so the app looks alive; every sample record has an id starting with smp_ so it can be removed in one tap ----- */
+const SMP='smp_',isSmp=x=>typeof x.id==='string'&&x.id.startsWith(SMP);
+function sampleData(){
+ const at=(d,h,mi=0)=>{const x=new Date();x.setDate(x.getDate()+d);x.setHours(h,mi,0,0);return x.toISOString()},sid=p=>uid(SMP+p),now=Date.now(),DAYMS=864e5;
+ const ev=(title,scene,d,h,venue,cat,fee,desc,o={})=>({id:sid('e'),title,scene,date:at(d,h),venue,category:cat,fee,desc,featured:true,rsvps:{},cover:null,photos:[],capacity:0,...o});
+ const out={};
+ out.notices=[
+  ['Water tank cleaning','Maintenance','high',true,-1,'The overhead tanks will be cleaned between 9 am and 3 pm. Water supply will be interrupted, so please store water for essential use.'],
+  ['Annual General Meeting notice','Finance','high',true,-3,'The AGM is at 11 am in the Clubhouse Hall. Agenda: audited accounts, budget, election of committee members and open floor.'],
+  ['Visitor pre-approval is now mandatory','Security','normal',false,-6,'Please pre-approve expected visitors and delivery partners in the Visitors section. Security will ask for the six digit code at the gate.'],
+  ['Lift servicing','Maintenance','normal',false,-8,'One lift will be out of service from 10 am to 1 pm for the quarterly service. The second lift runs as usual.'],
+  ['Festive decoration guidelines','Emergency','high',false,-10,'Please do not use open flames in corridors and staircases. Electric lights are allowed on balconies until 11 pm.'],
+  ['Parking sticker renewal','General','normal',false,-14,'Residents with expired parking stickers should apply at the society office with a copy of the vehicle RC.']
+ ].map(([t,c,p,pin,d,b])=>({id:sid('n'),title:t,body:b,category:c,priority:p,pinned:pin,date:at(d,10),author:'Society Office',readBy:[],attachment:null}));
+ out.events=[
+  ev('Yoga and Wellness Morning','yoga',3,6,'Central Lawn','Wellness',0,'A guided one hour yoga and breathing session for all ages. Bring your own mat.'),
+  ev('Sports Fest','sports',9,8,'Sports Court','Sports',100,'Badminton, box cricket, table tennis and a kids relay. Fee covers refreshments and trophies.'),
+  ev('Annual Day Cultural Evening','night',16,18,'Amphitheatre','Cultural',0,'Dance, music and skits by residents of all ages. Dinner follows the show.'),
+  ev('Annual General Meeting','meeting',25,11,'Clubhouse Hall','Meeting',0,'Presentation of accounts, budget, committee election and open floor. Every flat has one vote.',{featured:false}),
+  ev('Kids Fair and Carnival','kids',32,16,'Central Lawn','Festival',150,'Stalls, games, a puppet show and a food court run by residents.'),
+  ev('New Year Gala Night','festival',45,20,'Amphitheatre and Clubhouse','Festival',600,'Live band, dinner buffet and a midnight countdown. Family passes are limited.',{capacity:300})
+ ].map(e=>({...e,attachment:null}));
+ out.schedule=[['Water tank cleaning',4,9,'maintenance','Supply off 9 am to 3 pm'],['Lift servicing',6,10,'maintenance','One lift out of service'],['Committee meeting',7,19,'meeting','Clubhouse office'],['DG set load test',8,11,'maintenance','Short power cut, 20 minutes'],['Pest control',12,10,'maintenance','Keep kitchen cabinets open']].map(([t,d,h,k,n])=>({id:sid('s'),title:t,date:at(d,h),kind:k,note:n}));
+ out.amenities=[
+  {id:sid('am'),name:'Banquet Hall',rate:3000,unit:'per slot',capacity:120,hours:'8 am to 11 pm',desc:'Air conditioned hall with a pantry and stage.',scene:'festival'},
+  {id:sid('am'),name:'Tennis Court',rate:150,unit:'per hour',capacity:4,hours:'6 am to 9 pm',desc:'Floodlit synthetic court. Racquets at the desk.',scene:'sports'},
+  {id:sid('am'),name:'Swimming Pool',rate:0,unit:'free for residents',capacity:40,hours:'6 am to 9 am, 4 pm to 8 pm',desc:'Swim cap compulsory. Lifeguard on duty.',scene:'yoga'},
+  {id:sid('am'),name:'Guest Room',rate:1200,unit:'per night',capacity:3,hours:'Check-in 12 pm',desc:'Rooms for visiting relatives. Book two days ahead.',scene:'garden'}];
+ out.polls=[
+  {id:sid('p'),question:'Should we install solar panels on the roofs?',options:[{t:'Yes, go ahead'},{t:'Yes, after the AGM discussion'},{t:'No'}],votes:{},closes:at(12,23),status:'open',by:'Committee'},
+  {id:sid('p'),question:'Preferred time for the weekly yoga class',options:[{t:'5:30 am'},{t:'6:30 am'},{t:'7:30 am'}],votes:{},closes:at(20,23),status:'open',by:'Committee'}];
+ out.docs=[['Society Bye-laws','Bye-laws',-400,'Registered bye-laws: renovation, pets, parking and common areas.'],['Audited Accounts','Audit',-60,'Income and expenditure statement, balance sheet and auditor remarks.'],['Proxy form for AGM','Forms',-3,'Fill and hand over to the office before the meeting.'],['Fire safety and evacuation plan','Circulars',-90,'Assembly points, extinguisher locations and emergency numbers.']].map(([t,ty,d,ds])=>({id:sid('d'),title:t,type:ty,date:at(d,0),desc:ds,link:''}));
+ out.contacts=[['Main Gate Security','24 x 7 desk','9876543210','Society'],['Society Office','10 am to 6 pm','9876543211','Society'],['Plumber','Mr. Biswas','9876543212','Services'],['Electrician','Rafiq Electricals','9876543213','Services'],['Lift Care Service','Lift AMC','9876543214','Services'],['Housekeeping','CleanPro agency','9876543215','Services']].map(([n,r,p,c])=>({id:sid('t'),name:n,role:r,phone:p,cat:c}));
+ const ent=[];[0,1,2].forEach(i=>{const d=new Date();d.setMonth(d.getMonth()-i);const iso=k=>new Date(d.getFullYear(),d.getMonth(),k,12).toISOString();
+  [['Salaries','Security and housekeeping staff',62000],['Electricity','Common area electricity',28000],['Lift AMC','Lift maintenance',9500],['Water','Tanker and treatment',11000],['Garden','Gardener and supplies',4500]].forEach(([c,t,a],j)=>ent.push({id:sid('x'),date:iso(3+j),category:c,desc:t,amount:a+i*350,type:'expense'}));
+  ent.push({id:sid('x'),date:iso(11),category:'Hall rent',desc:'Banquet hall bookings',amount:6000+i*1500,type:'income'})});
+ out.entries=ent.filter(e=>+new Date(e.date)<=now);
+ /* these need a real resident, so they are added only when one exists */
+ const res=(DB.users||[]).find(u=>u.status==='approved'&&u.role!=='admin');
+ if(res){
+  out.complaints=[{id:sid('c'),userId:res.id,category:'Plumbing',title:'Water leakage from bathroom ceiling',body:'Seepage in the bathroom ceiling since two days.',priority:'normal',status:'in-progress',assignee:'Mr. Biswas, plumber',created:now-2*DAYMS,comments:[{by:'Society Office',text:'Plumber will visit tomorrow morning.',at:now-DAYMS,admin:true}]},
+   {id:sid('c'),userId:res.id,category:'Lift',title:'Lift making noise between floors',body:'Grinding sound between floors 5 and 6.',priority:'high',status:'open',assignee:'',created:now-5*3600e3,comments:[]}];
+  out.ads=[{id:sid('a'),userId:res.id,business:'FreshBite Cloud Kitchen',title:'Home style tiffin, lunch and dinner',body:'Weekly menu on WhatsApp. Free delivery inside the society.',category:'Food',contact:'98765 00009',price:'From ₹120 per meal',type:'banner',weeks:2,fee:1000,feePaid:true,status:'live',hue:'#2FA39B',created:now-5*DAYMS},
+   {id:sid('a'),userId:res.id,business:'',title:'Dining table, 6 seater, teak',body:'Two years old, very good condition.',category:'Buy and Sell',contact:'98765 00007',price:'₹14,000',type:'classified',weeks:0,fee:0,feePaid:true,status:'live',hue:'#C77A0A',created:now-2*DAYMS}]}
+ return out}
+ACT['sample-add']=async()=>{
+ if(!isAdmin())return;const data=sampleData();let n=0;
+ for(const k of Object.keys(data)){if(!Array.isArray(DB[k]))DB[k]=[];const have=new Set(DB[k].map(x=>x.id));const add=data[k].filter(x=>!have.has(x.id));DB[k].unshift(...add);n+=add.length}
+ logAct('Added sample data');save();
+ if(REMOTE){const rej=await flushWait();if(rej.length)return}
+ render(true);toast(n+' sample records added across notices, events, forecast, amenities, polls, documents, directory and accounts.')};
+ACT['sample-clear']=async()=>{
+ if(!isAdmin())return;let n=0;
+ for(const k of Object.keys(DB)){if(!Array.isArray(DB[k]))continue;const keep=DB[k].filter(x=>!(x&&isSmp(x)));n+=DB[k].length-keep.length;DB[k]=keep}
+ save();if(REMOTE){const rej=await flushWait();if(rej.length)return}
+ render(true);toast(n?n+' sample records removed.':'No sample records to remove.')};
+/* ===== Security desk: guards log visitors with a photo, residents approve or deny, like a gate app ===== */
+const isGuard=()=>{const m=me();return !!m&&m.role==='security'};
+const GATE_PURPOSES=['Guest','Delivery','Cab or taxi','Service or repair','Staff or maid','Other'];
+const agoShort=t=>{const s=Math.max(0,Math.floor((Date.now()-+D(t))/1000));return s<60?'just now':s<3600?Math.floor(s/60)+' min ago':s<86400?Math.floor(s/3600)+' h ago':fdate(t)};
+const vFlat=v=>v.flat||uflat(v.userId);
+const vThumb=(v,cls='vthumb')=>v.photo?`<img class="${cls}" src="${esc(v.photo)}" alt="Photo of ${esc(v.name)}" data-act="v-photo" data-id="${esc(v.id)}">`:`<span class="${cls} noimg" aria-hidden="true">${ic('visitor')}</span>`;
+ACT['v-photo']=d=>{const v=DB.visitors.find(x=>x.id===d.id);if(!v||!v.photo)return;modal(esc(v.name),`<img class="vbig" src="${esc(v.photo)}" alt="Photo of ${esc(v.name)}"><p class="muted" style="margin:10px 0 0">${esc(v.purpose)} · Flat ${esc(vFlat(v))} · ${esc(agoShort(v.date))}</p>`)};
+
+/* ---------- photo capture ---------- */
+let GPHOTO='';
+function shrinkPhoto(file){return new Promise((ok,bad)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{try{let max=480,q=.62,out='';for(let n=0;n<6;n++){const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*k));c.height=Math.max(1,Math.round(img.height*k));c.getContext('2d').drawImage(img,0,0,c.width,c.height);out=c.toDataURL('image/jpeg',q);if(out.length<=70000)break;max=Math.round(max*.8);q=Math.max(.4,q-.06)}URL.revokeObjectURL(url);out.length<=88000?ok(out):bad(new Error('Photo is too large'))}catch(e){bad(e)}};img.onerror=()=>{URL.revokeObjectURL(url);bad(new Error('Could not read that photo'))};img.src=url})}
+const photoField=()=>`<div class="fld full"><span>Visitor photo</span><div class="phbox" id="g_phbox"><div class="phprev" id="g_prev">${ic('camera')}<small>No photo yet</small></div><div class="stack" style="gap:8px"><button type="button" class="btn pri" data-act="g-snap">${ic('camera')}<span id="g_snaplbl">Take photo</span></button><small class="muted">Opens the camera. Ask the visitor to face you.</small></div><input type="file" id="g_file" accept="image/*" capture="environment" hidden></div></div>`;
+ACT['g-snap']=()=>{const f=$('#g_file');if(f)f.click()};
+document.addEventListener('change',async e=>{const t=e.target;if(!t||t.id!=='g_file'||!t.files||!t.files[0])return;
+ try{GPHOTO=await shrinkPhoto(t.files[0]);const p=$('#g_prev');if(p)p.innerHTML=`<img src="${GPHOTO}" alt="Visitor photo preview">`;const l=$('#g_snaplbl');if(l)l.textContent='Retake photo'}catch(er){toast(er.message,'x')}t.value=''});
+
+/* ---------- guard: new visitor ---------- */
+ACT['g-new']=()=>{GPHOTO='';modal('New visitor',formWrap('gnew',
+ F.s('g_flat','Going to flat',[['','Choose a flat...']].concat(approvedFlats().sort((a,b)=>flatKey(a).localeCompare(flatKey(b),undefined,{numeric:true})).map(u=>[u.id,flatKey(u)+' · '+u.name])),{cls:'full'})+
+ F.t('g_name','Visitor name',{req:true,cls:'full',ph:'Name of the visitor'})+
+ F.t('g_phone','Visitor mobile (optional)',{attrs:'inputmode="tel" maxlength="12"',ph:'98765 43210'})+
+ F.s('g_purpose','Purpose',GATE_PURPOSES.map(x=>[x,x]))+
+ F.t('g_veh','Vehicle number (optional)',{cls:'full',ph:'MH 12 AB 1234'})+photoField(),'Ask resident'),{wide:1})};
+FORMS.gnew=async d=>{
+ if(!d.g_flat)return fErr('Choose the flat this visitor is going to.');
+ if(d.g_name.trim().length<2)return fErr('Enter the visitor name.');
+ if(!GPHOTO&&!confirm('No photo taken. Send the request without a photo?'))return;
+ const u=DB.users.find(x=>x.id===d.g_flat);if(!u)return fErr('That flat was not found.');
+ const v={id:uid('v'),userId:u.id,flat:flatKey(u),name:d.g_name.trim(),phone:(d.g_phone||'').replace(/\D/g,''),purpose:d.g_purpose,vehicle:(d.g_veh||'').trim(),photo:GPHOTO,date:new Date().toISOString(),code:'',status:'waiting',byName:me().name,by:me().id};
+ DB.visitors.unshift(v);if(!REMOTE)notify(u.id,`${v.name} (${v.purpose}) is at the gate for ${flatKey(u)}. Open Visitors to approve or deny.`,'visitors');
+ save();
+ if(REMOTE){const rej=await flushWait();if(rej.length)return}
+ GPHOTO='';closeModal();UI.tab='wait';render();toast('Request sent to '+flatKey(u)+'. Waiting for their answer.')};
+const gSet=(id,s,msg)=>{const v=DB.visitors.find(x=>x.id===id);if(!v)return;v.status=s;if(s==='entered')v.entryAt=Date.now();if(s==='exited')v.exitAt=Date.now();if(!REMOTE&&s==='entered')notify(v.userId,`${v.name} has entered the gate.`,'visitors');save();render();if(msg)toast(msg)};
+ACT['g-enter']=d=>gSet(d.id,'entered','Entry recorded');
+ACT['g-exit']=d=>gSet(d.id,'exited','Exit recorded');
+ACT['g-cancel']=d=>gSet(d.id,'cancelled','Request withdrawn');
+
+/* ---------- guard desk page ---------- */
+const GTABS=[['wait','At gate'],['inside','Inside'],['expected','Expected'],['log','History']];
+function gateCard(v){
+ const st=v.status,who=`Flat ${esc(vFlat(v))}${v.flat?'':' · '+esc(uname(v.userId))}`;
+ const act=st==='waiting'?btn('Withdraw','g-cancel',{sm:1,d:{id:v.id}}):(st==='approved'||st==='expected')?btn('Allow entry','g-enter',{sm:1,c:'good',i:'check',d:{id:v.id}}):st==='entered'?btn('Mark exit','g-exit',{sm:1,i:'logout',d:{id:v.id}}):'';
+ const note=st==='waiting'?`<span class="pulse">Waiting for ${esc(vFlat(v))} to answer</span>`:st==='denied'?'<b class="bad-t">Resident denied. Do not allow.</b>':st==='approved'?'<b class="good-t">Approved. You can let them in.</b>':st==='entered'&&v.entryAt?`<span>In at ${esc(ftime(v.entryAt))}</span>`:st==='exited'&&v.exitAt?`<span>${esc(ftime(v.entryAt||v.date))} to ${esc(ftime(v.exitAt))}</span>`:'';
+ return`<div class="gcard ${st}">${vThumb(v,'vthumb lg')}<div class="sp" style="min-width:0"><h4>${esc(v.name)}</h4><p>${esc(v.purpose)}${v.vehicle?' · '+esc(v.vehicle):''}${v.phone?' · '+esc(v.phone):''}</p><div class="meta">${sChip(st)}<b>${who}</b><span>${esc(agoShort(v.date))}</span></div>${note?`<div class="gnote">${note}</div>`:''}</div><div class="gact">${act}</div></div>`}
+ROUTES.gate=()=>{
+ const tab=GTABS.some(t=>t[0]===UI.tab)?UI.tab:'wait',all=DB.visitors.slice().sort((a,b)=>D(b.date)-D(a.date)),day0=new Date();day0.setHours(0,0,0,0);
+ const recent=v=>Date.now()-(v.decidedAt||+D(v.date))<2*3600e3,wait=all.filter(v=>v.status==='waiting'||v.status==='approved'||(v.status==='denied'&&recent(v))),inside=all.filter(v=>v.status==='entered'),exp=all.filter(v=>v.status==='expected'&&+D(v.date)<=Date.now()+864e5),log=all.filter(v=>['exited','cancelled'].includes(v.status)||(v.status==='denied'&&!recent(v)));
+ const sets={wait,inside,expected:exp,log},list=sets[tab];
+ const kp=(n,l,t,w)=>`<button class="gk ${tab===t?'on':''} ${w&&n?'warn':''}" data-act="tab" data-v="${t}"><b>${n}</b><span>${l}</span></button>`;
+ return head('Security desk','Log every visitor, take a photo and ask the resident to approve.',btn('New visitor','g-new',{c:'pri',i:'plus'}))+
+ `<div class="gkpis">${kp(wait.length,'At gate','wait',1)}${kp(inside.length,'Inside now','inside')}${kp(exp.length,'Expected','expected')}${kp(all.filter(v=>+D(v.date)>=+day0).length,'Today','log')}</div>`+
+ `<div class="card"><h3>${ic('shield')}Pre-approved visitor</h3><form data-form="gate" class="row wrap-r" style="align-items:flex-end"><label class="fld" style="width:200px"><span>Visitor code</span><input id="g_code" name="g_code" inputmode="numeric" maxlength="6" placeholder="6 digit code" required></label><button class="btn pri" type="submit">Check code</button></form></div>`+
+ `<div class="filters">${GTABS.map(([t,l])=>`<button class="pill ${tab===t?'on':''}" data-act="tab" data-v="${t}">${l} (${t==='wait'?wait.length:t==='inside'?inside.length:t==='expected'?exp.length:log.length})</button>`).join('')}</div>`+
+ `<div class="stack">${list.length?list.slice(0,80).map(gateCard).join(''):empty('visitor',tab==='wait'?'Nobody is at the gate':tab==='inside'?'No visitors inside':tab==='expected'?'No pre-approved visitors':'No history yet',tab==='wait'?'Tap New visitor when someone arrives at the gate.':'')}</div>`};
+
+/* ---------- resident: approve or deny ---------- */
+ACT['v-decide']=d=>{const v=DB.visitors.find(x=>x.id===d.id);if(!v||v.status!=='waiting'){closeModal();render();return toast('This request was already answered.','info')}
+ v.status=d.s;v.decidedAt=Date.now();v.decidedBy=me().name;if(!REMOTE)notify('security',`${vFlat(v)} ${d.s==='approved'?'approved':'denied'} ${v.name}.`,'gate');save();closeModal();render();toast(d.s==='approved'?'Approved. Security will let '+v.name+' in.':'Denied. Security has been told.')};
+const waitCard=v=>`<div class="gcard waiting big">${vThumb(v,'vthumb xl')}<div class="sp" style="min-width:0"><span class="pulse">At the gate now</span><h4>${esc(v.name)}</h4><p>${esc(v.purpose)}${v.vehicle?' · '+esc(v.vehicle):''}${v.phone?' · '+esc(v.phone):''}</p><div class="meta"><span>${esc(agoShort(v.date))}</span>${v.byName?`<span>Security: ${esc(v.byName)}</span>`:''}</div><div class="row" style="gap:10px;margin-top:12px;flex-wrap:wrap">${btn('Approve','v-decide',{c:'good',i:'check',d:{id:v.id,s:'approved'}})}${btn('Deny','v-decide',{c:'bad',i:'x',d:{id:v.id,s:'denied'}})}</div></div></div>`;
+const alertsCard=()=>('Notification' in window&&Notification.permission==='default')?`<div class="card flat row" style="gap:12px;align-items:center;flex-wrap:wrap"><div class="sp"><b>Get gate alerts on this device</b><p class="muted" style="margin:2px 0 0">Allow notifications so you hear about visitors while this page is open.</p></div>${btn('Allow alerts','alerts-on',{sm:1,c:'pri',i:'bell'})}</div>`:'';
+ACT['alerts-on']=async()=>{try{await Notification.requestPermission()}catch(e){}render()};
+
+/* ---------- live alerts: pop-up for residents, sound for guards ---------- */
+const SEEN_V=new Set(),GSTAT={};
+function beep(){try{const A=window.AudioContext||window.webkitAudioContext,c=new A(),o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=880;g.gain.value=.12;o.connect(g);g.connect(c.destination);o.start();setTimeout(()=>{o.frequency.value=1175},140);setTimeout(()=>{o.stop();c.close()},320)}catch(e){}try{navigator.vibrate&&navigator.vibrate([180,80,180])}catch(e){}}
+function gateAlerts(){
+ if(!DB||!SES||isAdmin())return;const m=me();if(!m)return;
+ if(isGuard()){DB.visitors.forEach(v=>{const was=GSTAT[v.id];GSTAT[v.id]=v.status;if(was==='waiting'&&(v.status==='approved'||v.status==='denied')){beep();toast(`${vFlat(v)} ${v.status==='approved'?'approved':'denied'} ${v.name}`,v.status==='approved'?'':'x')}});return}
+ const w=DB.visitors.filter(v=>v.status==='waiting'&&!SEEN_V.has(v.id));if(!w.length)return;
+ const mr=$('#modal-root');if(mr&&mr.classList.contains('open'))return;
+ const v=w[0];SEEN_V.add(v.id);beep();
+ if('Notification' in window&&Notification.permission==='granted'&&document.hidden){try{new Notification(`${v.name} is at the gate`,{body:`${v.purpose}. Open the app to approve or deny.`})}catch(e){}}
+ setTimeout(()=>modal('Visitor at the gate',`<div class="stack" style="align-items:center;text-align:center">${vThumb(v,'vthumb huge')}<div><h3 style="margin:0">${esc(v.name)}</h3><p class="muted" style="margin:4px 0 0">${esc(v.purpose)}${v.vehicle?' · '+esc(v.vehicle):''}${v.phone?' · '+esc(v.phone):''}</p></div><div class="row" style="gap:10px;justify-content:center;flex-wrap:wrap">${btn('Approve','v-decide',{c:'good',i:'check',d:{id:v.id,s:'approved'}})}${btn('Deny','v-decide',{c:'bad',i:'x',d:{id:v.id,s:'denied'}})}</div></div>`),60)}
+/* check every few seconds so a guard and a resident see each other's answer quickly */
+if(typeof document!=='undefined')setInterval(()=>{if(SES&&REMOTE&&TOKEN&&!document.hidden)pollRemote()},6000);
+
+/* ---------- admin: security staff ---------- */
+const guards=()=>DB.users.filter(u=>u.role==='security');
+function guardCard(u){const on=u.status==='staff';return`<div class="card"><div class="row" style="gap:12px;align-items:center"><span class="av">${initials(u.name)}</span><div class="sp"><h4 style="margin:0">${esc(u.name)}</h4><small class="muted">Mobile ${esc(u.mobile)} · ${on?'Active':'Disabled'}</small></div>${chip(on?'Active':'Disabled',on?'good':'bad')}</div><div class="row" style="gap:8px;margin-top:12px;flex-wrap:wrap">${btn('Reset password','reset-pw',{sm:1,i:'lock',d:{id:u.id}})}${btn(on?'Disable':'Enable','g-toggle',{sm:1,d:{id:u.id}})}</div></div>`}
+ACT['g-toggle']=d=>{const u=DB.users.find(x=>x.id===d.id);if(!u)return;u.status=u.status==='staff'?'rejected':'staff';logAct((u.status==='staff'?'Enabled':'Disabled')+' security guard '+u.name);save();render();toast(u.status==='staff'?'Guard enabled':'Guard disabled')};
+ACT['guard-new']=()=>modal('Add a security guard',formWrap('guardnew',F.t('gd_name','Full name',{req:true,cls:'full'})+F.t('gd_mobile','Mobile number (used to sign in)',{attrs:'inputmode="tel" maxlength="10"',req:true})+F.t('gd_pw','Password',{type:'password',req:true,ph:'At least 6 characters'}),'Add guard'));
+FORMS.guardnew=async d=>{const name=d.gd_name.trim(),mob=d.gd_mobile.trim();
+ if(name.length<3)return fErr('Enter the guard\'s full name.');if(!/^[6-9]\d{9}$/.test(mob))return fErr('Enter a valid 10 digit mobile number.');if((d.gd_pw||'').length<6)return fErr('Password needs at least 6 characters.');
+ if(DB.users.some(u=>u.mobile===mob))return fErr('This mobile number is already used by another account.');
+ if(REMOTE){try{await api('/api/admin/security',{method:'POST',body:{name,mobile:mob,password:d.gd_pw}});const r=await api('/api/state');adopt(r.db,r.rev)}catch(e){return fErr(e.message)}}
+ else{DB.users.push({id:uid('g'),name,tower:'',flat:'',mobile:mob,email:'',type:'Security',passHash:await sha(d.gd_pw),status:'staff',role:'security',title:'Security',members:1,vehicle:'',showPhone:false,ref:'',created:Date.now()});logAct('Added security guard '+name);save()}
+ closeModal();UI.tab='security';render();toast('Guard added. They sign in with their mobile number.')};
 /* ========== admin views + app wiring ========== */
 ROUTES.admin=()=>{const c=collection(mkey()),pend=DB.users.filter(u=>u.status==='pending'),ver=DB.bills.filter(b=>b.status==='verifying'),bk=DB.bookings.filter(b=>b.status==='pending'),ads=DB.ads.filter(a=>a.status==='pending'),open=DB.complaints.filter(x=>x.status==='open');
  const q=(i,t,n,link)=>`<a class="kpi ${n?'warn':''}" href="#${link}"><span class="k-ic">${ic(i)}</span><div><b data-count="${n}">0</b><small>${t}</small></div></a>`;
@@ -1327,8 +1803,8 @@ ROUTES.admin=()=>{const c=collection(mkey()),pend=DB.users.filter(u=>u.status===
 function memberCard(u){const dup=DB.users.find(x=>x.id!==u.id&&x.status==='approved'&&x.tower===u.tower&&x.flat===u.flat&&x.type==='Owner'),pm=DB.users.some(x=>x.id!==u.id&&x.mobile===u.mobile);
  return`<div class="notice" style="cursor:default"><span class="av" style="width:44px;height:44px;flex:none">${initials(u.name)}</span><div class="sp" style="min-width:0"><h4>${esc(u.name)}</h4><p style="-webkit-line-clamp:3">${esc(flatKey(u))} · ${esc(u.type)} · ${u.members} member${u.members>1?'s':''} · ${esc(u.mobile)}${u.email?' · '+esc(u.email):''}${u.ref?' · Proof: '+esc(u.ref):''}</p><div class="meta">${sChip(u.status)}${u.role==='committee'?chip(esc(u.title||'Committee'),'brand'):''}<span>Requested ${rel(u.created)}</span>${dup&&u.type==='Owner'?chip('Flat has an owner already','bad'):''}</div>
  <div class="row wrap-r" style="margin-top:10px">${u.status==='pending'?btn('Approve','approve',{sm:1,c:'good',i:'check',d:{id:u.id}})+btn('Reject','reject',{sm:1,c:'bad',i:'x',d:{id:u.id}}):u.status==='approved'?btn('Make committee','committee',{sm:1,d:{id:u.id}})+(REMOTE?btn('Reset password','reset-pw',{sm:1,d:{id:u.id}}):'')+btn('Remove access','reject',{sm:1,c:'bad',d:{id:u.id}}):btn('Approve now','approve',{sm:1,c:'good',d:{id:u.id}})}</div></div></div>`}
-ROUTES.members=()=>{const tab=UI.tab||'pending';let l=DB.users.filter(u=>u.status===tab);if(UI.q)l=l.filter(u=>(u.name+flatKey(u)+u.mobile).toLowerCase().includes(UI.q.toLowerCase()));const cnt=s=>DB.users.filter(u=>u.status===s).length;
- return head('Members','Approve flat registrations and manage resident access.')+`<div class="filters">${['pending','approved','rejected'].map(t=>`<button class="pill ${tab===t?'on':''}" data-act="tab" data-v="${t}">${t[0].toUpperCase()+t.slice(1)} (${cnt(t)})</button>`).join('')}<div class="search">${ic('search')}<input id="q" value="${esc(UI.q)}" placeholder="Name, flat or mobile" data-input="q" aria-label="Search members"></div></div><div class="grid g2">${l.length?l.slice(0,60).map(memberCard).join(''):empty(tab==='pending'?'check':'users','Nothing here',tab==='pending'?'All registration requests are handled.':'')}</div>`};
+ROUTES.members=()=>{const tab=UI.tab||'pending';if(tab==='security')return head('Members','Security guards sign in with their mobile number and log visitors at the gate.',btn('Add guard','guard-new',{c:'pri',i:'plus'}))+`<div class="filters">${['pending','approved','rejected','security'].map(t=>`<button class="pill ${tab===t?'on':''}" data-act="tab" data-v="${t}">${t==='security'?'Security':t[0].toUpperCase()+t.slice(1)} (${t==='security'?guards().length:DB.users.filter(u=>u.status===t&&u.role!=='security').length})</button>`).join('')}</div><div class="grid g2">${guards().length?guards().map(guardCard).join(''):empty('shield','No security guards yet','Add a guard so visitors can be logged at the gate.')}</div>`;let l=DB.users.filter(u=>u.status===tab&&u.role!=='security');if(UI.q)l=l.filter(u=>(u.name+flatKey(u)+u.mobile).toLowerCase().includes(UI.q.toLowerCase()));const cnt=s=>DB.users.filter(u=>u.status===s&&u.role!=='security').length;
+ return head('Members','Approve flat registrations and manage resident access.')+`<div class="filters">${['pending','approved','rejected','security'].map(t=>`<button class="pill ${tab===t?'on':''}" data-act="tab" data-v="${t}">${t==='security'?'Security':t[0].toUpperCase()+t.slice(1)} (${t==='security'?guards().length:cnt(t)})</button>`).join('')}<div class="search">${ic('search')}<input id="q" value="${esc(UI.q)}" placeholder="Name, flat or mobile" data-input="q" aria-label="Search members"></div></div><div class="grid g2">${l.length?l.slice(0,60).map(memberCard).join(''):empty(tab==='pending'?'check':'users','Nothing here',tab==='pending'?'All registration requests are handled.':'')}</div>`};
 ACT.approve=d=>{const u=DB.users.find(x=>x.id===d.id);if(u.type==='Owner'&&DB.users.some(x=>x.id!==u.id&&x.status==='approved'&&x.type==='Owner'&&x.tower===u.tower&&x.flat===u.flat)&&!d.force){return modal('Flat already has an owner',`<div class="stack"><p>${esc(flatKey(u))} already has an approved owner. Approving ${esc(u.name)} as a second owner is usually for co-owners. Continue?</p><div class="row" style="justify-content:flex-end">${btn('Cancel','close-modal')}${btn('Approve anyway','approve',{c:'pri',d:{id:u.id,force:1}})}</div></div>`)}
  u.status='approved';u.reason='';const n=DB.bills.some(b=>b.flat===flatKey(u)&&b.month===mkey())?0:genBills(mkey());notify(u.id,`Welcome to ${DB.settings.name}! Your registration for ${flatKey(u)} is approved.`,'home');logAct(`Approved ${u.name} (${flatKey(u)})`);save();closeModal();render();toast(`${u.name.split(' ')[0]} approved${n?'. Bill generated for this month':''}`)};
 ACT.reject=d=>{const u=DB.users.find(x=>x.id===d.id);modal((u.status==='approved'?'Remove access for ':'Reject ')+esc(u.name),formWrap('reject',hid(u.id)+F.t('rj_reason','Reason (shown to the resident)',{cls:'full',ph:'Could not verify ownership documents'}),u.status==='approved'?'Remove access':'Reject request'))};
@@ -1354,10 +1830,10 @@ FORMS.cash=d=>{const b=DB.bills.find(x=>x.id===d.id);b.lateFee=lateFee(b);b.stat
 
 /* ----- setup ----- */
 ROUTES.setup=()=>{const s=DB.settings;
- return head('Society setup','Details, charges and account security.')+`<div class="split"><div class="card"><h3>${ic('building')}Society details</h3>${formWrap('setup',F.t('s_name','Society name',{req:true,v:s.name,cls:'full'})+F.t('s_tag','Tagline',{v:s.tagline,cls:'full'})+F.t('s_addr','Address',{v:s.address,cls:'full'})+F.t('s_upi','UPI ID for collection',{v:s.upi,hint:'Residents see a QR for this ID.'})+F.t('s_upin','Name on UPI account',{v:s.upiName})+F.a('s_bank','Bank transfer details (optional)',{v:s.bank||'',cls:'full',ph:'A/c name, number, IFSC, branch'})+F.a('s_charges','Monthly charges, one per line as Label | Amount',{v:s.charges.map(c=>c.label+' | '+c.amt).join('\n'),cls:'full'})+F.t('s_due','Due day of month',{type:'number',v:s.dueDay,attrs:'min="1" max="28"'})+F.t('s_late','Late fee % per month',{type:'number',v:s.latePct,attrs:'min="0" max="20" step="0.5"'})+F.t('s_banner','Banner ad rate per week (₹)',{type:'number',v:s.adRates.banner}),'Save setup')}</div>
+ return head('Society setup','Details, charges and account security.')+`<div class="split"><div class="card"><h3>${ic('building')}Society details</h3>${formWrap('setup',F.t('s_name','Society name',{req:true,v:s.name,cls:'full'})+F.t('s_tag','Tagline',{v:s.tagline,cls:'full'})+F.t('s_addr','Address',{v:s.address,cls:'full'})+F.t('s_upi','UPI ID for collection',{v:s.upi,hint:'Residents see a QR for this ID.'})+F.t('s_upin','Name on UPI account',{v:s.upiName})+`<div class="full subcard"><h4>Bank account for maintenance</h4><div class="frm">`+F.t('b_holder','Account holder name',{v:(s.bankDetails||{}).holder,cls:'full'})+F.t('b_number','Account number',{v:(s.bankDetails||{}).number,attrs:'inputmode="numeric"'})+F.t('b_ifsc','IFSC code',{v:(s.bankDetails||{}).ifsc,ph:'HDFC0001234'})+F.t('b_bank','Bank name',{v:(s.bankDetails||{}).bank})+F.t('b_branch','Branch',{v:(s.bankDetails||{}).branch})+F.s('b_type','Account type',['Current','Savings'],{v:(s.bankDetails||{}).type||'Current'})+`</div><small>Residents see these details, with copy buttons, under Bank transfer when they pay.</small></div>`+`<div class="full subcard"><h4>Payment methods residents can use</h4><div class="stack" style="gap:6px">`+F.c('pm_upi','UPI (QR code and the UPI ID above)',(s.payMethods||{}).upi!==false)+F.c('pm_bank','Bank transfer (NEFT, IMPS, RTGS with the account above)',(s.payMethods||{}).bank!==false)+`</div></div>`+`<div class="full subcard"><h4>Sample data</h4><p class="muted" style="margin:0 0 10px">Fill notices, events, forecast, amenities, polls, documents, directory and accounts with example entries so every page looks alive. Remove them in one tap before you go live.</p><div class="row" style="flex-wrap:wrap;gap:8px"><button type="button" class="btn" data-act="sample-add">${ic('plus')}Add sample data</button><button type="button" class="btn" data-act="sample-clear">${ic('trash')}Remove sample data</button></div></div>`+F.a('s_charges','Monthly charges, one per line as Label | Amount',{v:s.charges.map(c=>c.label+' | '+c.amt).join('\n'),cls:'full'})+F.t('s_due','Due day of month',{type:'number',v:s.dueDay,attrs:'min="1" max="28"'})+F.t('s_late','Late fee % per month',{type:'number',v:s.latePct,attrs:'min="0" max="20" step="0.5"'})+F.t('s_banner','Banner ad rate per week (₹)',{type:'number',v:s.adRates.banner}),'Save setup')}</div>
  <div class="stack"><div class="card"><h3>${ic('lock')}Admin login</h3>${formWrap('adminpw',F.t('ap_user','Admin username',{v:adminName(),req:true,cls:'full'})+F.t('ap_old','Current password',{type:'password',req:true,cls:'full'})+F.t('ap_new','New password',{type:'password',req:true,cls:'full',hint:'At least 8 characters.'}),'Update admin login')}</div>
  <div class="card"><h3>${ic('upload')}Data</h3>${REMOTE?`<p class="muted" style="margin-bottom:12px">Everything is stored safely in the society database, so it is the same on every phone and computer. Download a copy any time. Passwords are never included.</p><div class="row wrap-r">${btn('Download backup','backup',{sm:1,i:'copy'})}</div>`:`<p class="muted" style="margin-bottom:12px">Everything is stored in this browser. Take a backup before clearing data or switching device.</p><div class="row wrap-r">${btn('Backup','backup',{sm:1,i:'copy'})}${btn('Restore','restore',{sm:1,i:'upload'})}${btn('Reload demo data','reset-demo',{sm:1,confirm:1})}${btn('Clear demo data','clear-demo',{sm:1,c:'bad',confirm:1})}</div>`}</div></div></div>`};
-FORMS.setup=d=>{const ch=d.s_charges.split('\n').map(l=>l.split('|')).filter(p=>p.length>=2&&+p[1]>0).map(p=>({label:p[0].trim(),amt:+p[1]}));if(!d.s_name.trim())return fErr('Society name is required.');if(!ch.length)return fErr('Add at least one charge, like: Maintenance | 2200');Object.assign(DB.settings,{name:d.s_name.trim(),tagline:d.s_tag.trim(),address:d.s_addr.trim(),upi:d.s_upi.trim(),upiName:d.s_upin.trim(),bank:d.s_bank.trim(),charges:ch,dueDay:Math.min(28,Math.max(1,+d.s_due||15)),latePct:+d.s_late||0});DB.settings.adRates.banner=+d.s_banner||0;save();render();toast('Setup saved')};
+FORMS.setup=d=>{const ch=d.s_charges.split('\n').map(l=>l.split('|')).filter(p=>p.length>=2&&+p[1]>0).map(p=>({label:p[0].trim(),amt:+p[1]}));if(!d.s_name.trim())return fErr('Society name is required.');const bd={holder:(d.b_holder||'').trim(),number:(d.b_number||'').replace(/\s+/g,''),ifsc:(d.b_ifsc||'').trim().toUpperCase(),bank:(d.b_bank||'').trim(),branch:(d.b_branch||'').trim(),type:d.b_type||'Current'};if(bd.number&&!/^\d{9,18}$/.test(bd.number))return fErr('The account number should be 9 to 18 digits.');if(bd.ifsc&&!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(bd.ifsc))return fErr('The IFSC code looks wrong. It is 4 letters, a zero, then 6 letters or digits.');if(!ch.length)return fErr('Add at least one charge, like: Maintenance | 2200');const pm={online:false,upi:!!d.pm_upi,bank:!!d.pm_bank};if(!pm.upi&&!pm.bank)return fErr('Keep at least one payment method switched on.');Object.assign(DB.settings,{name:d.s_name.trim(),tagline:d.s_tag.trim(),address:d.s_addr.trim(),upi:d.s_upi.trim(),upiName:d.s_upin.trim(),payMethods:pm,bankDetails:bd,bank:[bd.holder,bd.number&&'A/c '+bd.number,bd.ifsc&&'IFSC '+bd.ifsc,bd.bank,bd.branch].filter(Boolean).join(', '),charges:ch,dueDay:Math.min(28,Math.max(1,+d.s_due||15)),latePct:+d.s_late||0});DB.settings.adRates.banner=+d.s_banner||0;save();render();toast('Setup saved')};
 FORMS.adminpw=async d=>{if(REMOTE){if(d.ap_new.length<8)return fErr('New password needs at least 8 characters.');try{const r=await api('/api/auth/password',{method:'POST',body:{current:d.ap_old,next:d.ap_new,username:d.ap_user}});TOKEN=r.token;lsSet(AKEY,TOKEN);SES={...SES,username:d.ap_user.trim().toLowerCase()};setSes(SES);render();toast('Admin login updated')}catch(e){fErr(e.message)}return}if(await sha(d.ap_old)!==DB.settings.adminHash)return fErr('Current password is incorrect.');if(d.ap_new.length<8)return fErr('New password needs at least 8 characters.');DB.settings.adminUser=d.ap_user.trim();DB.settings.adminHash=await sha(d.ap_new);save();render();toast('Admin login updated')};
 ACT.backup=()=>modal('Backup',`<div class="stack"><p class="muted">Copy this text and keep it somewhere safe. Paste it into Restore to get your data back.</p><textarea id="bk" readonly style="width:100%;min-height:200px;font:12px monospace;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px">${esc(JSON.stringify(DB))}</textarea><div class="row" style="justify-content:flex-end"><button class="btn pri" data-act="copy" data-t="${esc(JSON.stringify(DB))}">${ic('copy')}Copy backup</button></div></div>`);
 ACT.restore=()=>modal('Restore backup',formWrap('restore',`<label class="fld full"><span>Paste backup text</span><textarea id="rs" name="rs" required style="min-height:200px"></textarea></label>`,'Restore'));

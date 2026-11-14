@@ -89,7 +89,7 @@ test('images must be small PNG, JPEG or WebP; a bad image is refused and the old
   for (const [what, patch] of [
     ['logo', { logo: 'data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=' }],
     ['logo', { logo: 'https://evil.example/logo.png' }],
-    ['logo', { logo: 'data:image/png;base64,' + 'A'.repeat(170000) }],
+    ['logo', { logo: 'data:image/png;base64,' + 'A'.repeat(420000) }],
     ['footer image', { footer: { ...full().footer, image: 'data:image/png;base64,' + 'A'.repeat(520000) } }]
   ]) {
     const r = await saveSite(admin, { ...full(), ...patch, content: { headline: 'SHOULD NOT SAVE' } });

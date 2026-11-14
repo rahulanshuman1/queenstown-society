@@ -8,8 +8,9 @@ const { bootstrap } = require('./lib/bootstrap');
 const rules = require('./lib/rules');
 const razorpayLib = require('./lib/razorpay');
 const payments = require('./lib/payments');
+const files = require('./lib/files');
 
-const { COLLS, HttpError, viewFor, publicView, applyChanges, flatKey, sanitize, str } = rules;
+const { COLLS, HttpError, viewFor, publicView, applyChanges, flatKey, sanitize, str, canAct } = rules;
 
 /* razorpay: pass a client to override (tests do), null to turn online payments off, leave out to read the environment. */
 function createApp({ store, config, razorpay }) {
@@ -58,7 +59,7 @@ function createApp({ store, config, razorpay }) {
   const needAdmin = u => { if (u.role !== 'admin') throw new HttpError(403, 'Admin only.'); };
 
   async function loadData() {
-    const data = { settings: { ...((await store.get('settings', 'settings')) || {}), payOnline: !!rzp } };
+    const data = { settings: { ...((await store.get('settings', 'settings')) || {}), payOnline: !!rzp, payTest: !!(rzp && rzp.testMode) } };
     for (const c of COLLS) data[c] = await store.all(c);
     return data;
   }
@@ -125,6 +126,7 @@ function createApp({ store, config, razorpay }) {
       const u = await actorOf(req);
       const b = await readJson(req);
       const result = await applyChanges(u, store, b.changes);
+      if (u.role === 'admin' && b.changes && (b.changes.notices || b.changes.events)) files.sweep(store).catch(e => console.error('file sweep', e));
       const fresh = await store.get('users', u.id);
       return [200, { db: viewFor(fresh || u, await loadData()), rejected: result.rejected, applied: result.applied, rev: await store.rev() }];
     },
@@ -162,6 +164,33 @@ function createApp({ store, config, razorpay }) {
       try { event = JSON.parse(raw.toString('utf8')); } catch (e) { throw new HttpError(400, 'Bad body.'); }
       await payments.handleWebhook({ store, event });
       return [200, { ok: true }];
+    },
+
+
+    /* ---- file attachments for notices and events ---- */
+    'POST /api/files': async (req) => {
+      const u = await actorOf(req); needAdmin(u);
+      // base64 is about a third bigger than the file, so allow a little over 5 MB x 4/3 here; files.check enforces the real limit
+      const b = await readJson(req, Math.ceil(files.FILE_MAX * 4 / 3) + 4096);
+      const file = await files.put(store, u.id, b);
+      return [201, { file }];
+    },
+
+    /* ---- security guards: only the admin creates them ---- */
+    'POST /api/admin/security': async (req) => {
+      const u = await actorOf(req); needAdmin(u);
+      const b = await readJson(req, 20000);
+      const name = str(b.name, 80).trim(), mobile = str(b.mobile, 10).trim(), pw = str(b.password, 200);
+      if (name.length < 3) throw new HttpError(400, 'Enter the guard\'s full name.');
+      if (!/^[6-9]\d{9}$/.test(mobile)) throw new HttpError(400, 'Enter a valid 10 digit mobile number.');
+      if (pw.length < 6) throw new HttpError(400, 'Password needs at least 6 characters.');
+      const users = await store.all('users');
+      if (users.some(x => x.mobile === mobile)) throw new HttpError(409, 'This mobile number is already used by another account.');
+      const g = { id: 'g' + crypto.randomBytes(6).toString('hex'), name, tower: '', flat: '', mobile, email: '', type: 'Security', status: 'staff', role: 'security',
+        title: 'Security', members: 1, vehicle: '', showPhone: false, ref: '', created: Date.now(), pass: await auth.hashPassword(pw), pwdAt: Date.now() };
+      await store.put('users', g);
+      await addNotifyAndLog(`Security guard ${name} was added`, 'members', `Added security guard ${name}`);
+      return [201, { id: g.id }];
     },
 
     'POST /api/auth/password': async (req) => {
@@ -211,14 +240,44 @@ function createApp({ store, config, razorpay }) {
       let params = null;
       const m = /^\/api\/admin\/users\/([A-Za-z0-9_-]{1,64})\/password$/.exec(path);
       if (!h && req.method === 'POST' && m) { params = { id: m[1] }; h = resetPassword; }
+      const fl = /^\/api\/files\/([A-Za-z0-9_-]{1,64})\/link$/.exec(path), fg = /^\/api\/files\/([A-Za-z0-9_-]{1,64})$/.exec(path);
+      if (!h && req.method === 'POST' && fl) { params = { id: fl[1] }; h = fileLink; }
+      if (!h && req.method === 'GET' && fg) return serveFile(req, res, fg[1], url);
       if (!h) return send(res, 404, { error: 'Not found.' });
       const [status, body] = await h(req, params);
       send(res, status, body);
     } catch (e) {
-      if (e instanceof HttpError) return send(res, e.status, { error: e.message });
+      if (e instanceof HttpError || (e && e.client && e.status)) return send(res, e.status, { error: e.message });
       console.error(e);
       send(res, 500, { error: 'Something went wrong on the server. Try again.' });
     }
+  }
+
+  /* A resident (or the admin) asks for a link to one file. The link is signed for that file only and expires in 10 minutes,
+     so it can be opened in a new tab, a PDF viewer or the Android download manager without sending the login token. */
+  async function fileLink(req, params) {
+    const u = await actorOf(req);
+    if (!canAct(u)) throw new HttpError(403, 'Your registration is not approved yet.');
+    const f = await files.get(store, params.id);
+    if (!f) throw new HttpError(404, 'That file is no longer available.');
+    const t = auth.sign({ ft: f.id, exp: Math.floor(Date.now() / 1000) + 600 }, config.jwtSecret);
+    return [200, { url: '/api/files/' + f.id + '?t=' + encodeURIComponent(t), inline: !!f.inline, name: f.name, mime: f.mime }];
+  }
+
+  async function serveFile(req, res, id, url) {
+    const pl = auth.verify(url.searchParams.get('t'), config.jwtSecret);
+    if (!pl || pl.ft !== id) return send(res, 403, { error: 'This link has expired. Open the file again.' });
+    const f = await files.get(store, id);
+    if (!f) return send(res, 404, { error: 'That file is no longer available.' });
+    const dl = url.searchParams.get('dl') === '1' || !f.inline;
+    res.writeHead(200, {
+      'Content-Type': f.mime, 'Content-Length': f.buf.length,
+      'Content-Disposition': (dl ? 'attachment; ' : 'inline; ') + files.dispositionName(f.name),
+      'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff',
+      'Content-Security-Policy': "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; sandbox",
+      'Cross-Origin-Resource-Policy': 'cross-origin'
+    });
+    res.end(f.buf);
   }
 
   async function resetPassword(req, params) {
