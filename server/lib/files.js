@@ -69,7 +69,7 @@ function cleanAtt(a) {
 /* Delete files that no notice, event or resident proof points to any more (and are older than the grace period). */
 async function sweep(store, now = Date.now()) {
   const used = new Set();
-  for (const c of ['notices', 'events', 'ads']) for (const d of await store.all(c)) if (d && d.attachment && d.attachment.id) used.add(d.attachment.id);
+  for (const c of ['notices', 'events', 'ads', 'docs']) for (const d of await store.all(c)) if (d && d.attachment && d.attachment.id) used.add(d.attachment.id);
   for (const u of await store.all('users')) if (u && u.proof && u.proof.id) used.add(u.proof.id);
   let n = 0;
   for (const f of await store.all('files')) {

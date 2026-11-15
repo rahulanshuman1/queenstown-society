@@ -249,7 +249,15 @@ const RULES = {
   bookings: {
     async upsert(c, ex, d) {
       if (c.admin) return { doc: d };
-      if (ex) return { err: 'You cannot change a booking. Cancel it and book again.' };
+      if (ex) {
+        // The owner of a booking with an unpaid fee can send the payment reference. Nothing else changes.
+        const ref = str(d.feeRef, 60).trim();
+        if (ex.userId === c.aid && ex.fee > 0 && !ex.feePaid && ref && ['pending', 'approved'].includes(ex.status)) {
+          const method = PAY_METHODS.includes(d.feeMethod) ? d.feeMethod : 'UPI';
+          return { doc: { ...ex, feeMethod: method, feeRef: ref, feeSubmittedOn: new Date(c.now).toISOString() } };
+        }
+        return { ok: true };
+      }
       const am = await c.store.get('amenities', str(d.amenityId, 64));
       if (!am) return { err: 'Unknown amenity.' };
       const date = iso(d.date);
@@ -259,7 +267,7 @@ const RULES = {
       const all = await c.store.all('bookings');
       // The browser sends local midnight of the chosen day, so the same day is the same instant.
       if (all.some(b => b.amenityId === am.id && b.slot === slot && b.status !== 'rejected' && +new Date(b.date) === +new Date(date))) return { err: 'That slot is already taken.' };
-      return { doc: { id: d.id, amenityId: am.id, userId: c.aid, date, slot, purpose: str(d.purpose, 200), status: 'pending', at: c.now } };
+      return { doc: { id: d.id, amenityId: am.id, userId: c.aid, date, slot, purpose: str(d.purpose, 200), status: 'pending', at: c.now, fee: Math.max(0, Number(am.rate) || 0), feePaid: !(Number(am.rate) > 0) } };
     },
     remove: (c, ex) => c.admin || (ex && ex.userId === c.aid) ? { ok: true } : { err: 'That booking is not yours.' }
   },
@@ -410,7 +418,11 @@ const RULES = {
     remove: c => c.admin ? { ok: true } : { skip: true }
   },
 
-  schedule: adminOnly, amenities: adminOnly, docs: adminOnly, contacts: adminOnly, entries: adminOnly
+  docs: {
+    async upsert(c, ex, d) { return c.admin ? { doc: { ...d, attachment: await attOf(c.store, d.attachment) } } : { err: 'Only the admin can change this.' }; },
+    remove: adminOnly.remove
+  },
+  schedule: adminOnly, amenities: adminOnly, contacts: adminOnly, entries: adminOnly
 };
 
 const SETTINGS_FIELDS = ['name', 'tagline', 'address', 'upi', 'upiName', 'bank', 'bankDetails', 'payMethods', 'charges', 'dueDay', 'latePct', 'penalty', 'adRates', 'demo', 'site'];

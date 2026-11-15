@@ -137,7 +137,7 @@ function createApp({ store, config, razorpay }) {
       const u = await actorOf(req);
       const b = await readJson(req);
       const result = await applyChanges(u, store, b.changes);
-      if (u.role === 'admin' && b.changes && (b.changes.notices || b.changes.events || b.changes.users || b.changes.ads)) files.sweep(store).catch(e => console.error('file sweep', e));
+      if (u.role === 'admin' && b.changes && (b.changes.notices || b.changes.events || b.changes.users || b.changes.ads || b.changes.docs)) files.sweep(store).catch(e => console.error('file sweep', e));
       const fresh = await store.get('users', u.id);
       return [200, { db: viewFor(fresh || u, await loadData()), rejected: result.rejected, applied: result.applied, rev: await store.rev() }];
     },
