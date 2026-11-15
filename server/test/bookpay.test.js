@@ -68,3 +68,13 @@ test('the admin can add a file to a document and it is kept; a resident cannot a
   await files.sweep(store, Date.now() + 3 * 3600e3);
   assert.ok(await store.get('files', f.id));
 });
+
+test('only the admin and committee members receive the accounts entries', async () => {
+  await store.put('entries', { id: 'x1', date: new Date().toISOString(), category: 'Hall rent', desc: 'x', amount: 100, type: 'income' });
+  const r = await resident('9876550010', '201'), c = await resident('9876550011', '202');
+  await sync(admin, { users: { upsert: [{ id: c.id, role: 'committee', title: 'Secretary' }] } });
+  const get = t => call('POST', '/api/sync', { changes: {} }, t).then(x => x.body.db.entries);
+  assert.equal((await get(r.token)).length, 0);
+  assert.equal((await get(c.token)).length, 1);
+  assert.equal((await get(admin)).length, 1);
+});

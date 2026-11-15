@@ -113,6 +113,9 @@ function viewFor(actor, data, now = Date.now()) {
       case 'notifs':
         list = admin ? rows : rows.filter(n => n.to === aid || n.to === 'all' || (guard && n.to === 'security'));
         break;
+      case 'entries':
+        list = admin || actor.role === 'committee' ? rows : [];
+        break;
       case 'log':
         list = admin ? rows : [];
         break;
