@@ -9,6 +9,7 @@ const rules = require('./lib/rules');
 const razorpayLib = require('./lib/razorpay');
 const payments = require('./lib/payments');
 const files = require('./lib/files');
+const society = require('./lib/society');
 
 const { COLLS, HttpError, viewFor, publicView, applyChanges, flatKey, sanitize, str, canAct } = rules;
 
@@ -18,6 +19,7 @@ function createApp({ store, config, razorpay }) {
   const payLimit = auth.limiter(20, 10 * 60e3);
   const loginLimit = auth.limiter(10, 15 * 60e3);
   const regLimit = auth.limiter(10, 60 * 60e3);
+  const uploadLimit = auth.limiter(12, 60 * 60e3); // file uploads by residents (for ads)
   const ipLimit = auth.limiter(300, 60e3);
 
   const localOrigin = o => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o) || o === 'capacitor://localhost' || o === 'https://localhost';
@@ -95,23 +97,32 @@ function createApp({ store, config, razorpay }) {
 
     'POST /api/auth/register': async (req) => {
       if (!regLimit.check(clientIp(req))) throw new HttpError(429, 'Too many registrations from this network. Try again later.');
-      const b = await readJson(req, 50000);
+      // The proof file travels with the registration as base64, so allow room for it. files.check enforces the real 5 MB limit.
+      const b = await readJson(req, Math.ceil(files.FILE_MAX * 4 / 3) + 50000);
       const name = str(b.name, 80).trim(), mobile = str(b.mobile, 10).trim(), pw = str(b.password, 200);
-      const tower = str(b.tower, 2).trim().toUpperCase(), flat = str(b.flat, 5).trim();
+      const tower = str(b.tower, 4).trim().toUpperCase(), flat = str(b.flat, 8).trim().toUpperCase();
       const type = ['Owner', 'Tenant', 'Family member'].includes(b.type) ? b.type : 'Owner';
       if (name.length < 3) throw new HttpError(400, 'Enter your full name.');
       if (!/^[6-9]\d{9}$/.test(mobile)) throw new HttpError(400, 'Enter a valid 10 digit Indian mobile number.');
       if (pw.length < 6) throw new HttpError(400, 'Password needs at least 6 characters.');
-      if (!/^[A-Z]$/.test(tower) || !/^\d{3,4}$/.test(flat)) throw new HttpError(400, 'Choose your tower and flat number.');
+      const settings = (await store.get('settings', 'settings')) || {};
+      if (!society.hasFlat(settings, tower, flat)) throw new HttpError(400, 'Choose your tower and flat number from the list.');
       const users = await store.all('users');
       if (users.some(u => u.mobile === mobile)) throw new HttpError(409, 'This mobile number is already registered. Sign in instead.');
       if (type === 'Owner' && users.some(u => u.role !== 'admin' && u.tower === tower && u.flat === flat && u.type === 'Owner' && u.status === 'approved'))
         throw new HttpError(409, `${tower}-${flat} already has an approved owner. Register as Tenant or Family member, or contact the office.`);
+      // Check the proof before anything is stored, so a bad file never leaves a half-made account behind.
+      const hasProof = b.proof && typeof b.proof === 'object' && b.proof.data;
+      if (hasProof) files.check(b.proof);
+      const id = 'u' + crypto.randomBytes(6).toString('hex');
+      const proof = hasProof ? await files.put(store, id, b.proof, Date.now(), { kind: 'proof', owner: id }) : null;
       const u = {
-        id: 'u' + crypto.randomBytes(6).toString('hex'), name, tower, flat, mobile, email: str(b.email, 120).trim(), type,
+        id, name, tower, flat, mobile, email: str(b.email, 120).trim(), type,
         status: 'pending', role: 'resident', title: '', members: Math.min(12, Math.max(1, Number(b.members) || 1)), vehicle: '',
+        intercom: rules.cleanIntercom(b.intercom), company: str(b.company, 80).trim(), designation: str(b.designation, 60).trim(),
         showPhone: false, ref: str(b.ref, 120).trim(), created: Date.now(), pass: await auth.hashPassword(pw), pwdAt: Date.now()
       };
+      if (proof) u.proof = proof;
       await store.put('users', u);
       await addNotifyAndLog(`New registration request from ${name} (${tower}-${flat})`, 'members', `${name} registered for ${tower}-${flat}`);
       return [201, { token: token(u), session: session(u) }];
@@ -126,7 +137,7 @@ function createApp({ store, config, razorpay }) {
       const u = await actorOf(req);
       const b = await readJson(req);
       const result = await applyChanges(u, store, b.changes);
-      if (u.role === 'admin' && b.changes && (b.changes.notices || b.changes.events)) files.sweep(store).catch(e => console.error('file sweep', e));
+      if (u.role === 'admin' && b.changes && (b.changes.notices || b.changes.events || b.changes.users || b.changes.ads)) files.sweep(store).catch(e => console.error('file sweep', e));
       const fresh = await store.get('users', u.id);
       return [200, { db: viewFor(fresh || u, await loadData()), rejected: result.rejected, applied: result.applied, rev: await store.rev() }];
     },
@@ -167,12 +178,16 @@ function createApp({ store, config, razorpay }) {
     },
 
 
-    /* ---- file attachments for notices and events ---- */
+    /* ---- file attachments for notices, events and resident ads ---- */
     'POST /api/files': async (req) => {
-      const u = await actorOf(req); needAdmin(u);
+      const u = await actorOf(req);
+      // The admin uploads for notices and events. An approved resident may upload one file for an ad, a few times an hour.
+      const resident = u.role === 'resident' && canAct(u);
+      if (u.role !== 'admin' && !resident) throw new HttpError(403, 'You cannot upload files.');
+      if (resident && !uploadLimit.check(u.id)) throw new HttpError(429, 'Too many uploads. Try again in a while.');
       // base64 is about a third bigger than the file, so allow a little over 5 MB x 4/3 here; files.check enforces the real limit
       const b = await readJson(req, Math.ceil(files.FILE_MAX * 4 / 3) + 4096);
-      const file = await files.put(store, u.id, b);
+      const file = await files.put(store, u.id, b, Date.now(), resident ? { kind: 'ad', owner: u.id } : {});
       return [201, { file }];
     },
 
@@ -215,6 +230,7 @@ function createApp({ store, config, razorpay }) {
       const u = await actorOf(req);
       if (u.role === 'admin' || u.status === 'approved') throw new HttpError(400, 'Approved accounts cannot be withdrawn here.');
       await store.del('users', u.id);
+      files.sweep(store).catch(e => console.error('file sweep', e));
       return [200, { ok: true }];
     }
   };
@@ -260,6 +276,8 @@ function createApp({ store, config, razorpay }) {
     if (!canAct(u)) throw new HttpError(403, 'Your registration is not approved yet.');
     const f = await files.get(store, params.id);
     if (!f) throw new HttpError(404, 'That file is no longer available.');
+    // A registration proof is private: only the admin and the resident who uploaded it can open it.
+    if (f.kind === 'proof' && u.role !== 'admin' && f.owner !== u.id) throw new HttpError(403, 'That file is private.');
     const t = auth.sign({ ft: f.id, exp: Math.floor(Date.now() / 1000) + 600 }, config.jwtSecret);
     return [200, { url: '/api/files/' + f.id + '?t=' + encodeURIComponent(t), inline: !!f.inline, name: f.name, mime: f.mime }];
   }

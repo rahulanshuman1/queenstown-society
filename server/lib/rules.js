@@ -4,6 +4,8 @@
    Residents never get to set fields like status, amount, userId or fee on their own. */
 
 const files = require('./files');
+const society = require('./society');
+const { cleanPenalty, penaltyOf } = require('./penalty');
 const COLLS = ['users', 'notices', 'events', 'bills', 'schedule', 'amenities', 'bookings', 'complaints',
   'ads', 'polls', 'docs', 'contacts', 'entries', 'visitors', 'notifs', 'log'];
 // The browser keeps these newest first (it uses unshift), the others oldest first.
@@ -47,7 +49,9 @@ function userDirectory(u) {
   return {
     id: u.id, name: u.name, tower: u.tower, flat: u.flat, type: u.type, role: u.role, title: u.title || '',
     status: u.status, members: u.members, showPhone: !!u.showPhone, created: u.created,
-    mobile: u.showPhone ? u.mobile : '', email: '', vehicle: ''
+    mobile: u.showPhone ? u.mobile : '', email: '', vehicle: '',
+    /* the intercom extension is for neighbours and the gate, so it is not hidden like a mobile number */
+    intercom: str(u.intercom, 12)
   };
 }
 function publicSettings(s) {
@@ -163,6 +167,8 @@ const isGuard = u => !!u && u.role === 'security';
 const canAct = u => !!u && (u.role === 'admin' || u.status === 'approved' || (u.role === 'security' && u.status === 'staff'));
 const VISITOR_PHOTO_MAX = 90000;
 function cleanPhoto(v) { return typeof v === 'string' && v.length <= VISITOR_PHOTO_MAX && IMG_RE.test(v) ? v : ''; }
+/* an intercom extension: digits, letters, space or dash, e.g. 2041 or A-204 */
+const cleanIntercom = v => str(v, 12).replace(/[^A-Za-z0-9 -]/g, '').trim();
 const digits = (v, max) => String(v == null ? '' : v).replace(/\D/g, '').slice(0, max);
 async function tell(store, to, text, link, now) {
   await store.put('notifs', { id: 'n' + require('crypto').randomBytes(5).toString('hex'), to, text: str(text, 300), link, at: now, read: [] });
@@ -200,6 +206,9 @@ const RULES = {
       const n = { ...ex };
       if (c.admin) {
         for (const k of ['name', 'tower', 'flat', 'type', 'email', 'vehicle', 'ref']) if (k in d) n[k] = str(d[k], 120);
+        if ('intercom' in d) n.intercom = cleanIntercom(d.intercom);
+        if ('company' in d) n.company = str(d.company, 80).trim();
+        if ('designation' in d) n.designation = str(d.designation, 60).trim();
         if ('members' in d) n.members = num(d.members, 1, 12, 1);
         if ('showPhone' in d) n.showPhone = !!d.showPhone;
         if ('status' in d) { if (!USER_STATUS.includes(d.status)) return { err: 'Unknown status.' }; if (ex.role === 'security' ? !['staff', 'rejected'].includes(d.status) : d.status === 'staff') return { err: 'That status does not fit this account.' }; n.status = d.status; }
@@ -213,6 +222,9 @@ const RULES = {
       if ('email' in d) n.email = str(d.email, 120).trim();
       if ('members' in d) n.members = num(d.members, 1, 12, 1);
       if ('vehicle' in d) n.vehicle = str(d.vehicle, 40).trim();
+      if ('intercom' in d) n.intercom = cleanIntercom(d.intercom);
+      if ('company' in d) n.company = str(d.company, 80).trim();
+      if ('designation' in d) n.designation = str(d.designation, 60).trim();
       if ('showPhone' in d) n.showPhone = !!d.showPhone;
       return { doc: n };
     },
@@ -226,8 +238,7 @@ const RULES = {
       if (d.status === 'verifying' && ex.status === 'due') {
         const method = str(d.method, 30), ref = str(d.ref, 60).trim();
         if (!PAY_METHODS.includes(method)) return { err: 'Unknown payment method.' };
-        const overdue = +new Date(ex.dueDate) < c.now;
-        const late = overdue ? Math.round(ex.amount * (Number(c.settings.latePct) || 0) / 100) : 0;
+        const late = penaltyOf(ex.amount, ex.dueDate, c.settings, c.now);
         return { doc: { ...ex, status: 'verifying', method, ref: ref || 'CASH', submittedOn: new Date(c.now).toISOString(), lateFee: late } };
       }
       return { ok: true };
@@ -330,16 +341,27 @@ const RULES = {
   },
 
   ads: {
-    upsert(c, ex, d) {
-      if (c.admin) return { doc: d };
-      if (ex) return { ok: true };
+    async upsert(c, ex, d) {
+      if (c.admin) return { doc: { ...d, attachment: await attOf(c.store, d.attachment) } };
+      if (ex) {
+        // The owner of an ad with an unpaid fee can send the payment reference. Nothing else on the ad changes.
+        const ref = str(d.feeRef, 60).trim();
+        if (ex.userId === c.aid && ex.fee > 0 && !ex.feePaid && ref && ['pending', 'live'].includes(ex.status)) {
+          const method = PAY_METHODS.includes(d.feeMethod) ? d.feeMethod : 'UPI';
+          return { doc: { ...ex, feeMethod: method, feeRef: ref, feeSubmittedOn: new Date(c.now).toISOString() } };
+        }
+        return { ok: true };
+      }
+      // A resident can attach only a file they uploaded themselves for an ad.
+      let attachment = await attOf(c.store, d.attachment);
+      if (attachment) { const meta = await c.store.get('files', attachment.id); if (!meta || meta.owner !== c.aid || meta.kind !== 'ad') attachment = null; }
       const banner = d.type === 'banner';
       const weeks = banner ? Math.round(num(d.weeks, 1, 26, 1)) : 0;
       return { doc: {
         id: d.id, userId: c.aid, business: str(d.business, 80), title: str(d.title, 120), body: str(d.body, 1000),
         category: str(d.category, 40), contact: str(d.contact, 40), price: str(d.price, 60), type: banner ? 'banner' : 'classified',
         weeks, fee: banner ? weeks * (Number((c.settings.adRates || {}).banner) || 0) : 0, feePaid: !banner, status: 'pending',
-        hue: /^#[0-9a-fA-F]{6}$/.test(d.hue || '') ? d.hue : '#E39A1B', created: c.now
+        hue: /^#[0-9a-fA-F]{6}$/.test(d.hue || '') ? d.hue : '#E39A1B', created: c.now, attachment
       } };
     },
     remove: (c, ex) => c.admin || (ex && ex.userId === c.aid) ? { ok: true } : { err: 'That ad is not yours.' }
@@ -391,7 +413,7 @@ const RULES = {
   schedule: adminOnly, amenities: adminOnly, docs: adminOnly, contacts: adminOnly, entries: adminOnly
 };
 
-const SETTINGS_FIELDS = ['name', 'tagline', 'address', 'upi', 'upiName', 'bank', 'bankDetails', 'payMethods', 'charges', 'dueDay', 'latePct', 'adRates', 'demo', 'site'];
+const SETTINGS_FIELDS = ['name', 'tagline', 'address', 'upi', 'upiName', 'bank', 'bankDetails', 'payMethods', 'charges', 'dueDay', 'latePct', 'penalty', 'adRates', 'demo', 'site'];
 
 /* ---- site look and content (logo, festive theme, website text, footer) ----
    Everything here is shown to visitors before they sign in, so it is checked field by field.
@@ -414,8 +436,10 @@ const cleanEmail = v => { v = str(v, 120).trim(); return /^[^\s@<>"']+@[^\s@<>"'
 function cleanSite(x) {
   x = x && typeof x === 'object' && !Array.isArray(x) ? x : {};
   const t = x.theme || {}, c = x.content || {}, f = x.footer || {}, an = c.announce || {}, so = f.social || {};
+  const towers = society.cleanTowers(x.towers);
   return {
     logo: cleanImg(x.logo, LOGO_MAX, 'logo'),
+    towers: towers.length ? towers : society.defaultTowers(),
     theme: {
       festival: FESTIVALS.includes(t.festival) ? t.festival : 'none',
       from: cleanDay(t.from), to: cleanDay(t.to), effects: t.effects !== false,
@@ -460,6 +484,7 @@ function cleanSettings(ex, d) {
   if (Array.isArray(n.charges)) n.charges = n.charges.slice(0, 20).map(x => ({ label: str(x && x.label, 80), amt: num(x && x.amt, 0, 1e7, 0) }));
   n.dueDay = Math.round(num(n.dueDay, 1, 28, 15));
   n.latePct = num(n.latePct, 0, 100, 0);
+  if ('penalty' in n) n.penalty = cleanPenalty(n.penalty);
   n.adRates = { banner: num(n.adRates && n.adRates.banner, 0, 1e6, 0), classified: num(n.adRates && n.adRates.classified, 0, 1e6, 0) };
   if ('site' in n) n.site = cleanSite(n.site);
   n.id = 'settings';
@@ -530,4 +555,4 @@ async function applyChanges(actor, store, changes, now = Date.now()) {
   return { applied, rejected };
 }
 
-module.exports = { isGuard, canAct, cleanSite, COLLS, UNSHIFT, HttpError, sanitize, viewFor, publicView, applyChanges, flatKey, userSafe, str, num, isId };
+module.exports = { cleanIntercom, isGuard, canAct, cleanSite, COLLS, UNSHIFT, HttpError, sanitize, viewFor, publicView, applyChanges, flatKey, userSafe, str, num, isId };

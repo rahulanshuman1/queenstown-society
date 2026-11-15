@@ -3,6 +3,7 @@
    cfg() gives the rest of the app what to draw: the saved site, or the draft while previewing. */
 const SITE_DEF=()=>({
  logo:'',
+ towers:defaultTowers(),
  theme:{festival:'none',from:'',to:'',effects:true,greeting:'',brand:'#0F4C4A',accent:'#E39A1B'},
  content:{headline:'',intro:'Notices, maintenance payments, events, bookings, helpdesk and more. Residents register their flat and get access after the society admin approves the request.',
   steps:[{t:'Register your flat',d:'Name, tower, flat number and mobile.'},{t:'Admin verifies',d:'The committee checks ownership or tenancy.'},{t:'Start using the app',d:'Pay dues, read notices, book amenities.'}],
@@ -19,6 +20,8 @@ function deepMerge(d,s){
  return d}
 function mergeSite(s){
  const o=deepMerge(SITE_DEF(),s),def=SITE_DEF().content.steps;
+ o.towers=(Array.isArray(o.towers)?o.towers:[]).filter(t=>t&&t.code).map(t=>({code:String(t.code),name:String(t.name||''),flats:Array.isArray(t.flats)?t.flats.map(String):[]}));
+ if(!o.towers.length)o.towers=defaultTowers();
  o.content.steps=def.map((x,i)=>{const y=o.content.steps[i]||{};return{t:y.t||x.t,d:y.d||x.d}});
  return o}
 
@@ -159,6 +162,8 @@ ROUTES.studio=()=>{
  <section class="card"><h3>${ic('image')}Logo and name</h3><div class="stack">${imgBox('logo',s.logo,'logo','PNG, JPEG, WebP or SVG. It is resized and kept small. A square logo on a transparent background looks best.')}
  <div class="frm">${SF.t('name','Society name',{max:80,cls:'full'})}${SF.t('tagline','Tagline',{max:300,cls:'full'})}</div></div></section>
 
+ ${towersCard()}
+
  <section class="card"><h3>${ic('palette')}Festive theme</h3><div class="stack">
  <div class="tiles" role="group" aria-label="Theme">${FEST.map(festTile).join('')}</div>
  ${t.festival==='custom'?`<div class="frm">${SF.t('site.theme.brand','Main colour',{type:'color',attrs:'data-rr="1"'})}${SF.t('site.theme.accent','Highlight colour',{type:'color',attrs:'data-rr="1"'})}</div>`:''}
@@ -187,6 +192,62 @@ ROUTES.studio=()=>{
  <div class="frm" style="margin-top:12px">${SF.t('site.footer.caption','Caption',{max:120,cls:'full',ph:'For example: The clubhouse in spring'})}</div>${f.image?SF.c('site.footer.showImage','Show the image in the footer',1):''}</div>
  <div class="frm">${SF.t('site.footer.copyright','Copyright line',{max:160,cls:'full',ph:`© ${new Date().getFullYear()} ${d.name}. All rights reserved.`})}</div>
  </div></section></div>`};
+
+/* ----- towers and flats ----- */
+const TW_CODE=/^[A-Z0-9]{1,4}$/,TW_FLAT=/^[A-Z0-9][A-Z0-9-]{0,7}$/,TW_MAX=400;
+const twv=k=>esc((UI.tw||{})[k]??'');
+const twIn=(k,l,o={})=>`<label class="fld ${o.cls||''}" for="tw_${k}"><span>${l}</span><input id="tw_${k}" data-tw="${k}" value="${twv(k)}" ${o.ph?`placeholder="${esc(o.ph)}"`:''} ${o.attrs||''}>${o.hint?`<em class="hint">${o.hint}</em>`:''}</label>`;
+const flatInUse=(code,flat)=>DB.users.some(u=>u.role!=='admin'&&u.role!=='security'&&u.tower===code&&u.flat===flat&&u.status!=='rejected');
+const twRange=(from,to,per)=>{const o=[];for(let f=from;f<=to;f++)for(let u=1;u<=per;u++)o.push(String(f*100+u));return o};
+const twMerge=(t,list)=>{const s=new Set(t.flats);let add=0;list.forEach(x=>{if(!s.has(x)){s.add(x);add++}});t.flats=[...s].sort(flatSort);return add};
+function towersCard(){
+ const ts=DRAFT.site.towers;
+ return`<section class="card"><h3>${ic('building')}Towers and flats</h3><div class="stack">
+ <p class="muted">These are the towers and flat numbers residents choose from when they register. Add a new tower or more flats here, then save. Flats that already have residents cannot be removed.</p>
+ ${ts.map((t,i)=>{const n=DB.users.filter(u=>u.role!=='admin'&&u.role!=='security'&&u.tower===t.code&&u.status!=='rejected').length;
+  return`<div class="subcard"><div class="row" style="align-items:center;gap:10px;flex-wrap:wrap"><h4 style="margin:0">${esc(t.name||'Tower '+t.code)}</h4>${chip('Code '+esc(t.code),'brand')}<small class="muted">${t.flats.length} flat${t.flats.length===1?'':'s'}${n?' · '+n+' resident'+(n===1?'':'s'):''}</small><span class="sp"></span>${btn('Remove tower','tw-del',{sm:1,c:'bad',i:'trash',confirm:1,d:{i}})}</div>
+  <div class="frm">${SF.t(`site.towers.${i}.name`,'Display name',{max:40,ph:'Tower '+t.code})}</div>
+  <div class="twflats" role="list" aria-label="Flats in ${esc(t.name||'Tower '+t.code)}">${t.flats.map(f=>`<span class="twf" role="listitem">${esc(f)}${flatInUse(t.code,f)?'':`<button type="button" data-act="tw-flat-del" data-i="${i}" data-f="${esc(f)}" aria-label="Remove flat ${esc(f)}">${ic('x')}</button>`}</span>`).join('')||'<small class="muted">No flats yet. Add some below.</small>'}</div>
+  <div class="frm quad">${twIn(i+'_from','From floor',{ph:'1',attrs:'inputmode="numeric" maxlength="2"'})}${twIn(i+'_to','To floor',{ph:'10',attrs:'inputmode="numeric" maxlength="2"'})}${twIn(i+'_per','Flats per floor',{ph:'4',attrs:'inputmode="numeric" maxlength="2"'})}<div class="fld"><span>&nbsp;</span>${btn('Add floors','tw-gen',{sm:1,i:'plus',d:{i}})}</div></div>
+  <small class="muted" style="margin-top:-6px">Floors 11 to 14 with 4 flats each adds 1101 to 1104 up to 1401 to 1404.</small>
+  <div class="row" style="align-items:flex-end;gap:10px;flex-wrap:wrap">${twIn(i+'_list','Or type flat numbers',{cls:'sp',ph:'G01, G02, SHOP-1',attrs:'maxlength="200"',hint:'Separate with commas or spaces. Letters, digits and dashes, up to 8 characters.'})}${btn('Add','tw-add-list',{sm:1,i:'plus',d:{i}})}</div></div>`}).join('')}
+ <div class="subcard"><h4>Add a tower</h4><div class="frm quad">${twIn('new_code','Tower code',{ph:'E',attrs:'maxlength="4" style="text-transform:uppercase"',hint:'1 to 4 letters or digits. Cannot be changed later.'})}${twIn('new_name','Display name (optional)',{ph:'Tower E'})}${twIn('new_floors','Floors',{ph:'10',attrs:'inputmode="numeric" maxlength="2"'})}${twIn('new_per','Flats per floor',{ph:'4',attrs:'inputmode="numeric" maxlength="2"'})}</div>
+ <div class="row" style="justify-content:flex-end">${btn('Add tower','tw-new',{c:'pri',i:'plus'})}</div></div>
+ </div></section>`}
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.tw){(UI.tw=UI.tw||{})[t.dataset.tw]=t.value}});
+const twNum=(k,def,max)=>{const raw=String((UI.tw||{})[k]??'').trim();if(!raw)return def;const n=Number(raw);return Number.isInteger(n)&&n>=0&&n<=max?n:NaN};
+ACT['tw-new']=()=>{
+ if(!DRAFT)return;const w=UI.tw||{},code=String(w.new_code||'').trim().toUpperCase(),ts=DRAFT.site.towers;
+ if(!TW_CODE.test(code))return toast('Tower code needs 1 to 4 letters or digits.','x');
+ if(ts.some(t=>t.code===code))return toast('Tower '+code+' is already there.','x');
+ const fl=twNum('new_floors',0,99),per=twNum('new_per',4,99);
+ if(isNaN(fl)||isNaN(per))return toast('Floors and flats per floor must be whole numbers.','x');
+ if(fl*per>TW_MAX)return toast('That is more than '+TW_MAX+' flats in one tower.','x');
+ ts.push({code,name:String(w.new_name||'').trim().slice(0,40),flats:fl?twRange(1,fl,per):[]});
+ UI.tw={};render();toast('Tower '+code+' added. Save to publish it.')};
+ACT['tw-del']=d=>{
+ const t=DRAFT&&DRAFT.site.towers[+d.i];if(!t)return;
+ if(DRAFT.site.towers.length<2)return toast('Keep at least one tower.','x');
+ if(DB.users.some(u=>u.role!=='admin'&&u.role!=='security'&&u.tower===t.code&&u.status!=='rejected'))return toast('Tower '+t.code+' has residents. Move or remove them first.','x');
+ DRAFT.site.towers.splice(+d.i,1);UI.tw={};render();toast('Tower removed. Save to publish.','info')};
+ACT['tw-gen']=d=>{
+ const t=DRAFT&&DRAFT.site.towers[+d.i];if(!t)return;
+ const from=twNum(d.i+'_from',NaN,99),to=twNum(d.i+'_to',NaN,99),per=twNum(d.i+'_per',4,99);
+ if(isNaN(from)||isNaN(to)||isNaN(per)||from<1||to<from||per<1)return toast('Enter the first floor, the last floor and flats per floor.','x');
+ const list=twRange(from,to,per);if(list.length>TW_MAX)return toast('That is more than '+TW_MAX+' flats in one tower.','x');
+ const n=twMerge(t,list);if(t.flats.length>TW_MAX){t.flats=t.flats.slice(0,TW_MAX);toast('A tower holds at most '+TW_MAX+' flats. The rest were left out.','info')}
+ if(UI.tw)['_from','_to','_per'].forEach(k=>delete UI.tw[d.i+k]);render();toast(n?n+' flats added. Save to publish.':'Those flats were already there.','info')};
+ACT['tw-add-list']=d=>{
+ const t=DRAFT&&DRAFT.site.towers[+d.i];if(!t)return;
+ const parts=String((UI.tw||{})[d.i+'_list']||'').toUpperCase().split(/[,;\s]+/).filter(Boolean),bad=parts.find(x=>!TW_FLAT.test(x));
+ if(!parts.length)return toast('Type one or more flat numbers.','x');
+ if(bad)return toast('"'+bad+'" is not allowed. Use letters, digits and dashes, up to 8 characters.','x');
+ if(t.flats.length>=TW_MAX)return toast('That tower already has '+TW_MAX+' flats.','x');
+ const n=twMerge(t,parts);if(t.flats.length>TW_MAX)t.flats=t.flats.slice(0,TW_MAX);delete (UI.tw||{})[d.i+'_list'];render();toast(n?n+' flat'+(n===1?'':'s')+' added. Save to publish.':'Those flats were already there.','info')};
+ACT['tw-flat-del']=d=>{
+ const t=DRAFT&&DRAFT.site.towers[+d.i];if(!t)return;
+ if(flatInUse(t.code,d.f))return toast('Flat '+d.f+' has a resident.','x');
+ t.flats=t.flats.filter(x=>x!==d.f);render()};
 
 function studioTouch(){
  const dn=siteDirty(),s=$('#studio-state');
@@ -231,6 +292,7 @@ ACT['site-discard']=()=>{studioStart();PV=null;if(routeOf()!=='studio')location.
 function siteErrors(d){
  const e=[],url=u=>/^(https?:\/\/\S+|#[\w\/-]{0,40})$/i.test(u),web=u=>/^https?:\/\/\S+$/i.test(u),f=d.site.footer,c=d.site.content,t=d.site.theme;
  if(!d.name.trim())e.push('Society name is required.');
+ if(!d.site.towers.length||d.site.towers.some(t=>!t.flats.length))e.push('Every tower needs at least one flat. Add flats or remove the empty tower.');
  f.links.forEach((l,i)=>{const a=l.label.trim(),b=l.url.trim();if((a||b)&&!(a&&url(b)))e.push(`Quick link ${i+1} needs a label and an address that starts with https:// or #.`)});
  SOC.forEach(([k,l])=>{const v=(f.social[k]||'').trim();if(v&&!web(v))e.push(`${l} link must start with https://`)});
  if(f.email.trim()&&!/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(f.email.trim()))e.push('The footer email address does not look right.');

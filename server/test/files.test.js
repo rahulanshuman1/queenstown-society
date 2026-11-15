@@ -35,9 +35,10 @@ test.after(() => server.close());
 
 let pdf, png;
 
-test('only the admin can upload, and only real PDFs and images pass', async () => {
+test('only signed-in people can upload, and only real PDFs and images pass', async () => {
   assert.equal((await call('POST', '/api/files', { name: 'a.pdf', data: PDF })).status, 401);
-  assert.equal((await call('POST', '/api/files', { name: 'a.pdf', data: PDF }, res)).status, 403);
+  // an approved resident may upload too, but only for their own ad (see adfiles.test.js)
+  assert.equal((await call('POST', '/api/files', { name: 'a.pdf', data: PDF }, res)).status, 201);
   const ok = await call('POST', '/api/files', { name: 'Water tank notice.pdf', data: PDF }, admin);
   assert.equal(ok.status, 201); pdf = ok.body.file;
   assert.equal(pdf.mime, 'application/pdf'); assert.ok(pdf.size > 10);
@@ -99,7 +100,7 @@ test('public view never carries attachments; unused files are swept', async () =
   // the png was never attached anywhere: not swept while fresh, swept once old
   assert.ok(await store.get('files', png.id));
   assert.equal(await files.sweep(store, Date.now()), 0);
-  assert.equal(await files.sweep(store, Date.now() + files.GRACE_MS + 1000), 1);
+  assert.equal(await files.sweep(store, Date.now() + files.GRACE_MS + 1000), 2, 'the png and the resident test upload');
   assert.equal(await store.get('files', png.id), null);
   assert.equal(await store.get('fdata', png.id), null);
   // removing the notice frees the pdf on the next admin sync of notices

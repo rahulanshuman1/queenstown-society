@@ -4,12 +4,12 @@
    asks Razorpay for an order, and only marks bills paid after the signed confirmation (or the signed webhook). */
 const crypto = require('crypto');
 const { HttpError, flatKey, isId } = require('./rules');
+const { penaltyOf } = require('./penalty');
 
 const rid = p => p + crypto.randomBytes(5).toString('hex');
 const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
 
-const lateOf = (b, settings, now) =>
-  +new Date(b.dueDate) < now ? Math.round(b.amount * (Number(settings.latePct) || 0) / 100) : 0;
+const lateOf = (b, settings, now) => penaltyOf(b.amount, b.dueDate, settings, now);
 
 /* One writer at a time per order, so the browser confirmation and the webhook cannot both settle it. */
 const chains = new Map();

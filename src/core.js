@@ -22,6 +22,10 @@ const initials=n=>String(n||'?').split(/\s+/).map(w=>w[0]).slice(0,2).join('').t
 const greet=()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'};
 const isoLocal=d=>{const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,16)};
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+/* towers and flat numbers: the default is towers A to D, flats 101 to 104 up to 1001 to 1004. The admin changes them in Site studio. */
+const genFlats=(floors=10,per=4)=>{const o=[];for(let f=1;f<=floors;f++)for(let u=1;u<=per;u++)o.push(String(f*100+u));return o};
+const defaultTowers=()=>['A','B','C','D'].map(code=>({code,name:'Tower '+code,flats:genFlats(10,4)}));
+const flatSort=(a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true});
 const hashStr=s=>{let h=7;for(const c of String(s))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
 async function sha(s){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('qs|'+s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){return'x'+btoa(unescape(encodeURIComponent('qs|'+s)))}}
 function readImage(file,maxW=1200,q=.72){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=rej;fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const k=Math.min(1,maxW/im.width),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q))};im.src=fr.result};fr.readAsDataURL(file)})}
@@ -192,7 +196,15 @@ const unreadN=()=>{const m=me();return myNotifs().filter(n=>!n.read.includes(m.i
 
 /* money */
 const chargeTotal=()=>DB.settings.charges.reduce((a,c)=>a+Number(c.amt||0),0);
-function lateFee(b){if(b.status==='paid')return b.lateFee||0;return daysTo(b.dueDate)<0?Math.round(b.amount*DB.settings.latePct/100):0}
+/* Late payment penalty. Same rules as the server (server/lib/penalty.js), which sets the real amount when a bill is paid.
+   Until the admin saves penalty rules in Society setup, the old late fee % applies once with no grace period. */
+const PEN_DAY=86400e3;
+function penaltyCfg(s){s=s||{};const p=s.penalty;if(p&&typeof p==='object'){const t=p.type==='fixed'?'fixed':'percent',n=(v,lo,hi)=>Math.min(hi,Math.max(lo,Number(v)||0));return{enabled:!!p.enabled,graceDays:Math.round(n(p.graceDays,0,60)),type:t,value:n(p.value,0,t==='percent'?100:1e6),repeat:['monthly','daily'].includes(p.repeat)?p.repeat:'once',cap:Math.round(n(p.cap,0,1e7))}}const pct=Math.min(100,Math.max(0,Number(s.latePct)||0));return{enabled:pct>0,graceDays:0,type:'percent',value:pct,repeat:'once',cap:0}}
+function penaltyFor(amount,dueDate,s,now=Date.now()){const c=penaltyCfg(s);if(!c.enabled||!(c.value>0))return 0;const start=+new Date(dueDate)+c.graceDays*PEN_DAY;if(!(now>start))return 0;const late=now-start,units=c.repeat==='daily'?1+Math.floor(late/PEN_DAY):c.repeat==='monthly'?1+Math.floor(late/(30*PEN_DAY)):1,each=c.type==='fixed'?c.value:(Number(amount)||0)*c.value/100,t=Math.round(units*each);return c.cap>0?Math.min(t,c.cap):t}
+const ordinal=n=>n+(['th','st','nd','rd'][(n%100>10&&n%100<14)||n%10>3?0:n%10]);
+/* one plain sentence for residents and for the setup page */
+function penaltyText(s){const c=penaltyCfg(s),d=ordinal(s.dueDay||15);if(!c.enabled||!(c.value>0))return`Due on the ${d} of every month. There is no late penalty.`;return`Due on the ${d} of every month${c.graceDays?`, with ${c.graceDays} day${c.graceDays===1?'':'s'} of grace`:''}. After that a late penalty of ${c.type==='fixed'?inr(c.value):c.value+'% of the bill'} applies${c.repeat==='monthly'?', charged again every 30 days it stays unpaid':c.repeat==='daily'?', charged for every day it stays unpaid':', charged once'}${c.cap?', up to '+inr(c.cap)+' per bill':''}.`}
+function lateFee(b){if(b.status==='paid')return b.lateFee||0;return penaltyFor(b.amount,b.dueDate,DB.settings)}
 const billTotal=b=>b.amount+lateFee(b);
 const billsOf=fk=>DB.bills.filter(b=>b.flat===fk).sort((a,b)=>b.month.localeCompare(a.month));
 const unpaidOf=fk=>billsOf(fk).filter(b=>b.status!=='paid');
@@ -222,14 +234,14 @@ async function seed(){
  const LN=['Nair','Kulkarni','Iyer','Qureshi','Sharma','Mehta','Rao','Das','Banerjee','Gupta','Verma','Reddy','Singh','Joshi','Menon','Kapoor','Bose','Pillai','Chopra','Sen'];
  const users=[];let tIdx=0;const used=new Set(['A101']);
  const mk=(i,name,extra={})=>{let t,fl;do{t='ABCD'[tIdx++%4];fl=(1+Math.floor(r()*10))+'0'+(1+Math.floor(r()*4))}while(used.has(t+fl));used.add(t+fl);
-  return{id:'u'+i,name,tower:t,flat:fl,mobile:'9876500'+String(i+1).padStart(3,'0'),email:name.toLowerCase().replace(/[^a-z]/g,'.')+'@example.com',type:r()<.82?'Owner':'Tenant',passHash:ph,status:'approved',role:'resident',title:'',members:1+Math.floor(r()*4),vehicle:r()<.7?'WB 0'+Math.floor(r()*9)+' '+String.fromCharCode(65+Math.floor(r()*20))+' '+(1000+Math.floor(r()*8999)):'',showPhone:r()<.5,created:now-(200+r()*600)*DAY,...extra}};
+  return{id:'u'+i,name,tower:t,flat:fl,mobile:'9876500'+String(i+1).padStart(3,'0'),email:name.toLowerCase().replace(/[^a-z]/g,'.')+'@example.com',type:r()<.82?'Owner':'Tenant',passHash:ph,status:'approved',role:'resident',title:'',members:1+Math.floor(r()*4),vehicle:r()<.7?'WB 0'+Math.floor(r()*9)+' '+String.fromCharCode(65+Math.floor(r()*20))+' '+(1000+Math.floor(r()*8999)):'',showPhone:r()<.5,intercom:String(' ABCD'.indexOf(t))+fl,company:'',designation:'',created:now-(200+r()*600)*DAY,...extra}};
  for(let i=0;i<44;i++){const name=i===0?'Priya Nair':FN[(i*7)%FN.length]+' '+LN[(i*3+i%5)%LN.length];users.push(mk(i,name))}
- users[0].tower='A';users[0].flat='101';users[0].type='Owner';users[0].showPhone=true;
+ users[0].tower='A';users[0].flat='101';users[0].type='Owner';users[0].showPhone=true;users[0].intercom='1101';users[0].company='Infosys';users[0].designation='Software Engineer';
  users[1].role='committee';users[1].title='President';users[1].name='Sanjay Kulkarni';users[2].role='committee';users[2].title='Secretary';users[2].name='Meenakshi Iyer';users[3].role='committee';users[3].title='Treasurer';users[3].name='Farhan Qureshi';
  users.push({id:'g1',name:'Ramesh Yadav',tower:'',flat:'',mobile:'9876500099',email:'',type:'Security',passHash:await sha('guard123'),status:'staff',role:'security',title:'Security',members:1,vehicle:'',showPhone:false,ref:'',created:now-20*DAY});
  users.push({id:'u90',name:'Neha Bansal',tower:'B',flat:'704',mobile:'9876500901',email:'neha.bansal@example.com',type:'Owner',passHash:ph,status:'pending',role:'resident',title:'',members:3,vehicle:'',showPhone:false,ref:'Allotment letter 1187',created:now-1*DAY});
  users.push({id:'u91',name:'Imran Sheikh',tower:'C',flat:'305',mobile:'9876500902',email:'imran.sheikh@example.com',type:'Tenant',passHash:ph,status:'pending',role:'resident',title:'',members:2,vehicle:'',showPhone:false,ref:'Rent agreement 11 months',created:now-3*3600e3});
- const settings={name:'Queenstown Society',tagline:'Home, together.',address:'Queenstown Society, Main Gate Road',upi:'queenstown.society@upi',payMethods:{online:false,upi:true,bank:true},upiName:'Queenstown Society',charges:[{label:'Maintenance charges',amt:2200},{label:'Sinking fund',amt:300},{label:'Water and common electricity',amt:450},{label:'Security and housekeeping',amt:350}],dueDay:15,latePct:2,adRates:{banner:500,classified:0},adminUser:'admin',adminHash:ah,demo:true};
+ const settings={name:'Queenstown Society',tagline:'Home, together.',address:'Queenstown Society, Main Gate Road',upi:'queenstown.society@upi',payMethods:{online:false,upi:true,bank:true},upiName:'Queenstown Society',charges:[{label:'Maintenance charges',amt:2200},{label:'Sinking fund',amt:300},{label:'Water and common electricity',amt:450},{label:'Security and housekeeping',amt:350}],dueDay:15,latePct:2,penalty:{enabled:true,graceDays:0,type:'percent',value:2,repeat:'once',cap:0},adRates:{banner:500,classified:0},adminUser:'admin',adminHash:ah,demo:true};
  const ev=(title,scene,d,h,venue,cat,fee,desc,o={})=>({id:uid('e'),title,scene,date:at(d,h),venue,category:cat,fee,desc,featured:true,rsvps:{},cover:null,photos:[],capacity:0,...o});
  const events=[
   ev('Yoga and Wellness Morning','yoga',3,6,'Central Lawn','Wellness',0,'A guided one hour yoga and breathing session for all ages, led by a certified instructor. Bring your own mat.'),

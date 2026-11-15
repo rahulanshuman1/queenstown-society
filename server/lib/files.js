@@ -43,10 +43,11 @@ function check({ name, data }) {
   return { name, mime: t.mime, size: buf.length, data };
 }
 
-async function put(store, actorId, body, now = Date.now()) {
+/* `extra` marks who a file belongs to, e.g. { kind: 'proof', owner: userId } for a registration proof, which only the admin and that resident may open. */
+async function put(store, actorId, body, now = Date.now(), extra = {}) {
   const f = check(body || {});
   const id = 'f' + crypto.randomBytes(12).toString('hex');
-  await store.put('files', { id, name: f.name, mime: f.mime, size: f.size, at: now, by: actorId });
+  await store.put('files', { id, name: f.name, mime: f.mime, size: f.size, at: now, by: actorId, ...extra });
   await store.put('fdata', { id, data: f.data });
   return { id, name: f.name, mime: f.mime, size: f.size };
 }
@@ -65,10 +66,11 @@ function cleanAtt(a) {
   return { id: a.id, name: cleanName(a.name), mime: a.mime, size: Number.isFinite(size) ? Math.max(0, Math.min(FILE_MAX, Math.round(size))) : 0 };
 }
 
-/* Delete files that no notice or event points to any more (and are older than the grace period). */
+/* Delete files that no notice, event or resident proof points to any more (and are older than the grace period). */
 async function sweep(store, now = Date.now()) {
   const used = new Set();
-  for (const c of ['notices', 'events']) for (const d of await store.all(c)) if (d && d.attachment && d.attachment.id) used.add(d.attachment.id);
+  for (const c of ['notices', 'events', 'ads']) for (const d of await store.all(c)) if (d && d.attachment && d.attachment.id) used.add(d.attachment.id);
+  for (const u of await store.all('users')) if (u && u.proof && u.proof.id) used.add(u.proof.id);
   let n = 0;
   for (const f of await store.all('files')) {
     if (used.has(f.id) || now - (f.at || 0) < GRACE_MS) continue;

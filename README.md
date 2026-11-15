@@ -2,7 +2,7 @@
 
 One app for residents and the committee: notices, maintenance bills with online payment, events with a hero carousel and 30 day forecast, helpdesk, amenity booking, visitor passes, marketplace ads, polls, accounts, documents and a directory.
 
-New residents register their flat and get access only after the admin approves them.
+New residents register their flat and get access only after the admin approves them. The form takes an optional intercom number, company, designation and a proof file (PDF, photo or Word, up to 5 MB) that only the admin can open. Intercom numbers show in the Directory and in the security desk's Flats list.
 
 ## How it is built
 
@@ -24,12 +24,17 @@ Admin > **Site studio** edits how the whole site looks and reads, without touchi
 - Festive theme: Diwali, Holi, Christmas, New Year, Republic Day, Eid, Navratri, Ganesh Chaturthi or custom colours, with start and end dates, a greeting bar and optional falling effects
 - Landing page headline, intro, the three steps, the welcome line inside the app and an announcement bar
 - Footer: text, contact details, links, social links and a footer photo (upload)
+- **Towers and flats**: add a tower (code, name, floors, flats per floor), add more floors or type individual flat numbers such as G01. Residents only see these in the registration form. Flats that have residents cannot be removed.
 
 **Preview** shows the draft on the public page or inside the app without saving. **Discard** throws the draft away (tap twice). **Save changes** publishes it for everyone. Uploaded images are resized in the browser and checked again on the server.
 
 Notices, events and ads keep their own admin screens. **Publish notice** and **Add event** accept one attached file (PDF, image, Word or Excel, up to 5 MB). Residents tap Preview or Download, on the website and in the Android app.
 
 The society logo is animated (castle rises, name appears letter by letter, golden shine) on the splash screen and the public page. Uploading a logo in Site studio replaces it.
+
+## Late payment penalty (admin)
+
+Society setup, under Late payment penalty. Switch it on, then choose the grace period in days after the due date, a percentage of the bill or a fixed amount in rupees, whether it is charged once, again every 30 days or every day, and an optional maximum per bill. A live example shows what a typical bill would pay. The server works out the penalty itself when a resident pays or submits a payment, and residents see the rule on their Maintenance page. If you never save these rules, the old late fee % keeps working as a one time penalty with no grace period.
 
 ## Two ways to run the app
 
@@ -49,7 +54,7 @@ The society logo is animated (castle rises, name appears letter by letter, golde
 cd server && npm test
 ```
 
-29 tests cover registration, approval, roles, private data, site settings and image limits, bill rules, and every Razorpay case: amounts set by the server, late fees, wrong signatures, another resident's order, repeated webhooks and amount mismatch.
+50 tests cover registration, approval, roles, private data, site settings and image limits, bill rules, and every Razorpay case: amounts set by the server, late fees, wrong signatures, another resident's order, repeated webhooks and amount mismatch.
 
 ## Before real residents use it
 

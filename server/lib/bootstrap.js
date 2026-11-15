@@ -8,7 +8,7 @@ const DEFAULT_SETTINGS = {
   id: 'settings', name: 'Queenstown Society', tagline: 'Home, together.', address: 'Queenstown Society, Main Gate Road',
   upi: '', upiName: 'Queenstown Society', bank: '',
   charges: [{ label: 'Maintenance charges', amt: 2200 }, { label: 'Sinking fund', amt: 300 }, { label: 'Water and common electricity', amt: 450 }, { label: 'Security and housekeeping', amt: 350 }],
-  dueDay: 15, latePct: 2, adRates: { banner: 500, classified: 0 }, demo: false
+  dueDay: 15, latePct: 2, penalty: { enabled: true, graceDays: 0, type: 'percent', value: 2, repeat: 'once', cap: 0 }, adRates: { banner: 500, classified: 0 }, demo: false
 };
 
 const DEFAULT_AMENITIES = [

@@ -80,18 +80,35 @@ window.addEventListener('hashchange',()=>{UI.q='';UI.cat='all';UI.tab='';UI.sel=
 /* ========== landing + wait ========== */
 function landing(){
  const c=cfg(),s=c,st=c.site.content,reg=UI.auth==='register';
- const towers=['A','B','C','D'],n=c.name||'Queenstown Society';
+ const towers=c.site.towers,n=c.name||'Queenstown Society';
  return`${appBanner()}${siteBars()}<div class="wrap" style="max-width:1160px;padding-bottom:40px"><div class="landing-top"><a class="brand" href="#">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b>${n.split(' ').slice(1).length?`<span>${esc(n.split(' ').slice(1).join(' '))}</span>`:''}</div></a><div class="sp"></div><button class="iconbtn" data-act="theme" aria-label="Toggle theme">${ic('moon')}</button><button class="btn sm hdr-in" data-act="auth-go" data-t="login">${ic('user')}<span>Sign in</span></button><button class="btn sm pri hdr-up" data-act="auth-go" data-t="register">Sign up</button></div>
  <div class="view enter"><div class="lbanner">${bigLogo()}<p>${esc(c.tagline||'Home, together.')}</p></div>${hero(true)}
  <div class="split" style="align-items:start"><div class="stack"><h2 style="font-size:clamp(26px,4vw,38px)">${esc(st.headline||`${s.tagline} One place for everything at ${n}.`)}</h2><p class="muted" style="max-width:56ch">${esc(st.intro)}</p>
  <div class="steps card flat">${st.steps.map((x,i)=>`<div><span class="n">${i+1}</span><div><b>${esc(x.t)}</b><br><small>${esc(x.d)}</small></div></div>`).join('')}</div>
  ${appCard()}${REMOTE?'':`<div class="demo">${ic('info')}<span><b>Demo data is loaded.</b> Try admin <code>admin</code> / <code>admin123</code> or resident <code>9876500001</code> / <code>resident123</code> or security guard <code>9876500099</code> / <code>guard123</code>.</span></div>`}</div>
  ${reg?`<div class="card auth"><div class="tabs2" role="tablist"><button class="${reg?'':'on'}" data-act="auth-tab" data-t="login">Sign in</button><button class="${reg?'on':''}" data-act="auth-tab" data-t="register">Register flat</button></div>
- ${reg?formWrap('register',F.t('r_name','Full name',{req:true,cls:'full',attrs:'autocomplete="name"'})+F.s('r_tower','Tower',towers.map(t=>[t,'Tower '+t]))+F.s('r_flat','Flat number',flatOpts(),{})+F.s('r_type','You are',['Owner','Tenant','Family member'])+F.t('r_members','People in flat',{type:'number',v:2,attrs:'min="1" max="12"'})+F.t('r_mobile','Mobile number',{req:true,attrs:'inputmode="numeric" maxlength="10" autocomplete="tel"',hint:'10 digits. This is your login.'})+F.t('r_email','Email (optional)',{type:'email'})+F.t('r_ref','Proof reference (optional)',{cls:'full',ph:'Allotment letter no. or rent agreement date',hint:'Helps the admin verify you faster.'})+F.t('r_pw','Create password',{type:'password',req:true,attrs:'autocomplete="new-password"'})+F.t('r_pw2','Confirm password',{type:'password',req:true,attrs:'autocomplete="new-password"'}),'Submit for approval'):
+ ${reg?formWrap('register',F.t('r_name','Full name',{req:true,cls:'full',attrs:'autocomplete="name"'})+F.s('r_tower','Tower',towers.map(t=>[t.code,t.name||'Tower '+t.code]))+F.s('r_flat','Flat number',flatOpts(towers[0]&&towers[0].code),{})+F.s('r_type','You are',['Owner','Tenant','Family member'])+F.t('r_members','People in flat',{type:'number',v:2,attrs:'min="1" max="12"'})+F.t('r_mobile','Mobile number',{req:true,attrs:'inputmode="numeric" maxlength="10" autocomplete="tel"',hint:'10 digits. This is your login.'})+F.t('r_intercom','Intercom number (optional)',{attrs:'maxlength="12" autocomplete="off"',hint:'Your flat\'s intercom extension. Shown in the directory.'})+F.t('r_email','Email (optional)',{type:'email',cls:'full'})+F.t('r_company','Company (optional)',{attrs:'maxlength="80" autocomplete="organization"'})+F.t('r_desig','Designation (optional)',{attrs:'maxlength="60" autocomplete="organization-title"'})+F.t('r_ref','Proof reference (optional)',{cls:'full',ph:'Allotment letter no. or rent agreement date',hint:'Helps the admin verify you faster.'})+proofField()+F.t('r_pw','Create password',{type:'password',req:true,attrs:'autocomplete="new-password"'})+F.t('r_pw2','Confirm password',{type:'password',req:true,attrs:'autocomplete="new-password"'}),'Submit for approval'):
  formWrap('login',F.t('l_id','Mobile number, email or admin username',{req:true,cls:'full',attrs:'autocomplete="username"'})+F.t('l_pw','Password',{type:'password',req:true,cls:'full',attrs:'autocomplete="current-password"'}),'Sign in',`<span class="sp"></span>`)}
  ${reg||REMOTE?'':`<div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn sm ghost" data-act="demo-res">Fill demo resident</button><button class="btn sm ghost" data-act="demo-admin">Fill demo admin</button></div>`}</div>`:nlogin()}</div></div>${siteFooter()}</div>`;
 }
-const flatOpts=(t='A')=>{const o=[];for(let f=1;f<=10;f++)for(let u=1;u<=4;u++)o.push(f+'0'+u);return o.map(x=>[x,'Flat '+x])};
+const flatOpts=code=>{const ts=cfg().site.towers,t=ts.find(x=>x.code===code)||ts[0];return(t?t.flats:[]).slice().sort(flatSort).map(x=>[x,'Flat '+x])};
+/* picking a tower swaps the flat list to that tower's flats */
+document.addEventListener('change',e=>{const t=e.target;if(!t||t.id!=='r_tower')return;const f=$('#r_flat');if(f)f.innerHTML=flatOpts(t.value).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join('')});
+/* proof of ownership or tenancy: a file the admin can open when approving */
+const PROOF_EXT=['pdf','png','jpg','jpeg','webp','doc','docx'];
+const proofField=()=>`<label class="fld full" for="r_proof"><span>Upload proof (optional)</span><input type="file" id="r_proof" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,application/pdf,image/*"><em class="hint">Allotment letter, sale deed, rent agreement or ID. PDF, photo or Word, up to 5 MB. Only the admin can open it.</em></label>`;
+/* Reads the chosen proof. Photos are shrunk first, because phone photos are often bigger than the 5 MB limit. */
+async function proofPick(form){
+ const el=$('#r_proof',form),file=el&&el.files&&el.files[0];if(!file)return null;
+ const ext=(file.name.split('.').pop()||'').toLowerCase();
+ if(!PROOF_EXT.includes(ext))throw new Error('Choose a PDF, photo or Word file for the proof.');
+ if(!file.size)throw new Error('That proof file is empty.');
+ let name=file.name,url=null;
+ if(['png','jpg','jpeg','webp'].includes(ext)){try{url=await readImage(file,1800,.8);name=name.replace(/\.[^.]+$/,'')+'.jpg'}catch(e){url=null}}
+ if(!url){if(file.size>ATT_MAX)throw new Error('The proof file is larger than 5 MB.');url=await fileToDataUrl(file)}
+ const data=url.slice(url.indexOf(',')+1);
+ if(data.length>Math.ceil(ATT_MAX*4/3))throw new Error('The proof file is larger than 5 MB.');
+ return{name,data,url,ext:/\.jpg$/i.test(name)&&url.startsWith('data:image/jpeg')?'jpg':ext,size:Math.floor(data.length*3/4)}}
 function waitScreen(m){const rej=m.status==='rejected';return`<div class="wrap"><div class="landing-top">${brand()}<div class="sp"></div><button class="btn sm" data-act="logout">${ic('logout')}Sign out</button></div><div class="wait view enter"><div class="big">${ic(rej?'x':'hourglass')}</div><h2>${rej?'Registration not approved':'Waiting for admin approval'}</h2><p class="muted">${rej?`The admin declined your request${m.reason?': '+esc(m.reason):'.'} You can contact the society office or register again with correct details.`:`Thanks, ${esc(m.name.split(' ')[0])}. Your request for <b>${esc(flatKey(m))}</b> as ${esc(m.type.toLowerCase())} is with the committee. You will get full access as soon as it is approved.`}</p><div class="card flat" style="width:100%;text-align:left"><div class="kv"><span>Name</span><span>${esc(m.name)}</span></div><div class="kv"><span>Flat</span><span>${esc(flatKey(m))}</span></div><div class="kv"><span>Mobile</span><span>${esc(m.mobile)}</span></div><div class="kv"><span>Status</span><span>${sChip(m.status)}</span></div></div><div class="row">${btn('Check status','refresh',{c:'pri'})}${rej?btn('Register again','reregister'):''}</div></div></div>`}
 ACT.refresh=async()=>{if(REMOTE){try{const r=await api('/api/state');adopt(r.db,r.rev);SES=r.session;setSes(SES)}catch(e){if(e.status===401)return endSession('Your session ended. Please sign in again.');return toast(e.message,'x')}}render(true);toast('Status refreshed','info')};
 ACT['retry-boot']=async()=>{if(await startRemote())render(true)};
@@ -106,14 +123,19 @@ FORMS.login=async(d,f)=>{
  const idf=d.l_id.trim().toLowerCase(),h=await sha(d.l_pw);
  if(idf===DB.settings.adminUser.toLowerCase()){if(h!==DB.settings.adminHash)return fErr('Incorrect admin password.');setSes({k:'admin'});await loginWow();location.hash='admin';render(true);return}
  const u=DB.users.find(u=>u.mobile===idf||(u.email&&u.email.toLowerCase()===idf));if(!u||u.passHash!==h)return fErr('Mobile, email or password is incorrect.');setSes({k:'user',id:u.id});await loginWow();location.hash=u.role==='security'?'gate':'home';render(true);toast('Welcome back, '+u.name.split(' ')[0])};
-FORMS.register=async(d)=>{const mob=d.r_mobile.trim();
+FORMS.register=async(d,f)=>{const mob=d.r_mobile.trim();
  if(d.r_name.trim().length<3)return fErr('Enter your full name.');
  if(!/^[6-9]\d{9}$/.test(mob))return fErr('Enter a valid 10 digit Indian mobile number.');
  if(d.r_pw.length<6)return fErr('Password needs at least 6 characters.');
  if(d.r_pw!==d.r_pw2)return fErr('The two passwords do not match.');
- if(REMOTE){try{const r=await api('/api/auth/register',{method:'POST',body:{name:d.r_name,tower:d.r_tower,flat:d.r_flat,type:d.r_type,members:d.r_members,mobile:mob,email:d.r_email,ref:d.r_ref,password:d.r_pw}});await openSession(r.token,r.session);render(true);confetti()}catch(e){TOKEN=null;lsDel(AKEY);fErr(e.message)}return}
+ const tw=cfg().site.towers.find(t=>t.code===d.r_tower);if(!tw||!tw.flats.includes(d.r_flat))return fErr('Choose your tower and flat number from the list.');
+ let proof=null;try{proof=await proofPick(f)}catch(e){return fErr(e.message)}
+ const extra={intercom:(d.r_intercom||'').trim(),company:(d.r_company||'').trim(),designation:(d.r_desig||'').trim()};
+ if(REMOTE){try{if(proof)toast('Uploading your proof…','info');const r=await api('/api/auth/register',{method:'POST',body:{name:d.r_name,tower:d.r_tower,flat:d.r_flat,type:d.r_type,members:d.r_members,mobile:mob,email:d.r_email,ref:d.r_ref,password:d.r_pw,...extra,...(proof?{proof:{name:proof.name,data:proof.data}}:{})}});await openSession(r.token,r.session);render(true);confetti()}catch(e){TOKEN=null;lsDel(AKEY);fErr(e.message)}return}
  if(DB.users.some(u=>u.mobile===mob))return fErr('This mobile number is already registered. Sign in instead.');
  if(d.r_type==='Owner'&&DB.users.some(u=>u.tower===d.r_tower&&u.flat===d.r_flat&&u.type==='Owner'&&u.status==='approved'))return fErr(`${d.r_tower}-${d.r_flat} already has an approved owner. Register as Tenant or Family member, or contact the office.`);
- const u={id:uid('u'),name:d.r_name.trim(),tower:d.r_tower,flat:d.r_flat,mobile:mob,email:d.r_email.trim(),type:d.r_type,passHash:await sha(d.r_pw),status:'pending',role:'resident',title:'',members:+d.r_members||1,vehicle:'',showPhone:false,ref:d.r_ref.trim(),created:Date.now()};
+ if(proof&&proof.size>1.2*1024*1024)return fErr('In demo mode the proof file is limited to 1 MB. Connect the server for 5 MB files.');
+ const u={id:uid('u'),name:d.r_name.trim(),tower:d.r_tower,flat:d.r_flat,mobile:mob,email:d.r_email.trim(),type:d.r_type,passHash:await sha(d.r_pw),status:'pending',role:'resident',title:'',members:+d.r_members||1,vehicle:'',showPhone:false,ref:d.r_ref.trim(),created:Date.now(),...extra};
+ if(proof)u.proof={id:uid('f'),name:proof.name,mime:ATT_MIME[proof.ext]||'application/octet-stream',size:proof.size,local:proof.url};
  DB.users.push(u);notify('admin',`New registration request from ${u.name} (${flatKey(u)})`,'members');logAct(`${u.name} registered for ${flatKey(u)}`);save();setSes({k:'user',id:u.id});render(true);confetti()};
 function fErr(t){const e=$('#ferr');if(e)e.textContent=t;return false}
