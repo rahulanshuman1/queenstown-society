@@ -90,7 +90,7 @@ document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.i
  try{const th=lsGet(TKEY);if(th)document.documentElement.dataset.theme=th}catch(e){}
  if(REMOTE){if(!(await startRemote()))return}
  else{loadDB();if(!DB||!DB.settings){DB=await seed();save()}
- DB.entries=DB.entries||[];DB.visitors=DB.visitors||[];DB.notifs=DB.notifs||[];DB.log=DB.log||[];
+ DB.entries=DB.entries||[];DB.visitors=DB.visitors||[];DB.notifs=DB.notifs||[];DB.log=DB.log||[];ncBoot();
  if(SES&&SES.k==='user'&&!DB.users.some(u=>u.id===SES.id))SES=null}
  render(true);
  if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});

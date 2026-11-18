@@ -5,11 +5,13 @@
 
 const files = require('./files');
 const society = require('./society');
+const flows = require('./flows');
+const crypto = require('crypto');
 const { cleanPenalty, penaltyOf } = require('./penalty');
 const COLLS = ['users', 'notices', 'events', 'bills', 'schedule', 'amenities', 'bookings', 'complaints',
-  'ads', 'polls', 'docs', 'contacts', 'entries', 'visitors', 'notifs', 'log'];
+  'ads', 'polls', 'docs', 'contacts', 'entries', 'visitors', 'notifs', 'log', 'requests'];
 // The browser keeps these newest first (it uses unshift), the others oldest first.
-const UNSHIFT = new Set(['complaints', 'visitors', 'ads', 'polls', 'docs', 'notifs', 'log']);
+const UNSHIFT = new Set(['requests', 'complaints', 'visitors', 'ads', 'polls', 'docs', 'notifs', 'log']);
 
 const str = (v, max) => String(v == null ? '' : v).slice(0, max);
 const isId = v => typeof v === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(v);
@@ -92,6 +94,9 @@ function viewFor(actor, data, now = Date.now()) {
           : { id: b.id, amenityId: b.amenityId, date: b.date, slot: b.slot, status: b.status, userId: '', purpose: '', redacted: true });
         break;
       case 'complaints':
+        list = admin ? rows : rows.filter(r => r.userId === aid);
+        break;
+      case 'requests':
         list = admin ? rows : rows.filter(r => r.userId === aid);
         break;
       case 'visitors': {
@@ -392,6 +397,30 @@ const RULES = {
     remove: adminOnly.remove
   },
 
+  requests: {
+    /* Answers to a form made in the no-code builder. The form (fields, required, options) comes from the
+       saved blueprint, never from the browser, so a resident cannot invent fields or skip a required one. */
+    upsert(c, ex, d) {
+      if (c.guard) return { err: 'Not allowed.' };
+      if (!ex) {
+        const bp = flows.clean(c.settings && c.settings.nocode);
+        const form = bp.forms.find(f => f.id === d.formId && f.on);
+        if (!form) return { err: 'That form is not available.' };
+        if (!c.admin && form.audience !== 'all' && form.audience !== c.actor.type) return { err: 'This form is only for ' + form.audience.toLowerCase() + 's.' };
+        const chk = flows.checkAnswers(form, d.answers);
+        if (chk.err) return { err: chk.err };
+        return { doc: {
+          id: d.id, formId: form.id, formName: form.name, userId: c.aid, name: c.admin ? 'Society Office' : str(c.name, 80), flat: c.fk,
+          fields: form.fields.map(f => ({ id: f.id, label: f.label, type: f.type })), answers: chk.answers,
+          status: 'pending', note: '', created: c.now
+        } };
+      }
+      if (!c.admin) return { ok: true };
+      return { doc: { ...ex, status: flows.REQ_STATUS.includes(d.status) ? d.status : ex.status, note: str(d.note, 500) } };
+    },
+    remove: adminOnly.remove
+  },
+
   notifs: {
     async upsert(c, ex, d) {
       if (c.admin) return { doc: { ...d, read: union(ex && ex.read, d.read) } };
@@ -428,7 +457,7 @@ const RULES = {
   schedule: adminOnly, amenities: adminOnly, contacts: adminOnly, entries: adminOnly
 };
 
-const SETTINGS_FIELDS = ['name', 'tagline', 'address', 'upi', 'upiName', 'bank', 'bankDetails', 'payMethods', 'charges', 'dueDay', 'latePct', 'penalty', 'adRates', 'demo', 'site'];
+const SETTINGS_FIELDS = ['name', 'tagline', 'address', 'upi', 'upiName', 'bank', 'bankDetails', 'payMethods', 'charges', 'dueDay', 'latePct', 'penalty', 'adRates', 'demo', 'site', 'nocode'];
 
 /* ---- site look and content (logo, festive theme, website text, footer) ----
    Everything here is shown to visitors before they sign in, so it is checked field by field.
@@ -502,9 +531,32 @@ function cleanSettings(ex, d) {
   if ('penalty' in n) n.penalty = cleanPenalty(n.penalty);
   n.adRates = { banner: num(n.adRates && n.adRates.banner, 0, 1e6, 0), classified: num(n.adRates && n.adRates.classified, 0, 1e6, 0) };
   if ('site' in n) n.site = cleanSite(n.site);
+  if ('nocode' in n) n.nocode = flows.clean(n.nocode);
   n.id = 'settings';
   delete n.adminUser; delete n.adminHash;
   return n;
+}
+
+/* ---- automations: applied here, on the server, so a resident's browser can never skip or fake them ---- */
+const rid = () => 'a' + crypto.randomBytes(8).toString('hex');
+async function runAutomations(c, coll, doc) {
+  const trigger = coll === 'requests' ? 'request.created' : 'complaint.created';
+  const rec = { ...doc, name: doc.userId === 'admin' ? 'Society Office' : (c.name || ''), flat: c.fk || '', form: doc.formName || '', title: doc.title || doc.formName || '' };
+  const effects = flows.run(c.settings && c.settings.nocode, trigger, rec);
+  if (!effects.length) return;
+  let cur = { ...doc }, changed = false;
+  const link = coll === 'requests' ? 'services' : 'helpdesk';
+  for (const e of effects) {
+    if (e.type === 'notify_admin') await c.store.put('notifs', { id: rid(), to: 'admin', text: str(e.text, 300), link: coll === 'requests' ? 'requests' : 'helpdesk', at: c.now, read: [], auto: true });
+    else if (e.type === 'notify_resident' && cur.userId && cur.userId !== 'admin') await c.store.put('notifs', { id: rid(), to: cur.userId, text: str(e.text, 300), link, at: c.now, read: [], auto: true });
+    else if (e.type === 'set_status') { cur.status = e.value; changed = true; }
+    else if (e.type === 'assign' && coll === 'complaints') { cur.assignee = str(e.value, 60); changed = true; }
+    else if (e.type === 'post_notice') {
+      await c.store.put('notices', { id: rid(), title: str(e.title, 120), body: str(e.text, 600) || str(e.title, 120), category: 'General', priority: 'normal', pinned: false, date: new Date(c.now).toISOString(), author: 'Society Office (automation)', readBy: [], attachment: null });
+      await c.store.put('notifs', { id: rid(), to: 'all', text: 'New notice: ' + str(e.title, 120), link: 'notices', at: c.now, read: [], auto: true });
+    }
+  }
+  if (changed) await c.store.put(coll, cur);
 }
 
 async function applyChanges(actor, store, changes, now = Date.now()) {
@@ -549,7 +601,10 @@ async function applyChanges(actor, store, changes, now = Date.now()) {
       const ex = await store.get(coll, d.id);
       const r = await R.upsert(ctx, ex, d);
       if (r.err) { rejected.push({ coll, id: d.id, err: r.err }); continue; }
-      if (r.doc) { r.doc.id = d.id; await store.put(coll, r.doc); applied++; }
+      if (r.doc) {
+        r.doc.id = d.id; await store.put(coll, r.doc); applied++;
+        if (!ex && (coll === 'requests' || coll === 'complaints')) { try { await runAutomations(ctx, coll, r.doc); } catch (e) { /* an automation must never block the save */ } }
+      }
     }
 
     for (const id of rems) {

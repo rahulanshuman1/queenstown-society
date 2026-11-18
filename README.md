@@ -75,3 +75,15 @@ cd server && npm test
 - **Flats and vehicles:** which resident lives in which flat (names only), the vehicle numbers registered to each flat (search by flat, name or vehicle number to settle parking issues). Phone numbers are never shown to guards.
 - **Ring:** a guard can ring every resident of a flat through the app with a short message. It pops up on their phone like a call. A real phone call bridge (masked calling) needs a telephony provider such as Exotel or Twilio and is not part of this app.
 - **Emergency:** police, fire and ambulance numbers, the society's emergency contacts from the Directory, and step by step protocols for fire, medical emergency, theft, a stuck lift and suspicious visitors.
+
+## No-code builder (admin > No-code builder)
+
+The committee shapes the app without code. Everything is saved as one plain-data blueprint in `settings.nocode`.
+
+- **Modules**: switch features on or off for residents, with a live phone preview of the menu.
+- **Forms**: design request forms (text, long text, number, date, dropdown, checkbox, phone). They appear under Services; admins handle them in Requests.
+- **Automations**: when a form is submitted or a ticket is raised, check conditions, then approve, notify, assign or post a notice.
+- **Templates**: apartment, villa, co-living and office park set up all of the above in one tap.
+- **Blueprint**: copy, edit, download or import the whole setup as JSON (validated).
+
+`server/lib/flows.js` is the single engine (clean, validate answers, decide which automations fire). The API applies the effects on the server; demo mode applies them in the browser. `npm test` in `server/` covers it (`test/nocode.test.js`).

@@ -412,7 +412,7 @@ body.pv .wrap{padding-bottom:150px}
 /* ===== Queenstown animated logo ===== */
 .alogo{--a1:#F7E9C2;--a2:#D6AC57;--w:260px;position:relative;display:block;width:var(--w);max-width:100%;aspect-ratio:692/411;flex:none;animation:alGlow 5s ease-in-out 3.4s infinite}
 .al-p{position:absolute;inset:0}
-.al-i,.al-sh{position:absolute;inset:0;-webkit-mask:url(assets/queenstown-logo.png?v=20261115152619) 0 0/100% 100% no-repeat;mask:url(assets/queenstown-logo.png?v=20261115152619) 0 0/100% 100% no-repeat}
+.al-i,.al-sh{position:absolute;inset:0;-webkit-mask:url(assets/queenstown-logo.png?v=20261118121010) 0 0/100% 100% no-repeat;mask:url(assets/queenstown-logo.png?v=20261118121010) 0 0/100% 100% no-repeat}
 .al-i{background:linear-gradient(180deg,var(--a1) 0%,var(--a2) 100%)}
 .al-sh{background:linear-gradient(105deg,transparent 38%,rgba(255,252,232,.95) 50%,transparent 62%) 130% 0/260% 100% no-repeat;animation:alSheen 6.5s ease-in-out 3.6s infinite;pointer-events:none}
 .al-c .al-i{animation:alBuild 2.1s cubic-bezier(.25,.6,.2,1) .15s both}
@@ -429,7 +429,7 @@ body.pv .wrap{padding-bottom:150px}
 
 /* castle mark used next to the society name */
 .amark{--a1:#F7E9C2;--a2:#D6AC57;position:relative;display:block;flex:none;width:56px;aspect-ratio:311/241}
-.am-i,.am-sh{position:absolute;inset:0;-webkit-mask:url(assets/queenstown-castle.png?v=20261115152619) 0 0/100% 100% no-repeat;mask:url(assets/queenstown-castle.png?v=20261115152619) 0 0/100% 100% no-repeat}
+.am-i,.am-sh{position:absolute;inset:0;-webkit-mask:url(assets/queenstown-castle.png?v=20261118121010) 0 0/100% 100% no-repeat;mask:url(assets/queenstown-castle.png?v=20261118121010) 0 0/100% 100% no-repeat}
 .am-i{background:linear-gradient(180deg,var(--a1),var(--a2));animation:amIn 1.3s cubic-bezier(.2,.8,.2,1) both}
 .am-sh{background:linear-gradient(105deg,transparent 40%,rgba(255,252,232,.95) 50%,transparent 60%) 130% 0/280% 100% no-repeat;animation:alSheen 7s ease-in-out 2.2s infinite}
 @keyframes amIn{from{opacity:0;transform:translateY(22%) scale(.96)}to{opacity:1;transform:none}}
@@ -615,10 +615,241 @@ body.pv .wrap{padding-bottom:150px}
 .chrow .btn{padding:8px;justify-content:center}
 .chtotal{font-size:14px}.chtotal b{font-size:17px}
 @media (max-width:520px){.chhead,.chrow{grid-template-columns:minmax(0,1fr) 110px 40px}}
+/* ===== no-code builder, services and requests ===== */
+.bld-tabs{overflow-x:auto;scrollbar-width:none}
+.bld-tabs button{display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.bld-tabs .ic{width:16px;height:16px}
+.kpis4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.kpis4{grid-template-columns:repeat(2,minmax(0,1fr))}.bld-tabs button span{display:none}.bld-tabs button.on span{display:inline}}
+.tiles.tpl{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.tile .ic{width:22px;height:22px;color:var(--brand)}
+.tile small{color:var(--ink-2);font-weight:500;line-height:1.35}
+.tiles.svc .tile{min-height:112px}
+.rot90{transform:rotate(90deg)}
+/* modules */
+.mods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.mods{grid-template-columns:minmax(0,1fr)}}
+.mod{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer;transition:opacity .2s,border-color .2s;min-width:0}
+.mod:hover{border-color:var(--brand)}
+.mod.off{opacity:.6}
+.mod .mi{width:38px;height:38px;border-radius:11px;background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand);display:grid;place-items:center;flex:none}
+.mod .mt{flex:1;min-width:0;display:flex;flex-direction:column}
+.mod .mt small{color:var(--ink-2);font-weight:500;overflow-wrap:anywhere}
+.mod .tgl{flex:none}
+.phonecard{align-self:start;position:sticky;top:16px}
+.phone{width:min(100%,250px);margin:6px auto 10px;border:6px solid var(--ink);border-radius:30px;background:var(--surface-2);overflow:hidden;box-shadow:var(--shadow)}
+.phone .pn{background:var(--side-bg);color:var(--side-ink);padding:14px 14px 12px;font:700 14px var(--f-display)}
+.phone .pm{padding:8px;display:flex;flex-direction:column;gap:3px;max-height:360px;overflow:auto}
+.phone .pi{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;background:var(--surface);font-weight:600;font-size:13px;animation:pin .25s both}
+.phone .pi .ic{width:16px;height:16px;color:var(--brand)}
+@keyframes pin{from{opacity:0;transform:translateX(-8px)}}
+@media (prefers-reduced-motion:reduce){.phone .pi{animation:none}}
+/* forms and automations lists */
+.frow{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:4px 8px 4px 4px;min-width:0}
+.frow.on{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 18%,transparent)}
+.fr-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-align:left;border:0;background:none;padding:8px;cursor:pointer;color:inherit;font:inherit}
+.fr-main>.ic{width:20px;height:20px;color:var(--brand);flex:none}
+.fr-main span{display:flex;flex-direction:column;min-width:0}
+.fr-main small{color:var(--ink-2);font-weight:500;line-height:1.4;overflow-wrap:anywhere}
+.frow.flow{align-items:flex-start}.frow.flow .tgl{padding-top:12px}
+/* question rows */
+.qrow{border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.qtop{display:grid;grid-template-columns:130px minmax(0,1fr) auto;gap:8px;align-items:center}
+.qtop select,.qtop input,.arow select,.arow input,.qbot input{width:100%;min-width:0;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.qact{display:flex;gap:2px}
+.qbot{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}.qbot .sp{flex:1;min-width:180px}
+.addq{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+@media (max-width:640px){.qtop{grid-template-columns:minmax(0,1fr) auto}.qtop select{grid-column:1/-1}}
+.pv{align-self:start;position:sticky;top:16px}
+.pv-head{display:flex;gap:12px;align-items:center;margin-bottom:14px}.pv-head .ic{width:28px;height:28px;color:var(--brand)}
+.pv-head small{display:block;color:var(--ink-2)}
+.pv-fs{border:0;padding:0;margin:0;min-width:0}
+/* automation editor */
+.sentence{padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--brand) 10%,transparent);border:1px dashed var(--brand);line-height:1.5}
+.arow{border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--surface-2)}
+.arow .fld{min-width:130px;margin:0}.arow .fld.sp{flex:1}
+.arow .wrap-r{flex-wrap:wrap}
+code{font:600 12px ui-monospace,Menlo,Consolas,monospace;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 5px;white-space:nowrap}
+/* blueprint */
+textarea.code{width:100%;min-height:360px;resize:vertical;font:500 12.5px/1.55 ui-monospace,Menlo,Consolas,monospace;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px;tab-size:2}
+/* requests */
+.ans{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px 16px;margin:12px 0}
+.ans dt{font-size:11.5px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.03em}
+.ans dd{margin:2px 0 0;font-weight:600;overflow-wrap:anywhere}
+.myreq{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--surface-2)}
+.card.req .fld input{width:100%}
+
+.split.flows{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+@media (max-width:900px){.split.flows{grid-template-columns:minmax(0,1fr)}}
+.tkn{display:inline-block;margin:2px 4px 2px 0;font-size:12px}
+.arow>.row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr) minmax(0,1fr) auto;gap:8px;align-items:end}
+.arow>.row .fld{min-width:0}
+@media (max-width:640px){.arow>.row{grid-template-columns:minmax(0,1fr) auto}}
 </style>
 <div id="app"></div><div id="modal-root"></div><div id="toasts" aria-live="polite"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>'use strict';
+/* The no-code engine, shared by the browser and the API (one file, two runtimes).
+
+   A blueprint is plain data: modules switched on or off, forms made of fields, and automations
+   ("when this happens, if that is true, do these things"). This file knows how to
+     - clean a blueprint so nothing unexpected is stored (clean)
+     - answer which automations fire for an event (run), returning the effects as data
+   It never touches a database. Whoever calls run() applies the effects, so the same rules work in
+   the offline demo (browser) and the real server, where the server is the only place that applies them. */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.QSFlows = factory();
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+
+  const MODULES = ['notices', 'events', 'forecast', 'helpdesk', 'amenities', 'visitors', 'marketplace', 'polls', 'gallery', 'accounts', 'documents', 'directory'];
+  const FIELD_TYPES = ['text', 'longtext', 'number', 'date', 'select', 'checkbox', 'phone'];
+  const TRIGGERS = ['request.created', 'complaint.created'];
+  const OPS = ['is', 'isnot', 'contains', 'gt', 'lt', 'empty'];
+  const ACTIONS = ['notify_admin', 'notify_resident', 'set_status', 'assign', 'post_notice'];
+  const REQ_STATUS = ['pending', 'approved', 'rejected', 'done'];
+  const TKT_STATUS = ['open', 'in-progress', 'resolved'];
+  const ICONS = ['layout', 'key', 'building', 'book', 'tag', 'users', 'gear', 'wallet', 'flag', 'visitor', 'calendar', 'shield'];
+
+  const str = (v, max) => String(v == null ? '' : v).slice(0, max);
+  const isId = v => typeof v === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(v);
+  const arr = v => (Array.isArray(v) ? v : []);
+  const obj = v => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
+
+  /* ---------- cleaning ---------- */
+  function cleanField(f, i, seen) {
+    f = obj(f);
+    let id = isId(f.id) ? f.id : 'f' + (i + 1);
+    while (seen.has(id)) id += 'x';
+    seen.add(id);
+    const type = FIELD_TYPES.includes(f.type) ? f.type : 'text';
+    const out = { id, label: str(f.label, 80).trim() || 'Question ' + (i + 1), type, req: !!f.req };
+    if (type === 'select') {
+      out.options = arr(f.options).map(o => str(o, 60).trim()).filter(Boolean).slice(0, 20);
+      if (!out.options.length) out.options = ['Option 1', 'Option 2'];
+    }
+    return out;
+  }
+  function cleanForm(f, i, seenForms) {
+    f = obj(f);
+    let id = isId(f.id) ? f.id : 'form' + (i + 1);
+    while (seenForms.has(id)) id += 'x';
+    seenForms.add(id);
+    const seen = new Set();
+    return {
+      id, name: str(f.name, 60).trim() || 'Untitled form', desc: str(f.desc, 200).trim(),
+      icon: ICONS.includes(f.icon) ? f.icon : 'layout', on: f.on !== false,
+      audience: ['all', 'Owner', 'Tenant'].includes(f.audience) ? f.audience : 'all',
+      fields: arr(f.fields).slice(0, 15).map((x, k) => cleanField(x, k, seen))
+    };
+  }
+  function cleanFlow(w, i, seenFlows) {
+    w = obj(w);
+    let id = isId(w.id) ? w.id : 'flow' + (i + 1);
+    while (seenFlows.has(id)) id += 'x';
+    seenFlows.add(id);
+    const action = a => {
+      a = obj(a);
+      if (!ACTIONS.includes(a.type)) return null;
+      const o = { type: a.type };
+      if (a.type === 'notify_admin' || a.type === 'notify_resident') o.text = str(a.text, 200);
+      if (a.type === 'set_status') o.value = str(a.value, 20);
+      if (a.type === 'assign') o.value = str(a.value, 60);
+      if (a.type === 'post_notice') { o.title = str(a.title, 120); o.text = str(a.text, 600); }
+      return o;
+    };
+    return {
+      id, name: str(w.name, 80).trim() || 'Automation ' + (i + 1), on: w.on !== false,
+      trigger: TRIGGERS.includes(w.trigger) ? w.trigger : 'request.created',
+      formId: isId(w.formId) ? w.formId : '',
+      conds: arr(w.conds).slice(0, 4).map(c => { c = obj(c); return { field: str(c.field, 60), op: OPS.includes(c.op) ? c.op : 'is', value: str(c.value, 80) }; }).filter(c => c.field),
+      actions: arr(w.actions).slice(0, 4).map(action).filter(Boolean)
+    };
+  }
+  /* A blueprint is { modules, forms, flows, template }. Anything else is dropped. */
+  function clean(b) {
+    b = obj(b);
+    const modules = {};
+    const m = obj(b.modules);
+    for (const k of MODULES) if (m[k] === false) modules[k] = false;
+    const sf = new Set(), sw = new Set();
+    return {
+      template: str(b.template, 30).replace(/[^a-z0-9-]/gi, ''),
+      modules,
+      forms: arr(b.forms).slice(0, 12).map((f, i) => cleanForm(f, i, sf)),
+      flows: arr(b.flows).slice(0, 20).map((w, i) => cleanFlow(w, i, sw))
+    };
+  }
+
+  /* ---------- reading an answer back as text ---------- */
+  const fmtAnswer = (f, v) => (f.type === 'checkbox' ? (v ? 'Yes' : 'No') : v == null ? '' : String(v));
+  /* Check what a resident sent against the form. Returns { answers } or { err }. Unknown ids are dropped. */
+  function checkAnswers(form, raw) {
+    raw = obj(raw);
+    const answers = {};
+    for (const f of form.fields) {
+      let v = raw[f.id];
+      if (f.type === 'checkbox') { answers[f.id] = v === true || v === 'on' || v === 'true'; if (f.req && !answers[f.id]) return { err: 'Please tick: ' + f.label }; continue; }
+      v = str(v, f.type === 'longtext' ? 1500 : 200).trim();
+      if (!v) { if (f.req) return { err: f.label + ' is required.' }; answers[f.id] = ''; continue; }
+      if (f.type === 'number') { if (!Number.isFinite(Number(v))) return { err: f.label + ' must be a number.' }; v = String(Number(v)); }
+      if (f.type === 'date' && !/^\d{4}-\d{2}-\d{2}$/.test(v)) return { err: f.label + ' must be a date.' };
+      if (f.type === 'phone' && !/^[+0-9 ()-]{5,20}$/.test(v)) return { err: f.label + ' must be a phone number.' };
+      if (f.type === 'select' && !f.options.includes(v)) return { err: 'Choose one of the options for ' + f.label + '.' };
+      answers[f.id] = v;
+    }
+    return { answers };
+  }
+
+  /* ---------- running automations ---------- */
+  /* Path lookup on the event record: 'flat', 'priority', 'form', or 'a.<fieldId>' for a form answer. */
+  function pick(rec, path) {
+    if (path.startsWith('a.')) { const v = obj(rec.answers)[path.slice(2)]; return v == null ? '' : v; }
+    const v = rec[path];
+    return v == null ? '' : v;
+  }
+  function test(c, rec) {
+    const got = String(pick(rec, c.field)).trim().toLowerCase(), want = String(c.value).trim().toLowerCase();
+    switch (c.op) {
+      case 'is': return got === want;
+      case 'isnot': return got !== want;
+      case 'contains': return want !== '' && got.includes(want);
+      case 'gt': return got !== '' && Number(got) > Number(want);
+      case 'lt': return got !== '' && Number(got) < Number(want);
+      case 'empty': return got === '';
+      default: return false;
+    }
+  }
+  /* {{name}} {{flat}} {{form}} {{title}} {{a.<fieldId>}} in a message become real values */
+  function fill(t, rec) {
+    return String(t || '').replace(/\{\{\s*([a-zA-Z0-9_.-]{1,50})\s*\}\}/g, (_, k) => String(pick(rec, k)).slice(0, 200)).slice(0, 600);
+  }
+  /* trigger: 'request.created' | 'complaint.created'. rec: the new record, flattened for matching.
+     Returns the effects to apply, in order. Pure function: same input, same output. */
+  function run(blueprint, trigger, rec) {
+    const bp = clean(blueprint), effects = [];
+    for (const w of bp.flows) {
+      if (!w.on || w.trigger !== trigger) continue;
+      if (w.formId && w.formId !== rec.formId) continue;
+      if (!w.conds.every(c => test(c, rec))) continue;
+      for (const a of w.actions) {
+        const e = { type: a.type, flow: w.id };
+        if (a.type === 'notify_admin' || a.type === 'notify_resident') { e.text = fill(a.text, rec); if (!e.text) continue; }
+        else if (a.type === 'set_status') {
+          const ok = trigger === 'request.created' ? REQ_STATUS : TKT_STATUS;
+          if (!ok.includes(a.value)) continue;
+          e.value = a.value;
+        } else if (a.type === 'assign') { e.value = fill(a.value, rec).slice(0, 60); if (!e.value) continue; }
+        else if (a.type === 'post_notice') { e.title = fill(a.title, rec).slice(0, 120); e.text = fill(a.text, rec); if (!e.title) continue; }
+        effects.push(e);
+      }
+    }
+    return effects;
+  }
+
+  return { MODULES, FIELD_TYPES, TRIGGERS, OPS, ACTIONS, REQ_STATUS, TKT_STATUS, ICONS, clean, checkAnswers, run, fill, pick, fmtAnswer };
+});
+'use strict';
 /* ========== utils ========== */
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -746,7 +977,7 @@ function setSes(s){SES=s;if(s)lsSet(SKEY,JSON.stringify(s));else lsDel(SKEY)}
 const adminName=()=>REMOTE?(SES&&SES.username)||'admin':DB.settings.adminUser;
 
 /* ----- remote mode: server calls and change syncing ----- */
-const SYNC_COLLS=['users','notices','events','bills','schedule','amenities','bookings','complaints','ads','polls','docs','contacts','entries','visitors','notifs','log'];
+const SYNC_COLLS=['users','notices','events','bills','schedule','amenities','bookings','complaints','ads','polls','docs','contacts','entries','visitors','notifs','log','requests'];
 let SNAP={},syncing=false,dirty=false,LASTREV=null,syncTimer=null,failStreak=0,LASTREJ=[];
 /* Saves now and waits for the server. Returns the changes the server refused (empty when all was saved). */
 async function flushWait(){if(!REMOTE||!TOKEN)return[];clearTimeout(syncTimer);for(let i=0;i<60&&syncing;i++)await new Promise(r=>setTimeout(r,100));LASTREJ=[];await flush();return LASTREJ}
@@ -972,10 +1203,10 @@ const NAV=[['home','Home','home'],['notices','Notices','notice'],['maintenance',
 const ANAV=[['admin','Dashboard','shield'],['members','Members','users'],['billing','Billing','wallet'],['setup','Society setup','gear'],['studio','Site studio','palette']];
 const ROUTES={};
 const canAccounts=()=>{const m=me();return isAdmin()||!!m&&m.role==='committee'};
-const navOk=n=>n[0]!=='accounts'||canAccounts();
-const routeOf=()=>{if(isGuard()){const g=location.hash.slice(1);return['gate','flats','emerg','notices','profile'].includes(g)?g:'gate'}let h=location.hash.slice(1)||(isAdmin()?'admin':'home');if(isAdmin()&&h==='maintenance')h='billing';if(!isAdmin()&&ANAV.some(a=>a[0]===h))h='home';if(h!=='profile'&&!NAV.some(n=>n[0]===h)&&!ANAV.some(n=>n[0]===h))h='home';if(h==='accounts'&&!canAccounts())h='home';return h};
+const navOk=n=>{if(n[0]==='accounts')return canAccounts();if(n[0]==='services')return!isAdmin()&&servicesOn();return modOn(n[0])};
+const routeOf=()=>{if(isGuard()){const g=location.hash.slice(1);return['gate','flats','emerg','notices','profile'].includes(g)?g:'gate'}let h=location.hash.slice(1)||(isAdmin()?'admin':'home');if(isAdmin()&&h==='maintenance')h='billing';if(!isAdmin()&&ANAV.some(a=>a[0]===h))h='home';if(h!=='profile'&&!NAV.some(n=>n[0]===h)&&!ANAV.some(n=>n[0]===h))h='home';if(h==='accounts'&&!canAccounts())h='home';if(!isAdmin()){const nn=NAV.find(n=>n[0]===h);if(nn&&!navOk(nn))h='home'}return h};
 const pendingReviews=()=>DB.ads.filter(a=>a.status==='pending').length+DB.bookings.filter(b=>b.status==='pending').length+DB.bills.filter(b=>b.status==='verifying').length;
-function navBadge(id){if(isGuard())return id==='gate'?DB.visitors.filter(v=>v.status==='waiting').length:0;if(!isAdmin())return 0;return id==='members'?DB.users.filter(u=>u.status==='pending').length:id==='billing'?DB.bills.filter(b=>b.status==='verifying').length:id==='helpdesk'?DB.complaints.filter(c=>c.status==='open').length:id==='amenities'?DB.bookings.filter(b=>b.status==='pending').length:id==='marketplace'?DB.ads.filter(a=>a.status==='pending').length:0}
+function navBadge(id){if(isGuard())return id==='gate'?DB.visitors.filter(v=>v.status==='waiting').length:0;if(!isAdmin())return 0;return id==='members'?DB.users.filter(u=>u.status==='pending').length:id==='billing'?DB.bills.filter(b=>b.status==='verifying').length:id==='helpdesk'?DB.complaints.filter(c=>c.status==='open').length:id==='amenities'?DB.bookings.filter(b=>b.status==='pending').length:id==='marketplace'?DB.ads.filter(a=>a.status==='pending').length:id==='requests'?(DB.requests||[]).filter(r=>r.status==='pending').length:0}
 const logo=`<svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#E39A1B"/><path d="M9 31V19l5-3v15M16 31V12l6-4v23M24 31V17l7 3v11" fill="#0B3B3A"/><rect x="18" y="14" width="2" height="2" fill="#E39A1B"/><rect x="18" y="19" width="2" height="2" fill="#E39A1B"/><rect x="18" y="24" width="2" height="2" fill="#E39A1B"/></svg>`;
 const brand=()=>{const n=cfg().name||'Queenstown Society';return`<a class="brand" href="#${isAdmin()?'admin':isGuard()?'gate':'home'}">${logoHtml()}<div><b>${esc(n.split(' ')[0])}</b>${n.split(' ').slice(1).length?`<span>${esc(n.split(' ').slice(1).join(' '))}</span>`:''}</div></a>`};
 
@@ -1226,7 +1457,7 @@ ROUTES.helpdesk=()=>{const m=me(),adm=isAdmin(),tab=UI.tab||'all';let l=DB.compl
  const who=id=>{const u=DB.users.find(x=>x.id===id);return u?esc(flatKey(u))+' · '+esc(u.name):'Resident'};
  return head(adm?'Helpdesk':'My tickets','Raise a complaint or request and track it until it is fixed.',btn('New ticket','ticket-new',{c:'pri',i:'plus'}))+`<div class="filters">${[['all','All'],['open','Open'],['in-progress','In progress'],['resolved','Resolved']].map(t=>`<button class="pill ${tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${t[1]}</button>`).join('')}</div><div class="stack">${l.length?l.map(c=>`<div class="notice ${c.priority==='high'?'urgent':''}" data-act="ticket-open" data-id="${c.id}" tabindex="0"><div class="ni">${ic('chat')}</div><div class="sp" style="min-width:0"><h4>${esc(c.title)}</h4><p>${esc(c.body)}</p><div class="meta">${sChip(c.status)}${chip(esc(c.category))}${c.priority==='high'?chip('Urgent','bad'):''}<span>${adm?who(c.userId)+' · ':''}${rel(c.created)}</span><span>${c.comments.length} update${c.comments.length===1?'':'s'}</span></div></div></div>`).join(''):empty('chat','No tickets here','Raise a ticket and the office will respond.')}</div>`};
 ACT['ticket-new']=()=>modal('Raise a ticket',formWrap('ticket',F.t('t_title','Short title',{req:true,cls:'full',ph:'Water leakage in bathroom'})+F.s('t_cat','Category',TCATS)+F.s('t_pri','Priority',[['normal','Normal'],['high','Urgent']])+F.a('t_body','Describe the problem',{req:true,cls:'full'}),'Submit ticket'));
-FORMS.ticket=d=>{if(!d.t_title.trim()||!d.t_body.trim())return fErr('Add a title and describe the problem.');const m=me();DB.complaints.unshift({id:uid('c'),userId:m.id,category:d.t_cat,title:d.t_title.trim(),body:d.t_body.trim(),priority:d.t_pri,status:'open',assignee:'',created:Date.now(),comments:[]});notify('admin',`New ticket from ${isAdmin()?'office':flatKey(m)}: ${d.t_title.trim()}`,'helpdesk');save();closeModal();render();toast('Ticket raised')};
+FORMS.ticket=d=>{if(!d.t_title.trim()||!d.t_body.trim())return fErr('Add a title and describe the problem.');const m=me();const tk={id:uid('c'),userId:m.id,category:d.t_cat,title:d.t_title.trim(),body:d.t_body.trim(),priority:d.t_pri,status:'open',assignee:'',created:Date.now(),comments:[]};DB.complaints.unshift(tk);notify('admin',`New ticket from ${isAdmin()?'office':flatKey(m)}: ${d.t_title.trim()}`,'helpdesk');const said=ncAutomate('complaints',tk,isAdmin()?null:m);save();closeModal();render();toast(said.length?'Ticket raised. Automation: '+said.join(', '):'Ticket raised')};
 ACT['ticket-open']=d=>{const c=DB.complaints.find(x=>x.id===d.id),adm=isAdmin(),u=DB.users.find(x=>x.id===c.userId);
  modal(esc(c.title),`<div class="stack"><div class="row wrap-r">${sChip(c.status)}${chip(esc(c.category))}${c.priority==='high'?chip('Urgent','bad'):''}<small>${u?esc(flatKey(u))+' · ':''}${fdatey(c.created)}</small></div><p style="white-space:pre-wrap">${esc(c.body)}</p>${c.assignee?`<div class="chip info">Assigned to ${esc(c.assignee)}</div>`:''}<div class="tl">${c.comments.map(x=>`<div class="tli"><div class="sp"><b>${esc(x.by)}</b> <small>${rel(x.at)}</small><br>${esc(x.text)}</div></div>`).join('')||'<small>No updates yet.</small>'}</div>
  <form data-form="comment" class="row" style="align-items:flex-end"><input type="hidden" name="id" value="${c.id}"><label class="fld sp"><span>Add an update</span><input id="c_text" name="c_text" required></label><button class="btn pri" type="submit">${ic('send')}Send</button></form>
@@ -1688,6 +1919,277 @@ ACT['site-save']=async()=>{
  PV=null;studioStart();if(routeOf()!=='studio'&&isAdmin())location.hash='studio';
  render(true);toast('Saved. Residents and visitors see the changes now.')};
 window.addEventListener('beforeunload',e=>{if(siteDirty()){e.preventDefault();e.returnValue=''}});
+/* ========== No-code builder ==========
+   The committee shapes the app without code. Everything here is data (a "blueprint") saved in
+   DB.settings.nocode: which modules residents see, the forms they fill in, and the automations that
+   react when something is submitted. QSFlows (server/lib/flows.js) is the one engine that cleans the
+   blueprint and decides which automations fire; the API runs it for real, this file runs it in the demo. */
+IP.bolt='<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>';
+IP.copy=IP.copy||'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>';
+IP.download='<path d="M12 3v12M7 11l5 5 5-5M5 21h14"/>';
+NAV.splice(3,0,['services','Services','layout']);
+ANAV.push(['requests','Requests','book'],['builder','No-code builder','bolt']);
+
+const FT={text:'Short text',longtext:'Long text',number:'Number',date:'Date',select:'Dropdown',checkbox:'Checkbox',phone:'Phone'};
+const TRG={'request.created':'a resident submits a form','complaint.created':'a helpdesk ticket is raised'};
+const OPL={is:'is',isnot:'is not',contains:'contains',gt:'is more than',lt:'is less than',empty:'is empty'};
+const ACL={notify_admin:'Notify the office',notify_resident:'Notify the resident',set_status:'Set the status',assign:'Assign to',post_notice:'Post a notice'};
+const MODS={notices:['Notices','Announcements with attachments','notice'],events:['Events','Events, RSVPs and the hero carousel','calendar'],forecast:['Forecast','The next 30 days at a glance','sunrise'],helpdesk:['Helpdesk','Tickets and complaints','chat'],amenities:['Amenities','Clubhouse, gym and slot booking','key'],visitors:['Visitors','Visitor passes and gate approvals','visitor'],marketplace:['Marketplace','Classifieds and banner ads','tag'],polls:['Polls','Votes and surveys','vote'],gallery:['Gallery','Photo albums','image'],accounts:['Accounts','Income and expense ledger (committee)','chart'],documents:['Documents','Bylaws, minutes and forms','book'],directory:['Directory','Residents and emergency contacts','users']};
+const MCOUNT={notices:'notices',events:'events',forecast:'schedule',helpdesk:'complaints',amenities:'amenities',visitors:'visitors',marketplace:'ads',polls:'polls',documents:'docs',directory:'contacts',accounts:'entries'};
+const BLD={tab:'start',form:null,flow:null};
+
+const nc=()=>{const s=DB.settings;if(!s.nocode)s.nocode=QSFlows.clean({});return s.nocode};
+const ncForms=()=>nc().forms,ncForm=id=>nc().forms.find(f=>f.id===id);
+function modOn(id){const m=DB&&DB.settings&&DB.settings.nocode&&DB.settings.nocode.modules;return isAdmin()||!m||m[id]!==false}
+const formsFor=()=>{const m=me();return ncForms().filter(f=>f.on&&(f.audience==='all'||(m&&f.audience===m.type)))};
+const servicesOn=()=>formsFor().length>0;
+/* Text boxes save quietly (no redraw), so a click on the next button is never lost; everything else redraws. */
+function ncCommit(re=true){
+ DB.settings.nocode=QSFlows.clean(nc());save();
+ if(re)return render();
+ const p=$('#ncprev');if(p&&BLD.tab==='forms')p.innerHTML=formPreview(ncForm(BLD.form));
+ const s=$('.sentence'),w=fnd(BLD.flow);if(s&&w)s.innerHTML=describeFlow(w);
+ const fm=ncForm(BLD.form),b=$('.frow.on .fr-main b');if(b&&BLD.tab==='forms'&&fm)b.textContent=fm.name;
+ const fw=$('.frow.flow.on .fr-main b');if(fw&&w)fw.textContent=w.name}
+
+/* ---------- templates: whole blueprints in one click ---------- */
+const Q=(id,label,type,req,options)=>({id,label,type,req:!!req,...(options?{options}:{})});
+const TEMPLATES={
+ community:{name:'Gated apartment community',note:'Move-in, renovation, parking and NOC forms with smart approvals',icon:'building',bp:()=>({modules:{},forms:[
+  {id:'move',name:'Move in / move out',desc:'Book the lift and a time slot for shifting.',icon:'building',fields:[Q('kind','Move in or move out','select',1,['Move in','Move out']),Q('date','Date','date',1),Q('vehicle','Vehicle','select',1,['Hand-carried','Tempo','Mini truck','Truck']),Q('contact','Mover contact number','phone',1),Q('agree','I will pay for any damage to the lift or corridor','checkbox',1)]},
+  {id:'reno',name:'Renovation permission',desc:'Ask the committee before any work starts.',icon:'gear',fields:[Q('work','Type of work','select',1,['Painting','Flooring','Plumbing','Electrical','Carpentry','Other']),Q('from','Start date','date',1),Q('days','Working days','number',1),Q('contractor','Contractor name','text',1),Q('details','Describe the work','longtext')]},
+  {id:'park',name:'Parking sticker',desc:'Get a sticker for your vehicle.',icon:'key',fields:[Q('type','Vehicle type','select',1,['Two-wheeler','Car']),Q('number','Registration number','text',1),Q('make','Make and model','text')]},
+  {id:'noc',name:'NOC or address proof',desc:'Letters for bank, passport or gas connection.',icon:'book',fields:[Q('purpose','What is it for','select',1,['Bank loan','Passport','Gas connection','Other']),Q('details','Anything the office should know','longtext')]}],
+  flows:[
+   {id:'w-park',name:'Two-wheeler stickers are approved instantly',trigger:'request.created',formId:'park',conds:[{field:'a.type',op:'is',value:'Two-wheeler'}],actions:[{type:'set_status',value:'approved'},{type:'notify_resident',text:'Hi {{name}}, your parking sticker for {{a.number}} is approved. Collect it from the security desk.'}]},
+   {id:'w-reno',name:'Long renovations need a committee look',trigger:'request.created',formId:'reno',conds:[{field:'a.days',op:'gt',value:'7'}],actions:[{type:'notify_admin',text:'{{flat}} wants {{a.days}} days of {{a.work}} work. Please review.'}]},
+   {id:'w-truck',name:'Truck moves alert the office',trigger:'request.created',formId:'move',conds:[{field:'a.vehicle',op:'is',value:'Truck'}],actions:[{type:'notify_admin',text:'{{flat}} has a truck for a {{a.kind}} on {{a.date}}. Check the lift.'}]},
+   {id:'w-lift',name:'Lift tickets go to the lift vendor',trigger:'complaint.created',formId:'',conds:[{field:'category',op:'is',value:'Lift'}],actions:[{type:'assign',value:'Lift vendor (AMC)'},{type:'set_status',value:'in-progress'},{type:'notify_resident',text:'{{name}}, we have informed the lift vendor about: {{title}}.'}]}]})},
+ villa:{name:'Villa or plotted community',note:'Contractor passes, water tankers and tree trimming',icon:'tag',bp:()=>({modules:{forecast:false,marketplace:false},forms:[
+  {id:'contractor',name:'Contractor entry pass',desc:'Let the gate know who is coming to work.',icon:'visitor',fields:[Q('who','Contractor or company','text',1),Q('phone','Phone','phone',1),Q('work','Work','text',1),Q('from','From','date',1),Q('to','To','date',1)]},
+  {id:'tanker',name:'Water tanker request',desc:'Book a tanker for your villa.',icon:'wallet',fields:[Q('count','Number of tankers','number',1),Q('date','Needed on','date',1)]},
+  {id:'tree',name:'Garden or tree trimming',desc:'Ask the maintenance crew for a visit.',icon:'flag',fields:[Q('where','Where','select',1,['Front garden','Back garden','Street side']),Q('details','What needs doing','longtext',1)]}],
+  flows:[
+   {id:'w-tank',name:'Big tanker orders are flagged',trigger:'request.created',formId:'tanker',conds:[{field:'a.count',op:'gt',value:'2'}],actions:[{type:'notify_admin',text:'{{flat}} asked for {{a.count}} tankers on {{a.date}}.'}]},
+   {id:'w-pass',name:'Every contractor pass alerts the gate office',trigger:'request.created',formId:'contractor',conds:[],actions:[{type:'notify_admin',text:'Contractor pass: {{a.who}} for {{flat}}, {{a.from}} to {{a.to}}.'},{type:'set_status',value:'approved'}]}]})},
+ coliving:{name:'Co-living or hostel',note:'Late passes, guest stays and room changes',icon:'users',bp:()=>({modules:{marketplace:false,accounts:false,polls:false},forms:[
+  {id:'late',name:'Late-night pass',desc:'Tell the warden you will return after curfew.',icon:'clock',fields:[Q('date','Date','date',1),Q('back','Expected back by','text',1),Q('why','Reason','select',1,['Work shift','Family event','Travel','Other'])]},
+  {id:'guest',name:'Guest stay',desc:'Host a guest overnight.',icon:'users',fields:[Q('guest','Guest name','text',1),Q('nights','Nights','number',1),Q('from','Arriving on','date',1)]},
+  {id:'room',name:'Room change request',desc:'Ask for a different room or bed.',icon:'key',fields:[Q('why','Why','longtext',1)]}],
+  flows:[
+   {id:'w-shift',name:'Work-shift late passes are approved on the spot',trigger:'request.created',formId:'late',conds:[{field:'a.why',op:'is',value:'Work shift'}],actions:[{type:'set_status',value:'approved'},{type:'notify_resident',text:'{{name}}, your late pass for {{a.date}} is approved.'}]},
+   {id:'w-nights',name:'Long guest stays go to the warden',trigger:'request.created',formId:'guest',conds:[{field:'a.nights',op:'gt',value:'3'}],actions:[{type:'notify_admin',text:'{{name}} ({{flat}}) wants a guest for {{a.nights}} nights.'}]}]})},
+ office:{name:'Office or business park',note:'Courier passes, visitor parking and desk issues',icon:'layout',bp:()=>({modules:{marketplace:false,polls:false,gallery:false,events:false},forms:[
+  {id:'courier',name:'Asset or courier gate pass',desc:'Take equipment out or receive a delivery.',icon:'tag',fields:[Q('what','Item','text',1),Q('dir','Direction','select',1,['Going out','Coming in']),Q('date','Date','date',1)]},
+  {id:'vpark',name:'Visitor parking',desc:'Reserve a bay for a guest.',icon:'key',fields:[Q('guest','Guest name','text',1),Q('date','Date','date',1),Q('plate','Vehicle number','text')]},
+  {id:'desk',name:'Desk or IT issue',desc:'Something is not working at your desk.',icon:'gear',fields:[Q('kind','Type','select',1,['Network','Power','Furniture','Other']),Q('details','Describe','longtext',1)]}],
+  flows:[
+   {id:'w-out',name:'Equipment leaving the building alerts the office',trigger:'request.created',formId:'courier',conds:[{field:'a.dir',op:'is',value:'Going out'}],actions:[{type:'notify_admin',text:'{{name}} ({{flat}}) is taking out: {{a.what}} on {{a.date}}.'}]},
+   {id:'w-vp',name:'Visitor parking is approved automatically',trigger:'request.created',formId:'vpark',conds:[],actions:[{type:'set_status',value:'approved'},{type:'notify_resident',text:'Parking for {{a.guest}} on {{a.date}} is booked.'}]}]})}
+};
+function applyTemplate(id){const t=TEMPLATES[id];if(!t)return;const bp=t.bp();bp.template=id;DB.settings.nocode=QSFlows.clean(bp);BLD.form=null;BLD.flow=null;save()}
+
+/* ---------- demo mode: run automations here. With an API, the server does it. ---------- */
+function ncAutomate(coll,doc,u){
+ if(REMOTE)return[];
+ const rec={...doc,name:u?u.name:'Society Office',flat:u&&u.tower?flatKey(u):'',form:doc.formName||'',title:doc.title||doc.formName||''};
+ const fx=QSFlows.run(DB.settings.nocode,coll==='requests'?'request.created':'complaint.created',rec),said=[];
+ for(const e of fx){
+  if(e.type==='notify_admin'){notify('admin',e.text,coll==='requests'?'requests':'helpdesk');said.push('office notified')}
+  else if(e.type==='notify_resident'&&doc.userId&&doc.userId!=='admin'){notify(doc.userId,e.text,coll==='requests'?'services':'helpdesk');said.push('you were notified')}
+  else if(e.type==='set_status'){doc.status=e.value;said.push('status set to '+e.value)}
+  else if(e.type==='assign'&&coll==='complaints'){doc.assignee=e.value;said.push('assigned to '+e.value)}
+  else if(e.type==='post_notice'){DB.notices.unshift({id:uid('n'),title:e.title,body:e.text||e.title,category:'General',priority:'normal',pinned:false,date:new Date().toISOString(),author:'Society Office (automation)',readBy:[],attachment:null});notify('all','New notice: '+e.title,'notices');said.push('notice posted')}}
+ if(fx.length)logAct('Automation ran ('+fx.length+' step'+(fx.length>1?'s':'')+') for '+(doc.formName||doc.title));
+ return[...new Set(said)]}
+
+/* First run of the demo: start from the community template and add a few sample requests. */
+function ncBoot(){
+ DB.requests=DB.requests||[];
+ if(DB.settings.nocode&&DB.settings.nocode.forms)return;
+ applyTemplate('community');
+ const us=DB.users.filter(u=>u.status==='approved'&&u.role!=='admin'&&u.role!=='security').slice(0,3),mk=(u,f,a,st,note,d)=>{const form=ncForm(f);return{id:uid('r'),formId:f,formName:form.name,userId:u.id,name:u.name,flat:flatKey(u),fields:form.fields.map(({id,label,type})=>({id,label,type})),answers:a,status:st,note,created:Date.now()-d*DAY}};
+ const D1=new Date(Date.now()+3*DAY).toISOString().slice(0,10),D2=new Date(Date.now()+9*DAY).toISOString().slice(0,10);
+ if(us[0])DB.requests.push(mk(us[0],'move',{kind:'Move in',date:D1,vehicle:'Mini truck',contact:'9876512345',agree:true},'pending','',0));
+ if(us[1])DB.requests.push(mk(us[1],'reno',{work:'Flooring',from:D2,days:'10',contractor:'Shree Interiors',details:'Replace living room tiles.'},'pending','',1));
+ if(us[2])DB.requests.push(mk(us[2],'park',{type:'Two-wheeler',number:'KA01 AB 1234',make:'Honda Activa'},'approved','Approved automatically',2));
+ DB.requests.reverse();save()}
+
+/* ---------- resident form drawing (also used for the live preview) ---------- */
+function qField(f){
+ const id='q_'+f.id,L=esc(f.label)+(f.req?' *':'');
+ switch(f.type){
+  case'longtext':return F.a(id,L,{cls:'full',req:f.req});
+  case'select':return F.s(id,L,[['','Choose...'],...f.options],{req:f.req});
+  case'checkbox':return F.c(id,esc(f.label)+(f.req?' *':''),false);
+  case'number':return F.t(id,L,{type:'number',req:f.req,attrs:'inputmode="decimal"'});
+  case'date':return F.t(id,L,{type:'date',req:f.req});
+  case'phone':return F.t(id,L,{type:'tel',req:f.req,attrs:'inputmode="tel"'});
+  default:return F.t(id,L,{req:f.req})}}
+function formPreview(f){
+ if(!f)return`<div class="empty">${ic('layout')}<b>Pick a form to edit</b><span>The live preview appears here.</span></div>`;
+ return`<div class="pv-head">${ic(f.icon)}<div><b>${esc(f.name)}</b><small>${esc(f.desc)||'No description'}</small></div></div><fieldset disabled class="pv-fs"><div class="frm">${f.fields.map(qField).join('')||'<p class="muted full">No questions yet. Add one on the left.</p>'}</div></fieldset>`}
+
+/* ---------- builder page ---------- */
+const BTABS=[['start','Start','layout'],['modules','Modules','gear'],['forms','Forms','book'],['flows','Automations','bolt'],['code','Blueprint','copy']];
+ROUTES.builder=()=>{
+ if(!isAdmin())return ROUTES.home();
+ const n=nc();
+ return`<div class="stack">${head('No-code builder','Shape the whole app without writing code. Changes go live the moment you make them.',`<span class="chip good">${ic('check')}Live and saved</span>`)}
+ <div class="tabs2 bld-tabs" role="tablist">${BTABS.map(t=>`<button role="tab" class="${BLD.tab===t[0]?'on':''}" aria-selected="${BLD.tab===t[0]}" data-act="bld-tab" data-t="${t[0]}">${ic(t[2])}<span>${t[1]}</span></button>`).join('')}</div>
+ ${BLD.tab==='modules'?bModules(n):BLD.tab==='forms'?bForms(n):BLD.tab==='flows'?bFlows(n):BLD.tab==='code'?bCode(n):bStart(n)}</div>`};
+ACT['bld-tab']=d=>{BLD.tab=d.t;render()};
+
+function bStart(n){
+ const on=Object.keys(MODS).filter(k=>n.modules[k]!==false).length,pend=DB.requests.filter(r=>r.status==='pending').length,act=n.flows.filter(w=>w.on).length;
+ const kp=(i,v,l)=>`<div class="kpi"><span class="k-ic">${ic(i)}</span><div><b>${v}</b><small>${l}</small></div></div>`;
+ return`<div class="grid kpis4">${kp('gear',on+' / '+Object.keys(MODS).length,'modules switched on')}${kp('book',n.forms.length,'custom forms')}${kp('bolt',act,'automations running')}${kp('check',pend,'requests waiting')}</div>
+ <section class="card"><h3>${ic('layout')}Start from a template</h3><p class="muted" style="margin:-4px 0 12px">One tap sets up the modules, forms and automations for a kind of community. You can change everything afterwards.</p>
+ <div class="tiles tpl">${Object.entries(TEMPLATES).map(([id,t])=>`<button type="button" class="tile ${n.template===id?'on':''}" data-act="tpl-apply" data-id="${id}" data-confirm="1">${ic(t.icon)}<b>${esc(t.name)}</b><small>${esc(t.note)}</small>${n.template===id?'<span class="chip good">In use</span>':''}</button>`).join('')}</div></section>
+ <section class="card"><h3>${ic('info')}How the builder works</h3><div class="steps card flat"><div><span class="n">1</span><div><b>Modules</b><br><small>Switch features on or off. Residents see only what you enable.</small></div></div><div><span class="n">2</span><div><b>Forms</b><br><small>Design any request form by adding questions. It appears under Services.</small></div></div><div><span class="n">3</span><div><b>Automations</b><br><small>When something is submitted, check the answers and act: approve, notify, assign, post a notice.</small></div></div></div>
+ <p class="muted" style="margin-top:10px">${REMOTE?'Automations run on the server, so a resident can never skip or fake them.':'Demo mode: automations run in this browser. With the API connected they run on the server.'}</p></section>`}
+ACT['tpl-apply']=d=>{applyTemplate(d.id);toast('Template applied: '+TEMPLATES[d.id].name);render()};
+
+function bModules(n){
+ const items=Object.entries(MODS);
+ const phone=NAV.filter(x=>x[0]==='accounts'?false:x[0]==='services'?n.forms.some(f=>f.on):n.modules[x[0]]!==false);
+ return`<div class="split"><section class="card"><h3>${ic('gear')}What residents can use</h3><p class="muted" style="margin:-4px 0 12px">Home and Maintenance are always on. Admins keep access to everything.</p>
+ <div class="mods">${items.map(([k,[t,d,i]])=>{const c=MCOUNT[k]?(DB[MCOUNT[k]]||[]).length:null;return`<label class="mod ${n.modules[k]===false?'off':''}"><span class="mi">${ic(i)}</span><span class="mt"><b>${t}</b><small>${d}${c!=null?' · '+c+' item'+(c===1?'':'s'):''}</small></span><span class="tgl"><input type="checkbox" data-nc="mod|${k}" ${n.modules[k]===false?'':'checked'} aria-label="${t}"><span class="sw"></span></span></label>`}).join('')}</div></section>
+ <aside class="card phonecard"><h3>${ic('eye')}Resident menu</h3><div class="phone" aria-label="Preview of the resident menu"><div class="pn"><b>${esc(DB.settings.name)}</b></div><div class="pm">${phone.map(x=>`<div class="pi">${ic(x[2])}${x[1]}</div>`).join('')}</div></div><small class="muted">Updates as you switch modules.</small></aside></div>`}
+
+function bForms(n){
+ const f=ncForm(BLD.form);
+ const list=`<section class="card"><h3>${ic('book')}Your forms</h3><div class="stack">${n.forms.map(x=>`<div class="frow ${BLD.form===x.id?'on':''}"><button type="button" class="fr-main" data-act="form-pick" data-id="${x.id}">${ic(x.icon)}<span><b>${esc(x.name)}</b><small>${x.fields.length} question${x.fields.length===1?'':'s'}${x.on?'':' · hidden'}</small></span></button><button type="button" class="iconbtn" data-act="form-del" data-id="${x.id}" data-confirm="1" aria-label="Delete ${esc(x.name)}">${ic('trash')}</button></div>`).join('')||`<p class="muted">No forms yet.</p>`}
+ <button type="button" class="btn acc" data-act="form-new">${ic('plus')}New form</button></div></section>`;
+ if(!f)return`<div class="split">${list}<aside class="card"><div id="ncprev">${formPreview(null)}</div></aside></div>`;
+ const o=(k,v)=>`data-nc="form|${f.id}|${k}"`;
+ const edit=`<section class="card"><h3>${ic('edit')}Edit form</h3><div class="stack">
+ <div class="frm"><label class="fld full"><span>Form name</span><input ${o('name')} value="${esc(f.name)}" maxlength="60"></label>
+ <label class="fld full"><span>Short description</span><input ${o('desc')} value="${esc(f.desc)}" maxlength="200"></label>
+ <label class="fld"><span>Who can use it</span><select ${o('audience')}>${[['all','All residents'],['Owner','Owners only'],['Tenant','Tenants only']].map(([v,t])=>`<option value="${v}" ${f.audience===v?'selected':''}>${t}</option>`).join('')}</select></label>
+ <label class="fld"><span>Icon</span><select ${o('icon')}>${QSFlows.ICONS.map(i=>`<option ${f.icon===i?'selected':''}>${i}</option>`).join('')}</select></label></div>
+ <label class="tgl"><input type="checkbox" ${o('on')} ${f.on?'checked':''}><span class="sw"></span>Visible to residents</label>
+ <h4 style="margin:6px 0 0">Questions</h4>
+ ${f.fields.map((q,i)=>`<div class="qrow"><div class="qtop"><select data-nc="field|${f.id}|${q.id}|type" aria-label="Type">${QSFlows.FIELD_TYPES.map(t=>`<option value="${t}" ${q.type===t?'selected':''}>${FT[t]}</option>`).join('')}</select><input data-nc="field|${f.id}|${q.id}|label" value="${esc(q.label)}" maxlength="80" aria-label="Question"><div class="qact"><button type="button" class="iconbtn" data-act="q-move" data-f="${f.id}" data-q="${q.id}" data-d="-1" ${i?'':'disabled'} aria-label="Move up">${ic('cl','rot90')}</button><button type="button" class="iconbtn" data-act="q-move" data-f="${f.id}" data-q="${q.id}" data-d="1" ${i<f.fields.length-1?'':'disabled'} aria-label="Move down">${ic('cr','rot90')}</button><button type="button" class="iconbtn" data-act="q-del" data-f="${f.id}" data-q="${q.id}" aria-label="Remove question">${ic('trash')}</button></div></div>
+  <div class="qbot">${q.type==='select'?`<label class="fld sp"><span>Options, separated by commas</span><input data-nc="field|${f.id}|${q.id}|options" value="${esc(q.options.join(', '))}"></label>`:''}<label class="tgl"><input type="checkbox" data-nc="field|${f.id}|${q.id}|req" ${q.req?'checked':''}><span class="sw"></span>Required</label></div></div>`).join('')}
+ <div class="addq"><small>Add a question:</small>${QSFlows.FIELD_TYPES.map(t=>`<button type="button" class="pill" data-act="q-add" data-f="${f.id}" data-t="${t}">+ ${FT[t]}</button>`).join('')}</div></div></section>`;
+ return`<div class="split">${edit}<aside class="card pv"><h3>${ic('eye')}What residents see</h3><div id="ncprev">${formPreview(f)}</div></aside></div>`}
+ACT['form-pick']=d=>{BLD.form=d.id;render()};
+ACT['form-new']=()=>{const id=uid('f');nc().forms.push({id,name:'New form',desc:'',icon:'layout',on:true,audience:'all',fields:[Q('q1','Your question','text',1)]});BLD.form=id;ncCommit()};
+ACT['form-del']=d=>{const n=nc();n.forms=n.forms.filter(f=>f.id!==d.id);n.flows.forEach(w=>{if(w.formId===d.id){w.formId='';w.on=false}});if(BLD.form===d.id)BLD.form=null;ncCommit();toast('Form deleted. Automations that used it were paused.','info')};
+ACT['q-add']=d=>{const f=ncForm(d.f);if(!f||f.fields.length>=15)return toast('A form can have up to 15 questions.','x');f.fields.push(Q(uid('q'),'New '+FT[d.t].toLowerCase()+' question',d.t,0,d.t==='select'?['Option 1','Option 2']:null));ncCommit()};
+ACT['q-del']=d=>{const f=ncForm(d.f);if(!f)return;f.fields=f.fields.filter(q=>q.id!==d.q);ncCommit()};
+ACT['q-move']=d=>{const f=ncForm(d.f);if(!f)return;const i=f.fields.findIndex(q=>q.id===d.q),j=i+Number(d.d);if(i<0||j<0||j>=f.fields.length)return;[f.fields[i],f.fields[j]]=[f.fields[j],f.fields[i]];ncCommit()};
+
+/* ----- automations ----- */
+const flowFields=w=>{ /* what a condition can look at */
+ if(w.trigger==='complaint.created')return[['category','Category'],['priority','Priority (normal or high)'],['title','Title'],['flat','Flat']];
+ const f=ncForm(w.formId),o=[['flat','Flat'],['name','Resident name']];
+ if(!f)return[['form','Form name'],...o];
+ return[...f.fields.map(q=>['a.'+q.id,q.label]),...o]};
+const tokens=w=>w.trigger==='complaint.created'?[['name','Name'],['flat','Flat'],['title','Title'],['category','Category']]:[['name','Name'],['flat','Flat'],['form','Form'],...(ncForm(w.formId)?ncForm(w.formId).fields.map(q=>['a.'+q.id,q.label]):[])];
+function describeFlow(w){
+ const fl=flowFields(w),lab=k=>(fl.find(x=>x[0]===k)||[k,k])[1];
+ const when=w.trigger==='request.created'?(ncForm(w.formId)?`someone submits <b>${esc(ncForm(w.formId).name)}</b>`:'someone submits <b>any form</b>'):'a <b>ticket</b> is raised';
+ const cond=w.conds.length?' and '+w.conds.map(c=>`<b>${esc(lab(c.field))}</b> ${OPL[c.op]}${c.op==='empty'?'':' <b>'+esc(c.value)+'</b>'}`).join(' and '):'';
+ const act=w.actions.length?w.actions.map(a=>a.type==='notify_admin'?'tell the office':a.type==='notify_resident'?'message the resident':a.type==='set_status'?'set status to <b>'+esc(a.value||'?')+'</b>':a.type==='assign'?'assign to <b>'+esc(a.value||'?')+'</b>':'post notice <b>'+esc(a.title||'?')+'</b>').join(', then '):'<i>do nothing yet</i>';
+ return`When ${when}${cond}, ${act}.`}
+function actEditor(w,a,i){
+ const dn=`data-nc="act|${w.id}|${i}|`,st=w.trigger==='request.created'?QSFlows.REQ_STATUS:QSFlows.TKT_STATUS;
+ const types=QSFlows.ACTIONS.filter(t=>t!=='assign'||w.trigger==='complaint.created');
+ let p='';
+ if(a.type==='notify_admin'||a.type==='notify_resident')p=`<label class="fld sp"><span>Message</span><input ${dn}text" value="${esc(a.text||'')}" maxlength="200" placeholder="Hi {{name}}, ..."></label>`;
+ else if(a.type==='set_status')p=`<label class="fld sp"><span>New status</span><select ${dn}value"><option value="">Choose...</option>${st.map(s=>`<option ${a.value===s?'selected':''}>${s}</option>`).join('')}</select></label>`;
+ else if(a.type==='assign')p=`<label class="fld sp"><span>Assign to</span><input ${dn}value" value="${esc(a.value||'')}" maxlength="60" placeholder="Lift vendor"></label>`;
+ else p=`<label class="fld sp"><span>Notice title</span><input ${dn}title" value="${esc(a.title||'')}" maxlength="120"></label><label class="fld full"><span>Notice text</span><input ${dn}text" value="${esc(a.text||'')}" maxlength="600"></label>`;
+ return`<div class="arow"><div class="row wrap-r" style="align-items:flex-end"><label class="fld"><span>Then</span><select ${dn}type">${types.map(t=>`<option value="${t}" ${a.type===t?'selected':''}>${ACL[t]}</option>`).join('')}</select></label>${p}<button type="button" class="iconbtn" data-act="act-del" data-w="${w.id}" data-i="${i}" aria-label="Remove step">${ic('trash')}</button></div></div>`}
+function condEditor(w,c,i){
+ const fl=flowFields(w),dn=`data-nc="cond|${w.id}|${i}|`,fm=ncForm(w.formId),q=fm&&c.field.startsWith('a.')?fm.fields.find(x=>'a.'+x.id===c.field):null;
+ const val=c.op==='empty'?'':q&&q.type==='select'?`<select ${dn}value">${q.options.map(o=>`<option ${c.value.toLowerCase()===o.toLowerCase()?'selected':''}>${esc(o)}</option>`).join('')}</select>`:`<input ${dn}value" value="${esc(c.value)}" maxlength="80" ${q&&q.type==='number'?'inputmode="decimal"':''}>`;
+ return`<div class="arow"><div class="row wrap-r" style="align-items:flex-end"><label class="fld"><span>${i?'And':'If'}</span><select ${dn}field">${fl.map(([k,l])=>`<option value="${esc(k)}" ${c.field===k?'selected':''}>${esc(l)}</option>`).join('')}</select></label><label class="fld"><span>&nbsp;</span><select ${dn}op">${QSFlows.OPS.map(o=>`<option value="${o}" ${c.op===o?'selected':''}>${OPL[o]}</option>`).join('')}</select></label><label class="fld sp"><span>&nbsp;</span>${val||'<input disabled>'}</label><button type="button" class="iconbtn" data-act="cond-del" data-w="${w.id}" data-i="${i}" aria-label="Remove condition">${ic('trash')}</button></div></div>`}
+function bFlows(n){
+ const w=n.flows.find(x=>x.id===BLD.flow);
+ const list=`<section class="card"><h3>${ic('bolt')}Automations</h3><div class="stack">${n.flows.map(x=>`<div class="frow flow ${BLD.flow===x.id?'on':''}"><button type="button" class="fr-main" data-act="flow-pick" data-id="${x.id}">${ic('bolt')}<span><b>${esc(x.name)}</b><small>${describeFlow(x)}</small></span></button><label class="tgl" title="Switch on or off"><input type="checkbox" data-nc="flow|${x.id}|on" ${x.on?'checked':''} aria-label="${esc(x.name)} on or off"><span class="sw"></span></label></div>`).join('')||`<p class="muted">No automations yet. Add one to approve, notify or assign automatically.</p>`}<button type="button" class="btn acc" data-act="flow-new">${ic('plus')}New automation</button></div></section>`;
+ if(!w)return`<div class="split flows">${list}<aside class="card"><div class="empty">${ic('bolt')}<b>Pick an automation to edit</b><span>Rules read like a sentence: when this happens, if that is true, do these steps.</span></div></aside></div>`;
+ const tk=tokens(w).map(t=>`<span class="tkn">${esc(t[1])} <code>{{${t[0]}}}</code></span>`).join(' ');
+ return`<div class="split flows">${list}<section class="card"><h3>${ic('edit')}Edit automation</h3><div class="stack">
+ <label class="fld"><span>Name</span><input data-nc="flow|${w.id}|name" value="${esc(w.name)}" maxlength="80"></label>
+ <div class="sentence">${describeFlow(w)}</div>
+ <div class="row wrap-r" style="align-items:flex-end"><label class="fld"><span>When</span><select data-nc="flow|${w.id}|trigger">${QSFlows.TRIGGERS.map(t=>`<option value="${t}" ${w.trigger===t?'selected':''}>${TRG[t]}</option>`).join('')}</select></label>
+ ${w.trigger==='request.created'?`<label class="fld sp"><span>Which form</span><select data-nc="flow|${w.id}|formId"><option value="">Any form</option>${n.forms.map(f=>`<option value="${f.id}" ${w.formId===f.id?'selected':''}>${esc(f.name)}</option>`).join('')}</select></label>`:''}</div>
+ ${w.conds.map((c,i)=>condEditor(w,c,i)).join('')}
+ ${w.conds.length<4?`<button type="button" class="btn sm" data-act="cond-add" data-w="${w.id}">${ic('plus')}Add a condition</button>`:''}
+ ${w.actions.map((a,i)=>actEditor(w,a,i)).join('')}
+ ${w.actions.length<4?`<button type="button" class="btn sm" data-act="act-add" data-w="${w.id}">${ic('plus')}Add a step</button>`:''}
+ <small class="muted">Use these in messages: ${tk}</small>
+ <div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-act="flow-del" data-id="${w.id}" data-confirm="1">${ic('trash')}Delete automation</button></div></div></section></div>`}
+const fnd=id=>nc().flows.find(x=>x.id===id);
+ACT['flow-pick']=d=>{BLD.flow=d.id;render()};
+ACT['flow-new']=()=>{const id=uid('w');nc().flows.push({id,name:'New automation',on:true,trigger:'request.created',formId:'',conds:[],actions:[{type:'notify_admin',text:'New request from {{flat}}: {{form}}'}]});BLD.flow=id;ncCommit()};
+ACT['flow-del']=d=>{const n=nc();n.flows=n.flows.filter(w=>w.id!==d.id);BLD.flow=null;ncCommit()};
+ACT['cond-add']=d=>{const w=fnd(d.w);if(!w)return;const f=flowFields(w)[0];w.conds.push({field:f[0],op:'is',value:''});ncCommit()};
+ACT['cond-del']=d=>{const w=fnd(d.w);if(!w)return;w.conds.splice(Number(d.i),1);ncCommit()};
+ACT['act-add']=d=>{const w=fnd(d.w);if(!w)return;w.actions.push({type:'notify_admin',text:''});ncCommit()};
+ACT['act-del']=d=>{const w=fnd(d.w);if(!w)return;w.actions.splice(Number(d.i),1);ncCommit()};
+
+/* ----- blueprint (the code view of everything above) ----- */
+function bCode(n){
+ const json=JSON.stringify(n,null,2);
+ return`<section class="card"><h3>${ic('copy')}Blueprint</h3><p class="muted" style="margin:-4px 0 12px">Everything you built is saved as plain data. Copy it to move this setup to another society, or edit it by hand if you like code. It is checked before it is accepted.</p>
+ <textarea id="bp_text" class="code" spellcheck="false" aria-label="Blueprint JSON">${esc(json)}</textarea><div class="err" id="bp_err" role="alert"></div>
+ <div class="row wrap-r" style="margin-top:12px;justify-content:flex-end"><button type="button" class="btn" data-act="bp-copy">${ic('copy')}Copy</button><button type="button" class="btn" data-act="bp-dl">${ic('download')}Download</button><button type="button" class="btn acc" data-act="bp-apply">${ic('check')}Apply blueprint</button></div>
+ <p class="muted" style="margin-top:10px">${json.split('\n').length} lines of data replace the code you would otherwise write for ${n.forms.length} form${n.forms.length===1?'':'s'}, ${n.flows.length} rule${n.flows.length===1?'':'s'} and the menu.</p></section>`}
+ACT['bp-copy']=()=>copyText($('#bp_text').value);
+ACT['bp-dl']=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([$('#bp_text').value],{type:'application/json'}));a.download='society-blueprint.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
+ACT['bp-apply']=()=>{const e=$('#bp_err');try{const raw=JSON.parse($('#bp_text').value);if(!raw||typeof raw!=='object'||Array.isArray(raw))throw new Error('The blueprint must be an object with modules, forms and flows.');const c=QSFlows.clean(raw);DB.settings.nocode=c;BLD.form=null;BLD.flow=null;save();render();toast(`Blueprint applied: ${c.forms.length} forms, ${c.flows.length} automations`)}catch(x){if(e)e.textContent=x instanceof SyntaxError?'That is not valid JSON: '+x.message:x.message}};
+
+/* ----- one handler for every builder input ----- */
+document.addEventListener('change',e=>{
+ const t=e.target;if(!t.dataset||!t.dataset.nc||!isAdmin())return;
+ const[k,a,b,c]=t.dataset.nc.split('|'),v=t.type==='checkbox'?t.checked:t.value,n=nc(); if(k==='mod'){if(v)delete n.modules[a];else n.modules[a]=false}
+ else if(k==='form'){const f=n.forms.find(x=>x.id===a);if(f)f[b]=v}
+ else if(k==='field'){const f=n.forms.find(x=>x.id===a),q=f&&f.fields.find(x=>x.id===b);if(q){if(c==='options')q.options=String(v).split(',');else q[c]=v;if(c==='type'&&v==='select'&&!(q.options||[]).length)q.options=['Option 1','Option 2']}}
+ else if(k==='flow'){const w=fnd(a);if(w){w[b]=v;if(b==='trigger'){w.formId='';w.conds=[];w.actions=w.actions.filter(x=>x.type!=='assign'||v==='complaint.created').map(x=>x.type==='set_status'?{...x,value:''}:x)}if(b==='formId')w.conds=[]}}
+ else if(k==='cond'){const w=fnd(a),x=w&&w.conds[Number(b)];if(x){x[c]=v;if(c==='field')x.value='';if(c==='op'&&v==='empty')x.value=''}}
+ else if(k==='act'){const w=fnd(a),x=w&&w.actions[Number(b)];if(x){if(c==='type'){for(const p of Object.keys(x))delete x[p];x.type=v}else x[c]=v}}
+ else return;
+ ncCommit(t.tagName==='SELECT'||t.type==='checkbox')});
+
+/* ---------- requests inbox (admin) ---------- */
+const RST={pending:['Waiting','warn'],approved:['Approved','good'],rejected:['Declined','bad'],done:['Done','info']};
+const rChip=s=>{const[t,c]=RST[s]||[s,''];return chip(t,c)};
+const ansHtml=r=>`<dl class="ans">${(r.fields||[]).map(f=>{const v=(r.answers||{})[f.id];return`<div><dt>${esc(f.label)}</dt><dd>${esc(QSFlows.fmtAnswer(f,v)||'-')}</dd></div>`}).join('')}</dl>`;
+ROUTES.requests=()=>{
+ if(!isAdmin())return ROUTES.home();
+ const tab=UI.tab||'pending',all=DB.requests.slice().sort((a,b)=>b.created-a.created),l=tab==='all'?all:all.filter(r=>r.status===tab);
+ const cnt=s=>s==='all'?all.length:all.filter(r=>r.status===s).length;
+ return`<div class="stack">${head('Requests','Everything residents submit through your forms. Automations may already have handled some.',`<button class="btn" data-act="nav" data-to="builder">${ic('bolt')}Open builder</button>`)}
+ <div class="row wrap-r">${['pending','approved','rejected','done','all'].map(s=>`<button class="pill ${tab===s?'on':''}" data-act="req-tab" data-t="${s}">${s==='all'?'All':RST[s][0]} (${cnt(s)})</button>`).join('')}</div>
+ ${l.length?l.map(r=>`<article class="card req"><div class="row wrap-r" style="justify-content:space-between"><div><b>${esc(r.formName)}</b><div class="muted">${esc(r.name)} · ${esc(r.flat)} · ${fdatey(r.created)}</div></div>${rChip(r.status)}</div>${ansHtml(r)}
+  ${r.note?`<p class="muted">Note: ${esc(r.note)}</p>`:''}
+  <div class="row wrap-r" style="align-items:flex-end"><label class="fld sp"><span>Note to resident (optional)</span><input id="rn_${r.id}" value="" maxlength="300"></label>
+  ${r.status!=='approved'?btn('Approve','req-set',{c:'acc',sm:1,i:'check',d:{id:r.id,s:'approved'}}):''}${r.status!=='rejected'?btn('Decline','req-set',{sm:1,i:'x',d:{id:r.id,s:'rejected'}}):''}${r.status==='approved'?btn('Mark done','req-set',{sm:1,d:{id:r.id,s:'done'}}):''}</div></article>`).join(''):empty('book','Nothing here','New submissions show up as soon as residents send them.')}</div>`};
+ACT['req-tab']=d=>{UI.tab=d.t;render()};
+ACT['req-set']=d=>{const r=DB.requests.find(x=>x.id===d.id);if(!r)return;const note=(($('#rn_'+d.id)||{}).value||'').trim();r.status=d.s;if(note)r.note=note;
+ notify(r.userId,`Your ${r.formName} request was ${d.s==='rejected'?'declined':d.s}${note?': '+note:''}`,'services');logAct(`${RST[d.s][0]}: ${r.formName} for ${r.flat}`);save();render();toast('Marked '+RST[d.s][0].toLowerCase())};
+
+/* ---------- services (resident) ---------- */
+ROUTES.services=()=>{
+ if(isAdmin())return ROUTES.requests();
+ const m=me(),fs=formsFor(),mine=DB.requests.filter(r=>r.userId===m.id).sort((a,b)=>b.created-a.created);
+ return`<div class="stack">${head('Services','Ask the society for something. It reaches the office straight away.')}
+ ${fs.length?`<div class="tiles svc">${fs.map(f=>`<button type="button" class="tile" data-act="svc-open" data-id="${f.id}">${ic(f.icon)}<b>${esc(f.name)}</b><small>${esc(f.desc)}</small></button>`).join('')}</div>`:empty('layout','No services yet','The committee has not set up any forms.')}
+ <section class="card"><h3>${ic('book')}My requests</h3>${mine.length?`<div class="stack">${mine.map(r=>`<div class="myreq"><div class="row wrap-r" style="justify-content:space-between"><b>${esc(r.formName)}</b>${rChip(r.status)}</div><small class="muted">${fdatey(r.created)}</small>${ansHtml(r)}${r.note?`<p class="muted">Office note: ${esc(r.note)}</p>`:''}</div>`).join('')}</div>`:`<p class="muted">You have not sent any requests yet.</p>`}</section></div>`};
+ACT['svc-open']=d=>{const f=ncForm(d.id);if(!f)return;modal(esc(f.name),`<p class="muted" style="margin-top:0">${esc(f.desc)}</p>`+formWrap('request',`<input type="hidden" name="formId" value="${f.id}">`+f.fields.map(qField).join(''),'Send request'),{wide:true})};
+FORMS.request=(d,f)=>{
+ const form=ncForm(d.formId);if(!form||!form.on)return fErr('That form is no longer available.');
+ const m=me(),raw={};
+ for(const q of form.fields){const el=f.querySelector('#q_'+q.id);raw[q.id]=q.type==='checkbox'?!!(el&&el.checked):(el?el.value:'')}
+ const chk=QSFlows.checkAnswers(form,raw);if(chk.err)return fErr(chk.err);
+ const doc={id:uid('r'),formId:form.id,formName:form.name,userId:m.id,name:m.name,flat:flatKey(m),fields:form.fields.map(({id,label,type})=>({id,label,type})),answers:chk.answers,status:'pending',note:'',created:Date.now()};
+ DB.requests.unshift(doc);notify('admin',`New request from ${flatKey(m)}: ${form.name}`,'requests');
+ const said=ncAutomate('requests',doc,m);save();closeModal();render();
+ toast(said.length?'Sent. Automation: '+said.join(', '):'Request sent to the office','check')};
 /* ========== file attachments for notices and events ==========
    Admin picks a file in the notice or event form. With a server (REMOTE) the file is uploaded to the API and the notice keeps
    only a small description of it. In the offline demo the file stays inside the browser data.
@@ -2177,7 +2679,7 @@ document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.i
  try{const th=lsGet(TKEY);if(th)document.documentElement.dataset.theme=th}catch(e){}
  if(REMOTE){if(!(await startRemote()))return}
  else{loadDB();if(!DB||!DB.settings){DB=await seed();save()}
- DB.entries=DB.entries||[];DB.visitors=DB.visitors||[];DB.notifs=DB.notifs||[];DB.log=DB.log||[];
+ DB.entries=DB.entries||[];DB.visitors=DB.visitors||[];DB.notifs=DB.notifs||[];DB.log=DB.log||[];ncBoot();
  if(SES&&SES.k==='user'&&!DB.users.some(u=>u.id===SES.id))SES=null}
  render(true);
  if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});

@@ -5,11 +5,11 @@ cd "$(dirname "$0")"
 mkdir -p dist
 # stamp used to refresh the logo pictures on every device after each build
 BUILD="${QS_BUILD:-$(date +%Y%m%d%H%M%S)}"
-CSS="$(cat src/styles.css src/brand.css | sed "s/__BUILD__/$BUILD/g")"
+CSS="$(cat src/styles.css src/brand.css src/builder.css | sed "s/__BUILD__/$BUILD/g")"
 FONTS='<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700;800&display=swap">'
 BODY='<div id="app"></div><div id="modal-root"></div><div id="toasts" aria-live="polite"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>'"$(cat src/core.js src/ui.js src/views1.js src/views2.js src/studio.js src/attach.js src/brand.js src/security.js src/views3.js)"'</script>'
+<script>'"$(cat server/lib/flows.js src/core.js src/ui.js src/views1.js src/views2.js src/studio.js src/builder.js src/attach.js src/brand.js src/security.js src/views3.js)"'</script>'
 # artifact version: no doctype/html/head
 {
 echo '<title>Queenstown Society</title>'

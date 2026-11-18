@@ -126,7 +126,7 @@ function setSes(s){SES=s;if(s)lsSet(SKEY,JSON.stringify(s));else lsDel(SKEY)}
 const adminName=()=>REMOTE?(SES&&SES.username)||'admin':DB.settings.adminUser;
 
 /* ----- remote mode: server calls and change syncing ----- */
-const SYNC_COLLS=['users','notices','events','bills','schedule','amenities','bookings','complaints','ads','polls','docs','contacts','entries','visitors','notifs','log'];
+const SYNC_COLLS=['users','notices','events','bills','schedule','amenities','bookings','complaints','ads','polls','docs','contacts','entries','visitors','notifs','log','requests'];
 let SNAP={},syncing=false,dirty=false,LASTREV=null,syncTimer=null,failStreak=0,LASTREJ=[];
 /* Saves now and waits for the server. Returns the changes the server refused (empty when all was saved). */
 async function flushWait(){if(!REMOTE||!TOKEN)return[];clearTimeout(syncTimer);for(let i=0;i<60&&syncing;i++)await new Promise(r=>setTimeout(r,100));LASTREJ=[];await flush();return LASTREJ}
